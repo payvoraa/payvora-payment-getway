@@ -9,10 +9,11 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',-apple-system,sans-serif}
-:root{--bg:#fff;--bg-soft:#fafbfc;--card:#fff;--border:#eaecf0;--text:#0a0a0a;--muted:#6b7280;--green:#10b981;--green-dark:#059669;--orange:#f59e0b;--red:#ef4444;--dark:#0a0a0a}
+:root{--bg:#fff;--bg-soft:#fafbfc;--card:#fff;--border:#eaecf0;--text:#0a0a0a;--muted:#6b7280;--green:#10b981;--green-dark:#059669;--orange:#f59e0b;--red:#ef4444;--dark:#0a0a0a;--blue:#3b82f6;--purple:#8b5cf6}
 body{background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
 button{font-family:inherit;cursor:pointer;border:none;background:none}
 input,select{font-family:inherit}
+::selection{background:var(--green);color:#fff}
 ::-webkit-scrollbar{width:8px;height:8px}
 ::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:10px}
 
@@ -24,7 +25,6 @@ input,select{font-family:inherit}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
 
-/* LOGIN */
 #loginPage{display:flex;min-height:100vh;animation:fadeIn .4s ease}
 .login-left{flex:1;background:var(--dark);color:#fff;padding:60px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between}
 .shape{position:absolute;border-radius:50%;filter:blur(60px);opacity:.4;pointer-events:none}
@@ -54,35 +54,17 @@ input,select{font-family:inherit}
 .login-note{font-size:12px;color:var(--muted);margin-top:28px;line-height:1.7}
 .error-msg{color:var(--red);font-size:13px;margin-top:12px;display:none;padding:10px 14px;background:#fef2f2;border-radius:8px;border-left:3px solid var(--red)}
 
-/* APP */
 #app{display:none;min-height:100vh;animation:fadeIn .3s ease}
 .layout{display:flex;min-height:100vh}
-
-/* Mobile menu button */
-.menu-toggle{
-  display:none;position:fixed;top:14px;left:14px;z-index:1000;
-  width:44px;height:44px;background:var(--dark);color:#fff;border-radius:12px;
-  align-items:center;justify-content:center;font-size:20px;cursor:pointer;
-  box-shadow:0 4px 20px rgba(0,0,0,.2);transition:all .25s;
-}
+.menu-toggle{display:none;position:fixed;top:14px;left:14px;z-index:1000;width:44px;height:44px;background:var(--dark);color:#fff;border-radius:12px;align-items:center;justify-content:center;font-size:20px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.2);transition:all .25s}
 .menu-toggle:hover{background:#1f2937;transform:scale(1.05)}
-
-.sidebar-overlay{
-  display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:998;
-  backdrop-filter:blur(4px);
-}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:998;backdrop-filter:blur(4px)}
 .sidebar-overlay.show{display:block}
-
-.sidebar{
-  width:250px;background:var(--dark);color:#fff;padding:24px 0;
-  display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;
-  transition:transform .3s cubic-bezier(.4,0,.2,1);
-}
+.sidebar{width:250px;background:var(--dark);color:#fff;padding:24px 0;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;transition:transform .3s cubic-bezier(.4,0,.2,1)}
 .sidebar-logo{padding:0 24px 28px;font-weight:800;display:flex;align-items:center;gap:10px;font-size:16px}
 .nav-item{padding:13px 24px;font-size:14px;color:#9ca3af;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .2s;border-left:3px solid transparent;font-weight:500}
 .nav-item:hover{background:rgba(255,255,255,.05);color:#fff;padding-left:28px}
 .nav-item.active{background:rgba(16,185,129,.1);color:#fff;border-left-color:var(--green);font-weight:600}
-
 .main{flex:1;padding:32px 40px;max-width:1400px;background:var(--bg-soft);min-height:100vh}
 .page-head h1{font-size:26px;letter-spacing:-.5px;font-weight:800;animation:fadeUp .4s ease}
 .page-head p{color:var(--muted);font-size:13px;margin-top:4px}
@@ -94,6 +76,9 @@ input,select{font-family:inherit}
 .stat-card .value{font-size:28px;font-weight:800;margin-top:10px;letter-spacing:-1px}
 .stat-card .value.green{color:var(--green)}
 .stat-card .value.orange{color:var(--orange)}
+.stat-card .value.red{color:var(--red)}
+.stat-card .value.blue{color:var(--blue)}
+.stat-card .value.purple{color:var(--purple)}
 .card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:26px;margin-bottom:20px;animation:fadeUp .5s ease both}
 .card h3{font-size:16px;margin-bottom:18px;font-weight:700}
 .card-sub{font-size:13px;color:var(--muted);margin-top:-12px;margin-bottom:18px}
@@ -107,6 +92,8 @@ tr:last-child td{border-bottom:none}
 .badge.pending{background:#fef3c7;color:#92400e}
 .badge.success,.badge.approved,.badge.paid,.badge.credit{background:#d1fae5;color:#065f46}
 .badge.rejected,.badge.failed,.badge.debit{background:#fee2e2;color:#991b1b}
+.badge.custom{background:#dbeafe;color:#1e40af}
+.badge.default{background:#f3f4f6;color:#374151}
 .form-row{margin-bottom:16px}
 .form-row label{display:block;font-size:12px;font-weight:700;color:#374151;margin-bottom:7px}
 .form-row input,.form-row select{width:100%;padding:12px 15px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;outline:none;transition:all .2s;background:#fff;font-weight:500}
@@ -136,24 +123,21 @@ tr:last-child td{border-bottom:none}
 .modal h3{margin-bottom:20px;font-size:19px;font-weight:800}
 .loading{text-align:center;padding:60px;color:var(--muted)}
 .loading .spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--dark);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;display:block}
+.commission-info{background:linear-gradient(135deg,#fef3c7,#fef9c3);border:1px solid #fcd34d;border-radius:12px;padding:16px;margin-bottom:16px;animation:scaleIn .3s ease}
+.commission-row{display:flex;justify-content:space-between;padding:5px 0;font-size:13px}
+.commission-row.cut{color:#92400e}
+.commission-row.net{border-top:1px solid #fcd34d;margin-top:8px;padding-top:10px;font-size:15px;font-weight:800;color:var(--green-dark)}
+.info-box{background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:14px;font-size:12px;color:#1e40af;line-height:1.6;margin-bottom:16px}
 
-/* MOBILE RESPONSIVE */
 @media(max-width:900px){
   #loginPage{flex-direction:column}
   .login-left{padding:44px 26px;min-height:auto}
   .login-tagline h1{font-size:30px}
   .login-right{padding:32px 22px}
-  
   .layout{flex-direction:row}
   .menu-toggle{display:flex}
-  
-  .sidebar{
-    position:fixed;top:0;left:0;bottom:0;width:270px;height:100vh;
-    transform:translateX(-100%);z-index:999;
-    padding-top:70px;
-  }
+  .sidebar{position:fixed;top:0;left:0;bottom:0;width:270px;height:100vh;transform:translateX(-100%);z-index:999;padding-top:70px}
   .sidebar.open{transform:translateX(0)}
-  
   .main{padding:70px 18px 22px;min-height:100vh;width:100%}
   .grid-2{grid-template-columns:1fr}
   .stat-grid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
@@ -216,6 +200,9 @@ tr:last-child td{border-bottom:none}
 <div class="modal-back" id="modalBack" onclick="if(event.target===this)closeModal()"><div class="modal" id="modal"></div></div>
 
 <script>
+/* =========================================================
+   FIREBASE CONFIG
+   ========================================================= */
 const firebaseConfig = {
   apiKey: "AIzaSyDxrqWXt-GKk-RVHoCA8kPdwYU5VVG-ezg",
   authDomain: "payvora-pg.firebaseapp.com",
@@ -225,12 +212,8 @@ const firebaseConfig = {
   appId: "1:913823472620:web:46c1389e70a011a77fbec9"
 };
 
-let useFirebase = false, db;
-try{
-  firebase.initializeApp(firebaseConfig);
-  db = firebase.firestore();
-  useFirebase = true;
-}catch(e){ console.warn("Firebase init error:", e); }
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
 const DB = {
   async get(coll, id){
@@ -255,6 +238,9 @@ const DB = {
   }
 };
 
+/* =========================================================
+   SESSION
+   ========================================================= */
 let currentUser = null;
 function setSession(u){currentUser=u;sessionStorage.setItem("pv_session",JSON.stringify(u));}
 function clearSession(){currentUser=null;sessionStorage.removeItem("pv_session");}
@@ -267,7 +253,6 @@ function closeSidebar(){
   document.getElementById("sidebar").classList.remove("open");
   document.getElementById("sidebarOverlay").classList.remove("show");
 }
-
 function togglePass(){
   const inp = document.getElementById("loginPass");
   const btn = document.getElementById("eyeBtn");
@@ -281,7 +266,7 @@ async function doLogin(){
   const errEl = document.getElementById("loginError");
   const btn = document.getElementById("loginBtn");
   errEl.style.display = "none";
-  if(!email || !pass){ showErr("Enter email and password"); return; }
+  if(!email || !pass){ showErr("Please enter email and password"); return; }
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span> Signing in...';
   try{
@@ -289,7 +274,7 @@ async function doLogin(){
     if(!u) throw new Error("Invalid email or password");
     if(u.password !== pass) throw new Error("Invalid email or password");
     setSession({ email, role:u.role, name:u.name || email, phone:u.phone || "" });
-    showToast("✅ Welcome " + (u.name || email), "success");
+    showToast("Welcome " + (u.name || email), "success");
     await DB.push("loginHistory", { email, role:u.role, ua:navigator.userAgent, at:new Date().toISOString() });
     renderApp();
   }catch(e){ showErr(e.message || "Login failed"); }
@@ -298,6 +283,29 @@ async function doLogin(){
 function showErr(m){ const el = document.getElementById("loginError"); el.textContent = "⚠ " + m; el.style.display = "block"; }
 function logout(){ clearSession(); document.getElementById("app").style.display="none"; document.getElementById("loginPage").style.display="flex"; document.getElementById("loginEmail").value=""; document.getElementById("loginPass").value=""; }
 
+/* =========================================================
+   COMMISSION HELPERS
+   ========================================================= */
+async function getCommissionFor(merchantEmail){
+  const perMerchant = await DB.get("merchantCommissions", merchantEmail);
+  if(perMerchant && (perMerchant.payinPercent !== undefined || perMerchant.payoutPercent !== undefined)){
+    return {
+      payinPercent: Number(perMerchant.payinPercent) || 0,
+      payoutPercent: Number(perMerchant.payoutPercent) || 0,
+      isCustom: true
+    };
+  }
+  const global = (await DB.get("commissionSettings","config")) || {payinPercent:0, payoutPercent:0};
+  return {
+    payinPercent: Number(global.payinPercent) || 0,
+    payoutPercent: Number(global.payoutPercent) || 0,
+    isCustom: false
+  };
+}
+
+/* =========================================================
+   NAV
+   ========================================================= */
 const NAV = {
   merchant:[
     {id:"dashboard",label:"🏠 Dashboard"},
@@ -309,6 +317,7 @@ const NAV = {
   admin:[
     {id:"admin-dashboard",label:"🏠 Live Dashboard"},
     {id:"admin-settings",label:"⚙️ QR & UPI Settings"},
+    {id:"admin-commission",label:"💹 Global Commission"},
     {id:"admin-merchants",label:"👥 Merchants"},
     {id:"admin-deposits",label:"💰 PayIn Requests"},
     {id:"admin-payouts",label:"💸 Payout Requests"},
@@ -325,7 +334,6 @@ function renderApp(){
     + `<div class="nav-item" style="margin-top:auto;color:#ef4444" onclick="logout()">🚪 Logout</div>`;
   go(items[0].id);
 }
-
 function go(id){
   closeSidebar();
   document.querySelectorAll(".nav-item").forEach(n=>n.classList.toggle("active",n.dataset.id===id));
@@ -334,7 +342,6 @@ function go(id){
   if(currentUser.role === "merchant") renderMerchant(id, main);
   else renderAdmin(id, main);
 }
-
 function fmt(n){return "₹"+Number(n||0).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});}
 function now(){return new Date().toLocaleString("en-IN",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"});}
 function showToast(m,t=""){const el=document.getElementById("toast");el.textContent=m;el.className="toast show "+t;setTimeout(()=>el.className="toast "+t,3200);}
@@ -342,13 +349,16 @@ function openModal(html){document.getElementById("modal").innerHTML=html;documen
 function closeModal(){document.getElementById("modalBack").classList.remove("show");}
 async function addLedger(email,type,amount,description){await DB.push("ledger",{email,type,amount,description,at:now()});}
 
-/* ============== MERCHANT ============== */
+/* =========================================================
+   MERCHANT PANEL
+   ========================================================= */
+let MERCHANT_COMMISSION_CACHE = null;
+
 async function renderMerchant(id, main){
   const m = (await DB.get("merchants", currentUser.email)) || {balance:0,onHold:0,totalDeposit:0,totalWithdraw:0};
   const myDeposits = (await DB.list("deposits")).filter(d=>d.email===currentUser.email);
   const myWithdrawals = (await DB.list("withdrawals")).filter(w=>w.email===currentUser.email);
   const myLedger = (await DB.list("ledger")).filter(l=>l.email===currentUser.email);
-  // 🔥 Per-merchant settings — fallback to global
   const mySettings = (await DB.get("merchantSettings", currentUser.email)) || {};
   const globalSettings = (await DB.get("paySettings","config")) || {upiId:"payvora@paytm",payeeName:"PayVora",qrUrl:""};
   const settings = {
@@ -356,6 +366,8 @@ async function renderMerchant(id, main){
     payeeName: mySettings.payeeName || globalSettings.payeeName,
     qrUrl: mySettings.qrUrl || globalSettings.qrUrl
   };
+  const commission = await getCommissionFor(currentUser.email);
+  MERCHANT_COMMISSION_CACHE = commission;
 
   if(id==="dashboard"){
     const pend = myDeposits.filter(d=>d.status==="pending").length + myWithdrawals.filter(w=>w.status==="pending").length;
@@ -392,16 +404,24 @@ async function renderMerchant(id, main){
         <div class="card">
           <h3>Submit Deposit Request</h3>
           <p class="card-sub">Enter amount & UTR after payment</p>
-          <div class="form-row"><label>Amount (₹)</label><input id="depAmt" type="number" placeholder="0.00" min="1"/></div>
+          ${commission.payinPercent > 0 ? `
+          <div class="info-box">
+            💡 <b>Commission:</b> A ${commission.payinPercent}% fee applies on PayIn. Example: ₹1000 deposit → ₹${(1000 - (1000*commission.payinPercent/100)).toFixed(2)} credited.
+          </div>` : ''}
+          <div class="form-row"><label>Amount (₹)</label><input id="depAmt" type="number" placeholder="0.00" min="1" oninput="updateDepositCommission()"/></div>
+          <div id="depCommissionInfo"></div>
           <div class="form-row"><label>UTR / Transaction ID</label><input id="depUtr" placeholder="e.g. 3021xxxxxxxx"/></div>
           <button class="btn btn-dark" style="width:100%" onclick="submitDeposit()">Submit Deposit Request</button>
         </div>
       </div>
       <div class="card"><h3>📜 Deposit History</h3>
         ${myDeposits.length===0?'<div class="empty">No deposits yet.</div>':`
-        <table><thead><tr><th>Amount</th><th>UTR</th><th>Date & Time</th><th>Status</th></tr></thead>
+        <table><thead><tr><th>Amount</th><th>Commission</th><th>Net Credit</th><th>UTR</th><th>Date & Time</th><th>Status</th></tr></thead>
         <tbody>${myDeposits.slice().reverse().map(d=>`
-          <tr><td><b>${fmt(d.amount)}</b></td><td>${d.utr}</td><td>${d.at}</td>
+          <tr><td><b>${fmt(d.amount)}</b></td>
+          <td style="color:var(--red)">${d.commission?('-'+fmt(d.commission)):'—'}</td>
+          <td style="color:var(--green);font-weight:700">${d.netAmount?fmt(d.netAmount):'—'}</td>
+          <td>${d.utr}</td><td>${d.at}</td>
           <td><span class="badge ${d.status}">${d.status}</span></td></tr>`).join("")}
         </tbody></table>`}
       </div>
@@ -417,7 +437,8 @@ async function renderMerchant(id, main){
             <div class="label">Available for Withdrawal</div>
             <div class="value green">${fmt(m.balance)}</div>
           </div>
-          <div class="form-row" style="margin-top:20px;"><label>Withdrawal Amount (₹)</label><input id="wdAmt" type="number" placeholder="0.00" min="1"/></div>
+          <div class="form-row" style="margin-top:20px;"><label>Withdrawal Amount (₹)</label><input id="wdAmt" type="number" placeholder="0.00" min="1" oninput="updatePayoutCommission()"/></div>
+          <div id="payoutCommissionInfo" style="display:none;"></div>
           <div class="form-row"><label>Payout Method</label>
             <select id="wdMethod"><option value="upi">UPI ID</option><option value="bank">Bank Account</option></select>
           </div>
@@ -427,15 +448,18 @@ async function renderMerchant(id, main){
         <div class="card"><h3>📖 How payouts work</h3>
           <div class="step"><div class="step-num">01</div><div class="step-text">Amount is held from your balance immediately.</div></div>
           <div class="step"><div class="step-num">02</div><div class="step-text">Admin reviews and processes manually.</div></div>
-          <div class="step"><div class="step-num">03</div><div class="step-text">Once paid, UTR attached & status becomes <b>Paid</b>.</div></div>
-          <div class="step"><div class="step-num">04</div><div class="step-text">If rejected, held amount released back.</div></div>
+          <div class="step"><div class="step-num">03</div><div class="step-text">Once paid, UTR attached and status becomes <b>Paid</b>.</div></div>
+          <div class="step"><div class="step-num">04</div><div class="step-text">If rejected, held amount is released back.</div></div>
         </div>
       </div>
       <div class="card"><h3>📜 Withdrawal History</h3>
         ${myWithdrawals.length===0?'<div class="empty">No withdrawals yet.</div>':`
-        <table><thead><tr><th>Amount</th><th>Payout To</th><th>UTR</th><th>Date & Time</th><th>Status</th></tr></thead>
+        <table><thead><tr><th>Amount</th><th>Commission</th><th>Net Payout</th><th>Payout To</th><th>UTR</th><th>Date</th><th>Status</th></tr></thead>
         <tbody>${myWithdrawals.slice().reverse().map(w=>`
-          <tr><td><b>${fmt(w.amount)}</b></td><td>${w.dest}</td><td>${w.utr||"—"}</td><td>${w.at}</td>
+          <tr><td><b>${fmt(w.amount)}</b></td>
+          <td style="color:var(--red)">${w.commission?('-'+fmt(w.commission)):'—'}</td>
+          <td style="color:var(--green);font-weight:700">${w.netPayout?fmt(w.netPayout):'—'}</td>
+          <td>${w.dest}</td><td>${w.utr||"—"}</td><td>${w.at}</td>
           <td><span class="badge ${w.status}">${w.status}</span></td></tr>`).join("")}
         </tbody></table>`}
       </div>
@@ -457,7 +481,7 @@ async function renderMerchant(id, main){
           <div class="form-row"><label>Name</label><input value="${currentUser.name}" readonly/></div>
           <div class="form-row"><label>Email</label><input value="${currentUser.email}" readonly/></div>
           <div class="form-row"><label>Phone</label><input value="${currentUser.phone||'-'}" readonly/></div>
-          <div class="form-row"><label>Status</label><input value="active" readonly/></div>
+          <div class="form-row"><label>Commission Rate</label><input value="PayIn: ${commission.payinPercent}% | Payout: ${commission.payoutPercent}%" readonly/></div>
         </div>
         <div class="card"><h3>Change Password</h3>
           <div class="form-row"><label>Current Password</label><input id="cpOld" type="password"/></div>
@@ -480,13 +504,58 @@ function ledgerTable(rows){
     </tbody></table>`;
 }
 
+function updateDepositCommission(){
+  const amt = parseFloat(document.getElementById("depAmt").value) || 0;
+  const wrap = document.getElementById("depCommissionInfo");
+  if(!wrap) return;
+  const percent = MERCHANT_COMMISSION_CACHE?.payinPercent || 0;
+  if(amt <= 0 || percent <= 0){ wrap.innerHTML = ''; return; }
+  const commission = (amt * percent) / 100;
+  const net = amt - commission;
+  wrap.innerHTML = `
+    <div class="commission-info">
+      <div class="commission-row"><span>Deposit Amount:</span><b>${fmt(amt)}</b></div>
+      <div class="commission-row cut"><span>Commission (${percent}%):</span><b>-${fmt(commission)}</b></div>
+      <div class="commission-row net"><span>You'll Get:</span><b>${fmt(net)}</b></div>
+    </div>
+  `;
+}
+
+function updatePayoutCommission(){
+  const amt = parseFloat(document.getElementById("wdAmt").value) || 0;
+  const wrap = document.getElementById("payoutCommissionInfo");
+  if(!wrap) return;
+  const percent = MERCHANT_COMMISSION_CACHE?.payoutPercent || 0;
+  if(amt <= 0 || percent <= 0){ wrap.style.display = "none"; return; }
+  const commission = (amt * percent) / 100;
+  const net = amt - commission;
+  wrap.style.display = "block";
+  wrap.innerHTML = `
+    <div class="commission-info">
+      <div class="commission-row"><span>Withdrawal Amount:</span><b>${fmt(amt)}</b></div>
+      <div class="commission-row cut"><span>Commission (${percent}%):</span><b>-${fmt(commission)}</b></div>
+      <div class="commission-row net"><span>You'll Receive:</span><b>${fmt(net)}</b></div>
+    </div>
+  `;
+}
+
 async function submitDeposit(){
   const amt=parseFloat(document.getElementById("depAmt").value);
   const utr=document.getElementById("depUtr").value.trim();
-  if(!amt||amt<=0) return showToast("Enter valid amount","error");
-  if(!utr) return showToast("Enter UTR","error");
-  await DB.push("deposits",{email:currentUser.email,name:currentUser.name,amount:amt,utr,status:"pending",at:now()});
-  showToast("✅ Deposit request submitted","success");
+  if(!amt||amt<=0) return showToast("Please enter a valid amount","error");
+  if(!utr) return showToast("Please enter UTR","error");
+  const commission = MERCHANT_COMMISSION_CACHE?.payinPercent || 0;
+  const commissionAmt = (amt * commission) / 100;
+  const netAmount = amt - commissionAmt;
+  await DB.push("deposits",{
+    email:currentUser.email,name:currentUser.name,
+    amount:amt,
+    commission: commissionAmt,
+    commissionPercent: commission,
+    netAmount: netAmount,
+    utr,status:"pending",at:now()
+  });
+  showToast(`Deposit submitted — ₹${netAmount.toFixed(2)} will be credited (${commission}% fee)`,"success");
   go("payin");
 }
 
@@ -502,14 +571,24 @@ async function submitWithdrawal(){
   const amt=parseFloat(document.getElementById("wdAmt").value);
   const dest=document.getElementById("wdDest").value.trim();
   const method=document.getElementById("wdMethod").value;
-  if(!amt||amt<=0) return showToast("Enter valid amount","error");
-  if(!dest) return showToast("Enter payout destination","error");
+  if(!amt||amt<=0) return showToast("Please enter a valid amount","error");
+  if(!dest) return showToast("Please enter payout destination","error");
   const m=(await DB.get("merchants",currentUser.email))||{balance:0,onHold:0,totalDeposit:0,totalWithdraw:0};
   if(amt>m.balance) return showToast("Insufficient balance","error");
+  const commission = MERCHANT_COMMISSION_CACHE?.payoutPercent || 0;
+  const commissionAmt = (amt * commission) / 100;
+  const netPayout = amt - commissionAmt;
   m.balance-=amt; m.onHold+=amt;
   await DB.set("merchants",currentUser.email,m);
-  await DB.push("withdrawals",{email:currentUser.email,name:currentUser.name,amount:amt,dest,method,status:"pending",utr:"",at:now()});
-  showToast("✅ Withdrawal requested — amount on hold","success");
+  await DB.push("withdrawals",{
+    email:currentUser.email,name:currentUser.name,
+    amount:amt,
+    commission: commissionAmt,
+    commissionPercent: commission,
+    netPayout: netPayout,
+    dest,method,status:"pending",utr:"",at:now()
+  });
+  showToast(`Withdrawal requested — you will receive ₹${netPayout.toFixed(2)} (${commission}% fee)`,"success");
   go("payout");
 }
 
@@ -517,32 +596,36 @@ async function changePassword(){
   const o=document.getElementById("cpOld").value;
   const n=document.getElementById("cpNew").value;
   const n2=document.getElementById("cpNew2").value;
-  if(!o||!n||!n2) return showToast("Fill all fields","error");
-  if(n!==n2) return showToast("Passwords don't match","error");
-  if(n.length<6) return showToast("Min 6 characters","error");
+  if(!o||!n||!n2) return showToast("Please fill all fields","error");
+  if(n!==n2) return showToast("Passwords do not match","error");
+  if(n.length<6) return showToast("Minimum 6 characters","error");
   const u=await DB.get("users",currentUser.email);
-  if(!u||u.password!==o) return showToast("Current password wrong","error");
+  if(!u||u.password!==o) return showToast("Current password is wrong","error");
   u.password=n;
   await DB.set("users",currentUser.email,u);
-  showToast("✅ Password updated","success");
+  showToast("Password updated successfully","success");
 }
 
-/* ============== ADMIN ============== */
+/* =========================================================
+   ADMIN PANEL
+   ========================================================= */
 async function renderAdmin(id, main){
   if(id==="admin-dashboard"){
     const merchants = await DB.list("merchants");
     const deposits = await DB.list("deposits");
     const withdrawals = await DB.list("withdrawals");
+    const earnings = await DB.list("adminEarnings");
     const totalVolume = deposits.filter(d=>d.status==="approved").reduce((s,d)=>s+d.amount,0);
+    const totalCommission = earnings.reduce((s,e)=>s+(e.amount||0),0);
     const pendDep = deposits.filter(d=>d.status==="pending").length;
     const pendWd = withdrawals.filter(w=>w.status==="pending").length;
     main.innerHTML = `
       <div class="page-head"><div><h1>🏠 Live Dashboard</h1><p>Real-time overview</p></div></div>
       <div class="stat-grid">
         <div class="stat-card"><div class="label">Total Volume</div><div class="value green">${fmt(totalVolume)}</div></div>
+        <div class="stat-card"><div class="label">Commission Earned</div><div class="value blue">${fmt(totalCommission)}</div></div>
         <div class="stat-card"><div class="label">Total Merchants</div><div class="value">${merchants.length}</div></div>
-        <div class="stat-card"><div class="label">Pending Deposits</div><div class="value orange">${pendDep}</div></div>
-        <div class="stat-card"><div class="label">Pending Payouts</div><div class="value orange">${pendWd}</div></div>
+        <div class="stat-card"><div class="label">Pending Approvals</div><div class="value orange">${pendDep + pendWd}</div></div>
       </div>
       <div class="card"><h3>👥 Merchants & Balances</h3>${merchantTable(merchants)}</div>
     `;
@@ -558,7 +641,7 @@ async function renderAdmin(id, main){
           <div class="form-row"><label>Payee Name</label><input id="setName" value="${s.payeeName||''}" placeholder="PayVora"/></div>
           <div class="form-row"><label>QR Image URL</label><input id="setQr" value="${s.qrUrl||''}" placeholder="https://..."/></div>
           <button class="btn btn-dark" style="width:100%" onclick="saveSettings()">Save Global Settings</button>
-          <p style="font-size:12px;color:var(--muted);margin-top:12px;">⚠️ Ye default hai. Har merchant ko alag QR dene ke liye <b>Merchants</b> page pe jao.</p>
+          <p style="font-size:12px;color:var(--muted);margin-top:12px;">⚠️ These are defaults. To set per-merchant QR, go to <b>Merchants</b> page.</p>
         </div>
         <div class="card"><h3>QR Preview</h3>
           <div class="qr-box">
@@ -570,28 +653,78 @@ async function renderAdmin(id, main){
     `;
   }
 
+  if(id==="admin-commission"){
+    const c = (await DB.get("commissionSettings","config")) || {payinPercent:0, payoutPercent:0};
+    const merchants = await DB.list("merchants");
+    const customs = await DB.list("merchantCommissions");
+    main.innerHTML = `
+      <div class="page-head"><div><h1>💹 Global Commission Settings</h1><p>Default rates for merchants without custom rates</p></div></div>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="label">Global PayIn Rate</div><div class="value blue">${c.payinPercent||0}%</div></div>
+        <div class="stat-card"><div class="label">Global Payout Rate</div><div class="value purple">${c.payoutPercent||0}%</div></div>
+        <div class="stat-card"><div class="label">Custom Rates Set</div><div class="value">${customs.length}</div></div>
+        <div class="stat-card"><div class="label">Total Merchants</div><div class="value">${merchants.length}</div></div>
+      </div>
+      <div class="grid-2">
+        <div class="card"><h3>Default Commission Rates</h3>
+          <div class="form-row"><label>PayIn Commission (%)</label>
+            <input id="comPayin" type="number" step="0.1" min="0" max="50" value="${c.payinPercent || 0}" placeholder="e.g. 2"/>
+            <p style="font-size:12px;color:var(--muted);margin-top:6px;">Applies to merchants without a custom rate</p>
+          </div>
+          <div class="form-row"><label>Payout Commission (%)</label>
+            <input id="comPayout" type="number" step="0.1" min="0" max="50" value="${c.payoutPercent || 0}" placeholder="e.g. 2"/>
+            <p style="font-size:12px;color:var(--muted);margin-top:6px;">Applies to merchants without a custom rate</p>
+          </div>
+          <button class="btn btn-dark" style="width:100%" onclick="saveCommission()">Save Global Rates</button>
+          <p style="font-size:12px;color:var(--muted);margin-top:12px;">💡 To set a per-merchant rate, go to <b>Merchants</b> page and click the 💹 button.</p>
+        </div>
+        <div class="card"><h3>📊 Example</h3>
+          <div style="font-size:13px;color:var(--muted);line-height:1.8;">
+            <div style="padding:14px;background:#f8fafc;border-radius:10px;margin-bottom:12px;">
+              <b style="color:var(--text);">PayIn ₹1000 @ ${c.payinPercent||0}%</b><br>
+              Merchant deposits: ₹1000<br>
+              Commission: <span style="color:var(--red);">-₹${((1000*(c.payinPercent||0))/100).toFixed(2)}</span><br>
+              <b style="color:var(--green);">Merchant gets: ₹${(1000 - (1000*(c.payinPercent||0))/100).toFixed(2)}</b>
+            </div>
+            <div style="padding:14px;background:#f8fafc;border-radius:10px;">
+              <b style="color:var(--text);">Payout ₹500 @ ${c.payoutPercent||0}%</b><br>
+              Merchant withdraws: ₹500<br>
+              Commission: <span style="color:var(--red);">-₹${((500*(c.payoutPercent||0))/100).toFixed(2)}</span><br>
+              <b style="color:var(--green);">Merchant gets: ₹${(500 - (500*(c.payoutPercent||0))/100).toFixed(2)}</b>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
   if(id==="admin-merchants"){
     const merchants = await DB.list("merchants");
+    const commissions = await DB.list("merchantCommissions");
+    const commMap = {};
+    commissions.forEach(c=>{commMap[c.id] = c;});
     main.innerHTML = `
       <div class="page-head">
-        <div><h1>👥 Merchants</h1><p>Add, manage, set QR per merchant</p></div>
+        <div><h1>👥 Merchants</h1><p>Add, manage, set QR and commission per merchant</p></div>
         <button class="btn btn-dark" onclick="openAddMerchant()">+ Add Merchant</button>
       </div>
-      <div class="card">${merchantTable(merchants)}</div>
+      <div class="card">${merchantTable(merchants, commMap)}</div>
     `;
   }
 
   if(id==="admin-deposits"){
     const deposits = await DB.list("deposits");
     main.innerHTML = `
-      <div class="page-head"><div><h1>💰 PayIn Requests</h1><p>Approve / Reject merchant deposits</p></div></div>
+      <div class="page-head"><div><h1>💰 PayIn Requests</h1><p>Approve or reject merchant deposits</p></div></div>
       <div class="card">
         ${deposits.length===0?'<div class="empty">No deposits yet.</div>':`
-        <table><thead><tr><th>Merchant</th><th>Amount</th><th>UTR</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+        <table><thead><tr><th>Merchant</th><th>Amount</th><th>Commission</th><th>Net Credit</th><th>UTR</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
         <tbody>${deposits.slice().reverse().map(d=>`
           <tr>
             <td>${d.email}</td>
             <td><b>${fmt(d.amount)}</b></td>
+            <td style="color:var(--red);font-size:12px;">${d.commission?('-'+fmt(d.commission)+(d.commissionPercent?` (${d.commissionPercent}%)`:'')):'—'}</td>
+            <td style="color:var(--green);font-weight:700;">${d.netAmount?fmt(d.netAmount):fmt(d.amount)}</td>
             <td>${d.utr}</td>
             <td>${d.at}</td>
             <td><span class="badge ${d.status}">${d.status}</span></td>
@@ -611,11 +744,13 @@ async function renderAdmin(id, main){
       <div class="page-head"><div><h1>💸 Payout Requests</h1><p>Process merchant withdrawals</p></div></div>
       <div class="card">
         ${withdrawals.length===0?'<div class="empty">No withdrawals yet.</div>':`
-        <table><thead><tr><th>Merchant</th><th>Amount</th><th>Payout To</th><th>UTR</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+        <table><thead><tr><th>Merchant</th><th>Amount</th><th>Commission</th><th>Net Payout</th><th>Payout To</th><th>UTR</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
         <tbody>${withdrawals.slice().reverse().map(w=>`
           <tr>
             <td>${w.email}</td>
             <td><b>${fmt(w.amount)}</b></td>
+            <td style="color:var(--red);font-size:12px;">${w.commission?('-'+fmt(w.commission)+(w.commissionPercent?` (${w.commissionPercent}%)`:'')):'—'}</td>
+            <td style="color:var(--green);font-weight:700;">${w.netPayout?fmt(w.netPayout):fmt(w.amount)}</td>
             <td>${w.dest}</td>
             <td>${w.utr||"—"}</td>
             <td>${w.at}</td>
@@ -632,8 +767,10 @@ async function renderAdmin(id, main){
 
   if(id==="admin-ledger"){
     const ledger = await DB.list("ledger");
+    const earnings = await DB.list("adminEarnings");
+    const totalEarned = earnings.reduce((s,e)=>s+(e.amount||0),0);
     main.innerHTML = `
-      <div class="page-head"><div><h1>📒 All Transactions</h1><p>Global ledger</p></div></div>
+      <div class="page-head"><div><h1>📒 All Transactions</h1><p>Global ledger • Commission Earned: <b style="color:var(--green);">${fmt(totalEarned)}</b></p></div></div>
       <div class="card">
         ${ledger.length===0?'<div class="empty">No transactions yet.</div>':`
         <table><thead><tr><th>Merchant</th><th>Type</th><th>Amount</th><th>Description</th><th>Date</th></tr></thead>
@@ -648,22 +785,86 @@ async function renderAdmin(id, main){
   }
 }
 
-function merchantTable(merchants){
+function merchantTable(merchants, commMap){
+  commMap = commMap || {};
   if(!merchants||merchants.length===0) return '<div class="empty">No merchants yet.</div>';
-  return `<table><thead><tr><th>Name</th><th>Email</th><th>Balance</th><th>On Hold</th><th>Actions</th></tr></thead>
-    <tbody>${merchants.map(m=>`
+  return `<table><thead><tr><th>Name</th><th>Email</th><th>Balance</th><th>On Hold</th><th>Commission</th><th>Actions</th></tr></thead>
+    <tbody>${merchants.map(m=>{
+      const c = commMap[m.id];
+      const hasCustom = c && (c.payinPercent !== undefined || c.payoutPercent !== undefined);
+      const commBadge = hasCustom 
+        ? `<span class="badge custom">${c.payinPercent||0}% / ${c.payoutPercent||0}%</span>`
+        : `<span class="badge default">Global</span>`;
+      return `
       <tr>
         <td><b>${m.name||'-'}</b></td>
         <td>${m.email||m.id}</td>
         <td style="color:var(--green);font-weight:700">${fmt(m.balance)}</td>
         <td style="color:var(--orange);font-weight:700">${fmt(m.onHold)}</td>
+        <td>${commBadge}</td>
         <td>
-          <button class="btn btn-sm btn-outline" onclick="openMerchantQrModal('${m.id}')">📱 QR</button>
-          <button class="btn btn-sm btn-outline" onclick="openBalanceModal('${m.id}')">💰</button>
-          <button class="btn btn-sm btn-red" onclick="deleteMerchant('${m.id}')">🗑</button>
+          <button class="btn btn-sm btn-outline" onclick="openMerchantQrModal('${m.id}')" title="Set QR">📱</button>
+          <button class="btn btn-sm btn-outline" onclick="openMerchantCommissionModal('${m.id}')" title="Set Commission">💹</button>
+          <button class="btn btn-sm btn-outline" onclick="openBalanceModal('${m.id}')" title="Adjust Balance">💰</button>
+          <button class="btn btn-sm btn-red" onclick="deleteMerchant('${m.id}')" title="Delete">🗑</button>
         </td>
-      </tr>`).join("")}
+      </tr>`;
+    }).join("")}
     </tbody></table>`;
+}
+
+/* ---- Per-Merchant Commission Modal ---- */
+async function openMerchantCommissionModal(email){
+  const c = (await DB.get("merchantCommissions", email)) || {};
+  const g = (await DB.get("commissionSettings","config")) || {payinPercent:0, payoutPercent:0};
+  openModal(`
+    <h3>💹 Commission for ${email}</h3>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:18px;">Set custom rates for this merchant. Leave blank to use global (PayIn: ${g.payinPercent||0}%, Payout: ${g.payoutPercent||0}%).</p>
+
+    <div class="form-row">
+      <label>PayIn Commission (%)</label>
+      <input id="mcPayin" type="number" step="0.1" min="0" max="50" value="${c.payinPercent !== undefined ? c.payinPercent : ''}" placeholder="Global: ${g.payinPercent||0}%"/>
+    </div>
+    <div class="form-row">
+      <label>Payout Commission (%)</label>
+      <input id="mcPayout" type="number" step="0.1" min="0" max="50" value="${c.payoutPercent !== undefined ? c.payoutPercent : ''}" placeholder="Global: ${g.payoutPercent||0}%"/>
+    </div>
+
+    <div class="info-box">
+      💡 <b>Tip:</b> Leave both fields blank to use global rates. Enter a value to create a custom rate.
+    </div>
+
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-outline" style="flex:1" onclick="clearMerchantCommission('${email}')">Clear (use global)</button>
+      <button class="btn btn-dark" style="flex:1" onclick="saveMerchantCommission('${email}')">Save</button>
+    </div>
+  `);
+}
+
+async function saveMerchantCommission(email){
+  const payinVal = document.getElementById("mcPayin").value.trim();
+  const payoutVal = document.getElementById("mcPayout").value.trim();
+  if(payinVal === "" && payoutVal === ""){
+    return showToast("Please enter at least one value, or click Clear","error");
+  }
+  const payinPercent = payinVal === "" ? 0 : parseFloat(payinVal);
+  const payoutPercent = payoutVal === "" ? 0 : parseFloat(payoutVal);
+  if(payinPercent < 0 || payinPercent > 50) return showToast("PayIn % must be between 0 and 50","error");
+  if(payoutPercent < 0 || payoutPercent > 50) return showToast("Payout % must be between 0 and 50","error");
+  await DB.set("merchantCommissions", email, {
+    payinPercent, payoutPercent,
+    updatedAt: new Date().toISOString()
+  });
+  showToast(`Custom commission set: PayIn ${payinPercent}% / Payout ${payoutPercent}%`,"success");
+  closeModal();
+  go("admin-merchants");
+}
+
+async function clearMerchantCommission(email){
+  await DB.del("merchantCommissions", email);
+  showToast("Merchant will now use global commission","success");
+  closeModal();
+  go("admin-merchants");
 }
 
 /* ---- Merchant QR Modal ---- */
@@ -672,24 +873,18 @@ async function openMerchantQrModal(email){
   const g = (await DB.get("paySettings","config")) || {};
   openModal(`
     <h3>📱 QR & UPI for ${email}</h3>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Ye settings sirf is merchant ke PayIn page pe dikhengi. Khali chhodo toh global settings use hongi.</p>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">These settings appear only on this merchant's PayIn page.</p>
     <div class="form-row"><label>UPI ID</label><input id="mUpi" value="${s.upiId||''}" placeholder="${g.upiId||'payvora@paytm'}"/></div>
     <div class="form-row"><label>Payee Name</label><input id="mName" value="${s.payeeName||''}" placeholder="${g.payeeName||'PayVora'}"/></div>
-    <div class="form-row"><label>QR Image URL</label><input id="mQr" value="${s.qrUrl||''}" placeholder="${g.qrUrl||'https://...'}" oninput="previewQr(this.value)"/></div>
-    <div style="text-align:center;margin:14px 0;" id="qrPreviewWrap">
-      ${(s.qrUrl||g.qrUrl)?`<img id="qrPreview" src="${s.qrUrl||g.qrUrl}" style="width:160px;height:160px;object-fit:contain;border-radius:10px;border:1px solid var(--border);"/>`:''}
+    <div class="form-row"><label>QR Image URL</label><input id="mQr" value="${s.qrUrl||''}" placeholder="${g.qrUrl||'https://...'}"/></div>
+    <div style="text-align:center;margin:14px 0;">
+      ${(s.qrUrl||g.qrUrl)?`<img src="${s.qrUrl||g.qrUrl}" style="width:160px;height:160px;object-fit:contain;border-radius:10px;border:1px solid var(--border);"/>`:''}
     </div>
-    <div style="display:flex;gap:10px;margin-top:16px;">
+    <div style="display:flex;gap:10px;">
       <button class="btn btn-outline" style="flex:1" onclick="clearMerchantQr('${email}')">Clear (use global)</button>
       <button class="btn btn-dark" style="flex:1" onclick="saveMerchantQr('${email}')">Save</button>
     </div>
   `);
-}
-
-function previewQr(url){
-  const wrap = document.getElementById("qrPreviewWrap");
-  if(!url){ wrap.innerHTML=''; return; }
-  wrap.innerHTML = `<img src="${url}" style="width:160px;height:160px;object-fit:contain;border-radius:10px;border:1px solid var(--border);" onerror="this.outerHTML='<p style=&quot;color:var(--red);font-size:12px;&quot;>Invalid URL</p>'"/>`;
 }
 
 async function saveMerchantQr(email){
@@ -697,7 +892,7 @@ async function saveMerchantQr(email){
   const payeeName = document.getElementById("mName").value.trim();
   const qrUrl = document.getElementById("mQr").value.trim();
   await DB.set("merchantSettings", email, {upiId,payeeName,qrUrl,updatedAt:new Date().toISOString()});
-  showToast("✅ Merchant QR saved","success");
+  showToast("Merchant QR saved","success");
   closeModal();
   go("admin-merchants");
 }
@@ -715,7 +910,7 @@ function openAddMerchant(){
     <h3>➕ Add New Merchant</h3>
     <div class="form-row"><label>Full Name</label><input id="nmName" placeholder="e.g. Rocky"/></div>
     <div class="form-row"><label>Email (login id)</label><input id="nmEmail" type="email" placeholder="merchant@example.com"/></div>
-    <div class="form-row"><label>Password</label><input id="nmPass" type="text" placeholder="Min 6 characters"/></div>
+    <div class="form-row"><label>Password</label><input id="nmPass" type="text" placeholder="Minimum 6 characters"/></div>
     <div class="form-row"><label>Phone</label><input id="nmPhone" placeholder="9765432200"/></div>
     <div style="display:flex;gap:10px;margin-top:16px;">
       <button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancel</button>
@@ -729,22 +924,24 @@ async function createMerchant(){
   const email = document.getElementById("nmEmail").value.trim().toLowerCase();
   const password = document.getElementById("nmPass").value;
   const phone = document.getElementById("nmPhone").value.trim();
-  if(!name || !email || !password) return showToast("Fill all required fields","error");
-  if(password.length < 6) return showToast("Password min 6 characters","error");
+  if(!name || !email || !password) return showToast("Please fill all required fields","error");
+  if(password.length < 6) return showToast("Password must be at least 6 characters","error");
   const existing = await DB.get("users", email);
   if(existing) return showToast("Email already exists","error");
   await DB.set("users", email, { password, role:"merchant", name, phone, createdAt: new Date().toISOString() });
   await DB.set("merchants", email, { name, phone, email, balance:0, onHold:0, totalDeposit:0, totalWithdraw:0, createdAt:new Date().toISOString() });
-  showToast("✅ Merchant created","success");
+  showToast("Merchant created successfully","success");
   closeModal();
   go("admin-merchants");
 }
 
 async function deleteMerchant(email){
-  if(!confirm(`Delete merchant ${email}?`)) return;
+  if(!confirm(`Delete merchant ${email}? This cannot be undone.`)) return;
   await DB.del("users", email);
   await DB.del("merchants", email);
-  showToast("✅ Merchant deleted","success");
+  await DB.del("merchantSettings", email);
+  await DB.del("merchantCommissions", email);
+  showToast("Merchant deleted","success");
   go("admin-merchants");
 }
 
@@ -768,7 +965,7 @@ async function adjustBalance(email){
   const type = document.getElementById("balType").value;
   const amt = parseFloat(document.getElementById("balAmt").value);
   const note = document.getElementById("balNote").value.trim() || "Admin adjustment";
-  if(!amt || amt<=0) return showToast("Enter valid amount","error");
+  if(!amt || amt<=0) return showToast("Please enter a valid amount","error");
   const m = (await DB.get("merchants",email)) || {balance:0,onHold:0,totalDeposit:0,totalWithdraw:0};
   if(type==="credit") m.balance += amt;
   else{
@@ -777,7 +974,7 @@ async function adjustBalance(email){
   }
   await DB.set("merchants",email,m);
   await addLedger(email, type, amt, note);
-  showToast(`✅ ${type==="credit"?"Credited":"Debited"} ${fmt(amt)}`,"success");
+  showToast(`${type==="credit"?"Credited":"Debited"} ${fmt(amt)}`,"success");
   closeModal();
   go("admin-merchants");
 }
@@ -787,20 +984,59 @@ async function saveSettings(){
   const payeeName = document.getElementById("setName").value.trim();
   const qrUrl = document.getElementById("setQr").value.trim();
   await DB.set("paySettings","config",{upiId,payeeName,qrUrl,updatedAt:new Date().toISOString()});
-  showToast("✅ Global settings saved","success");
+  showToast("Global settings saved","success");
   go("admin-settings");
+}
+
+async function saveCommission(){
+  const payinPercent = parseFloat(document.getElementById("comPayin").value) || 0;
+  const payoutPercent = parseFloat(document.getElementById("comPayout").value) || 0;
+  if(payinPercent < 0 || payinPercent > 50) return showToast("PayIn % must be between 0 and 50","error");
+  if(payoutPercent < 0 || payoutPercent > 50) return showToast("Payout % must be between 0 and 50","error");
+  await DB.set("commissionSettings","config",{payinPercent, payoutPercent, updatedAt:new Date().toISOString()});
+  showToast("Global commission rates saved","success");
+  go("admin-commission");
 }
 
 async function approveDeposit(id){
   const deps = await DB.list("deposits");
   const d = deps.find(x=>x.id===id);
   if(!d || d.status!=="pending") return;
+  
+  // Get commission for this merchant
+  const comm = await getCommissionFor(d.email);
+  const percent = comm.payinPercent;
+  const commissionAmt = (d.amount * percent) / 100;
+  const netAmount = d.amount - commissionAmt;
+  
   const m = (await DB.get("merchants",d.email)) || {balance:0,onHold:0,totalDeposit:0,totalWithdraw:0};
-  m.balance += d.amount; m.totalDeposit += d.amount;
+  m.balance += netAmount;
+  m.totalDeposit += d.amount;
   await DB.set("merchants",d.email,m);
-  await DB.set("deposits",id,{...d, status:"approved", approvedAt:new Date().toISOString()});
-  await addLedger(d.email,"credit",d.amount,"Deposit approved — UTR "+d.utr);
-  showToast("✅ Deposit approved","success");
+  
+  await DB.set("deposits",id,{
+    ...d, 
+    status:"approved", 
+    commission: commissionAmt,
+    commissionPercent: percent,
+    netAmount: netAmount,
+    approvedAt:new Date().toISOString()
+  });
+  
+  await addLedger(d.email,"credit",netAmount,`Deposit approved — UTR ${d.utr}${percent>0?` (${percent}% commission: ₹${commissionAmt.toFixed(2)})`:''}`);
+  
+  if(commissionAmt > 0){
+    await DB.push("adminEarnings",{
+      type:"payin_commission",
+      merchant:d.email,
+      amount:commissionAmt,
+      percent:percent,
+      originalAmount:d.amount,
+      at:now()
+    });
+  }
+  
+  showToast(`Approved — ₹${netAmount.toFixed(2)} credited${commissionAmt>0?` (₹${commissionAmt.toFixed(2)} commission)`:''}`,"success");
   go("admin-deposits");
 }
 
@@ -817,14 +1053,30 @@ async function payWithdrawal(id){
   const wds = await DB.list("withdrawals");
   const w = wds.find(x=>x.id===id);
   if(!w || w.status!=="pending") return;
-  const utr = prompt("Enter UTR / Ref number:");
+  const utr = prompt("Enter UTR / Reference number:");
   if(!utr) return;
+  
   const m = (await DB.get("merchants",w.email)) || {balance:0,onHold:0,totalDeposit:0,totalWithdraw:0};
-  m.onHold -= w.amount; m.totalWithdraw += w.amount;
+  m.onHold -= w.amount;
+  m.totalWithdraw += w.amount;
   await DB.set("merchants",w.email,m);
+  
   await DB.set("withdrawals",id,{...w, status:"paid", utr, paidAt:new Date().toISOString()});
-  await addLedger(w.email,"debit",w.amount,"Withdrawal paid — UTR "+utr);
-  showToast("✅ Payout processed","success");
+  
+  await addLedger(w.email,"debit",w.amount,`Withdrawal paid — UTR ${utr}${w.commissionPercent>0?` (${w.commissionPercent}% commission: ₹${(w.commission||0).toFixed(2)})`:''}`);
+  
+  if(w.commission > 0){
+    await DB.push("adminEarnings",{
+      type:"payout_commission",
+      merchant:w.email,
+      amount:w.commission,
+      percent:w.commissionPercent,
+      originalAmount:w.amount,
+      at:now()
+    });
+  }
+  
+  showToast(`Payout processed — Merchant gets ₹${(w.netPayout||w.amount).toFixed(2)}`,"success");
   go("admin-payouts");
 }
 
@@ -833,13 +1085,17 @@ async function rejectWithdrawal(id){
   const w = wds.find(x=>x.id===id);
   if(!w) return;
   const m = (await DB.get("merchants",w.email)) || {balance:0,onHold:0,totalDeposit:0,totalWithdraw:0};
-  m.onHold -= w.amount; m.balance += w.amount;
+  m.onHold -= w.amount;
+  m.balance += w.amount;
   await DB.set("merchants",w.email,m);
   await DB.set("withdrawals",id,{...w, status:"rejected", rejectedAt:new Date().toISOString()});
-  showToast("Withdrawal rejected","error");
+  showToast("Withdrawal rejected — amount released back","error");
   go("admin-payouts");
 }
 
+/* =========================================================
+   AUTO LOGIN
+   ========================================================= */
 (function(){
   const s = sessionStorage.getItem("pv_session");
   if(s){ try{ currentUser = JSON.parse(s); renderApp(); }catch(e){} }
