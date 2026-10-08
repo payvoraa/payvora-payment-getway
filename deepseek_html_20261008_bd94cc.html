@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>PayVora — Secure Checkout</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',-apple-system,sans-serif}
+:root{--bg:#fff;--bg-soft:#fafbfc;--card:#fff;--border:#eaecf0;--text:#0a0a0a;--muted:#6b7280;--green:#10b981;--green-dark:#059669;--orange:#f59e0b;--red:#ef4444;--dark:#0a0a0a}
+body{background:var(--bg-soft);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+input,select{font-family:inherit}
+::selection{background:var(--green);color:#fff}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.checkout-wrap{max-width:920px;margin:0 auto;padding:40px 20px;animation:fadeIn .4s ease}
+.checkout-header{text-align:center;margin-bottom:32px;animation:fadeUp .5s ease}
+.checkout-header .logo{display:inline-flex;align-items:center;gap:10px;font-weight:800;font-size:18px;margin-bottom:16px}
+.checkout-header .logo-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--green-dark));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:18px;object-fit:cover}
+.checkout-header h1{font-size:24px;font-weight:800;letter-spacing:-.5px;margin-bottom:6px}
+.checkout-header p{color:var(--muted);font-size:13px}
+
+.checkout-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:26px;animation:fadeUp .5s ease both}
+.card h3{font-size:16px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+
+.form-row{margin-bottom:16px}
+.form-row label{display:block;font-size:12px;font-weight:700;color:#374151;margin-bottom:7px}
+.form-row input,.form-row select{width:100%;padding:12px 15px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;outline:none;transition:all .2s;background:#fff;font-weight:500}
+.form-row input:focus{border-color:var(--dark);box-shadow:0 0 0 4px rgba(0,0,0,.04)}
+
+.amount-input-wrap{position:relative;margin-bottom:20px}
+.amount-input-wrap .currency{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:24px;font-weight:800;color:var(--muted);pointer-events:none}
+.amount-input-wrap input{padding:20px 16px 20px 46px;font-size:24px;font-weight:800;letter-spacing:-.5px;border:2px solid var(--border);border-radius:12px;width:100%}
+.amount-input-wrap input:focus{border-color:var(--green);box-shadow:0 0 0 4px rgba(16,185,129,.1)}
+.quick-amounts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.quick-amounts button{padding:8px 14px;background:#f9fafb;border:1px solid var(--border);border-radius:99px;font-size:12px;font-weight:700;color:#374151;transition:.2s}
+.quick-amounts button:hover{border-color:var(--green);background:#f0fdf4;color:var(--green-dark)}
+
+.qr-box{text-align:center;padding:20px;border:2px dashed var(--border);border-radius:14px;margin-bottom:16px}
+.qr-img{width:220px;height:220px;margin:0 auto 12px;display:block;border-radius:12px;object-fit:contain;background:#fff;padding:10px}
+.qr-placeholder{width:220px;height:220px;margin:0 auto 12px;background:#f6f7f9;border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;text-align:center;padding:14px}
+
+.upi-info{background:#f9fafb;border-radius:10px;padding:14px;margin-bottom:14px}
+.upi-info .row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px}
+.upi-info .row .lbl{color:var(--muted)}
+.upi-info .row .val{font-weight:700;font-family:monospace;cursor:pointer}
+.upi-info .row .val:hover{color:var(--green)}
+
+.btn{width:100%;padding:15px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;transition:all .25s}
+.btn-dark{background:var(--dark);color:#fff}
+.btn-dark:hover{background:#1f2937;transform:translateY(-1px)}
+.btn-dark:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle}
+
+.step{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #f5f6f8;font-size:13px}
+.step:last-child{border:none}
+.step-num{width:26px;height:26px;border-radius:8px;background:#f0fdf4;color:var(--green-dark);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.step-text{color:#374151;line-height:1.6;padding-top:3px}
+
+.pay-section{display:none}
+.pay-section.show{display:block;animation:fadeUp .4s ease}
+.alert-info{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:16px;line-height:1.5}
+
+.success-wrap{text-align:center;padding:60px 20px;animation:scaleIn .4s ease}
+.success-icon{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--green-dark));display:flex;align-items:center;justify-content:center;font-size:40px;color:#fff;margin:0 auto 24px;box-shadow:0 20px 40px rgba(16,185,129,.3)}
+.success-wrap h2{font-size:26px;font-weight:800;margin-bottom:10px}
+.success-wrap p{color:var(--muted);font-size:14px;line-height:1.6;max-width:400px;margin:0 auto 20px}
+.order-box{background:#fff;border:1px solid var(--border);border-radius:14px;padding:22px;max-width:400px;margin:24px auto;text-align:left}
+.order-box .row{display:flex;justify-content:space-between;padding:8px 0;font-size:13px;border-bottom:1px solid #f5f6f8}
+.order-box .row:last-child{border:none}
+.order-box .row .lbl{color:var(--muted)}
+.order-box .row .val{font-weight:700}
+
+.error-wrap{text-align:center;padding:60px 20px}
+.error-icon{width:80px;height:80px;border-radius:50%;background:#fee2e2;display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--red);margin:0 auto 24px}
+.error-wrap h2{font-size:24px;font-weight:800;margin-bottom:10px}
+.error-wrap p{color:var(--muted);font-size:14px;line-height:1.6;max-width:400px;margin:0 auto}
+
+.loading-wrap{text-align:center;padding:80px 20px}
+.loading-spinner{width:44px;height:44px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 20px}
+
+.checkout-footer{text-align:center;margin-top:32px;color:var(--muted);font-size:12px;padding-bottom:20px}
+.checkout-footer .secure-badge{display:inline-flex;align-items:center;gap:6px;background:#f0fdf4;color:var(--green-dark);padding:8px 16px;border-radius:99px;font-weight:600;margin-bottom:12px}
+
+@media(max-width:768px){
+  .checkout-wrap{padding:24px 14px}
+  .checkout-grid{grid-template-columns:1fr}
+  .checkout-header h1{font-size:20px}
+  .qr-img,.qr-placeholder{width:200px;height:200px}
+  .amount-input-wrap input{font-size:20px}
+}
+</style>
+</head>
+<body>
+
+<div id="content">
+  <div class="loading-wrap">
+    <div class="loading-spinner"></div>
+    <p style="color:var(--muted);font-size:14px;">Loading secure checkout...</p>
+  </div>
+</div>
+
+<div class="checkout-footer">
+  <div class="secure-badge">🔒 256-bit SSL Secured</div>
+  <div>Powered by <b>PayVora</b> — Enterprise Payment Infrastructure</div>
+</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDxrqWXt-GKk-RVHoCA8kPdwYU5VVG-ezg",
+  authDomain: "payvora-pg.firebaseapp.com",
+  projectId: "payvora-pg",
+  storageBucket: "payvora-pg.firebasestorage.app",
+  messagingSenderId: "913823472620",
+  appId: "1:913823472620:web:46c1389e70a011a77fbec9"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+const DB = {
+  async get(coll, id){
+    try{ const d = await db.collection(coll).doc(id).get(); return d.exists ? d.data() : null; }
+    catch(e){ console.error(e); return null; }
+  },
+  async push(coll, data){
+    try{ const ref = await db.collection(coll).add(data); return ref.id; }
+    catch(e){ console.error(e); return null; }
+  }
+};
+
+const params = new URLSearchParams(window.location.search);
+const merchant = (params.get("merchant") || "").trim().toLowerCase();
+const preAmount = parseFloat(params.get("amount") || "0");
+const orderId = params.get("order") || params.get("order_id") || "";
+
+let MERCHANT = null;
+let SETTINGS = {};
+
+(async function init(){
+  const wrap = document.getElementById("content");
+  if(!merchant){
+    wrap.innerHTML = errorPage("Invalid Payment Link","Ye link sahi nahi hai. Kripya merchant se naya link lein.");
+    return;
+  }
+  const m = await DB.get("merchants", merchant);
+  if(!m){
+    wrap.innerHTML = errorPage("Merchant Not Found",`Merchant "${merchant}" PayVora pe registered nahi hai.`);
+    return;
+  }
+  MERCHANT = m;
+  const mySettings = (await DB.get("merchantSettings", merchant)) || {};
+  const globalSettings = (await DB.get("paySettings","config")) || {};
+  SETTINGS = {
+    upiId: mySettings.upiId || globalSettings.upiId || "",
+    payeeName: mySettings.payeeName || globalSettings.payeeName || m.name || "Merchant",
+    qrUrl: mySettings.qrUrl || globalSettings.qrUrl || ""
+  };
+  if(!SETTINGS.upiId && !SETTINGS.qrUrl){
+    wrap.innerHTML = errorPage("Payment Not Configured","Merchant ne abhi UPI/QR setup nahi kiya. Kripya merchant se contact karein.");
+    return;
+  }
+  renderCheckout();
+})();
+
+function renderCheckout(){
+  const wrap = document.getElementById("content");
+  wrap.innerHTML = `
+    <div class="checkout-wrap">
+      <div class="checkout-header">
+        <div class="logo">
+          <img src="https://raw.githubusercontent.com/payvoraa/payvora-payment-getway/main/logo.png" class="logo-icon" onerror="this.outerHTML='<div class=&quot;logo-icon&quot;>◆</div>'"/>
+          PayVora
+        </div>
+        <h1>Complete Your Payment</h1>
+        <p>Secure checkout for <b>${escapeHtml(MERCHANT.name || merchant)}</b></p>
+      </div>
+
+      <div class="checkout-grid">
+        <!-- LEFT: Amount -->
+        <div class="card" style="animation-delay:.1s">
+          <h3>💵 Enter Amount</h3>
+          <div class="alert-info">Pehle amount daalo, phir QR/UPI se pay karo.</div>
+
+          <div class="amount-input-wrap">
+            <span class="currency">₹</span>
+            <input id="amountInput" type="number" min="1" step="1" placeholder="0" value="${preAmount > 0 ? preAmount : ''}" oninput="onAmountChange()"/>
+          </div>
+
+          <div class="quick-amounts">
+            <button onclick="setAmount(100)">₹100</button>
+            <button onclick="setAmount(500)">₹500</button>
+            <button onclick="setAmount(1000)">₹1,000</button>
+            <button onclick="setAmount(2000)">₹2,000</button>
+            <button onclick="setAmount(5000)">₹5,000</button>
+          </div>
+
+          <div id="paySection" class="pay-section ${preAmount > 0 ? 'show' : ''}">
+            <h3 style="margin-top:8px;">📱 Pay ₹<span id="displayAmount">${preAmount > 0 ? preAmount : '0'}</span></h3>
+            <div class="qr-box">
+              <img class="qr-img" src="${SETTINGS.qrUrl || ''}" onerror="this.outerHTML='<div class=&quot;qr-placeholder&quot;>QR not set by merchant</div>'"/>
+              <p style="font-size:12px;color:var(--muted);">Scan with any UPI app</p>
+            </div>
+
+            ${SETTINGS.upiId ? `
+            <div class="upi-info">
+              <div class="row">
+                <span class="lbl">UPI ID</span>
+                <span class="val" onclick="copyText('${SETTINGS.upiId}',this)" title="Click to copy">${SETTINGS.upiId} 📋</span>
+              </div>
+              <div class="row">
+                <span class="lbl">Payee</span>
+                <span class="val">${escapeHtml(SETTINGS.payeeName)}</span>
+              </div>
+            </div>` : ''}
+
+            <div style="margin-top:8px;">
+              <div class="step"><div class="step-num">1</div><div class="step-text">QR scan karo ya UPI ID copy karke apni UPI app me daalo</div></div>
+              <div class="step"><div class="step-num">2</div><div class="step-text">Exact <b>₹<span id="displayAmount2">${preAmount > 0 ? preAmount : '0'}</span></b> pay karo</div></div>
+              <div class="step"><div class="step-num">3</div><div class="step-text">Payment ke baad <b>UTR / Reference number</b> copy karo</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: UTR only -->
+        <div class="card" style="animation-delay:.2s">
+          <h3>✅ Confirm Payment</h3>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6;">
+            Payment karne ke baad, UPI app se <b>UTR / Reference number</b> copy karke neeche daalo.
+          </p>
+          <div class="form-row">
+            <label>UTR / Transaction ID *</label>
+            <input id="custUtr" placeholder="12-digit UTR from your UPI app"/>
+          </div>
+          <button class="btn btn-dark" id="submitBtn" onclick="submitPayment()" style="margin-top:8px;">
+            ✅ I've Paid — Submit
+          </button>
+          <p style="font-size:11px;color:var(--muted);margin-top:12px;text-align:center;line-height:1.5;">
+            Payment manually verified hoga.
+          </p>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function setAmount(v){
+  document.getElementById("amountInput").value = v;
+  onAmountChange();
+}
+
+function onAmountChange(){
+  const val = parseFloat(document.getElementById("amountInput").value) || 0;
+  const sec = document.getElementById("paySection");
+  const disp1 = document.getElementById("displayAmount");
+  const disp2 = document.getElementById("displayAmount2");
+  if(disp1) disp1.textContent = val.toFixed(2);
+  if(disp2) disp2.textContent = val.toFixed(2);
+  if(val > 0){ sec.classList.add("show"); }
+  else { sec.classList.remove("show"); }
+}
+
+async function submitPayment(){
+  const amount = parseFloat(document.getElementById("amountInput").value) || 0;
+  const utr = document.getElementById("custUtr").value.trim();
+  const btn = document.getElementById("submitBtn");
+
+  if(!amount || amount <= 0) return alert("Please enter amount first");
+  if(!utr || utr.length < 6) return alert("Please enter valid UTR (min 6 characters)");
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Submitting...';
+
+  try{
+    const depositId = await DB.push("deposits", {
+      email: merchant,
+      merchant: merchant,
+      amount: amount,
+      utr: utr,
+      orderId: orderId || ("ORD-" + Date.now()),
+      source: "checkout",
+      status: "pending",
+      at: new Date().toLocaleString("en-IN",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"})
+    });
+    if(!depositId) throw new Error("Could not save payment");
+    showSuccess(utr, amount);
+  }catch(e){
+    console.error(e);
+    btn.disabled = false;
+    btn.innerHTML = '✅ I\'ve Paid — Submit';
+    alert("Error: " + e.message);
+  }
+}
+
+function showSuccess(utr, amount){
+  const wrap = document.getElementById("content");
+  wrap.innerHTML = `
+    <div class="success-wrap">
+      <div class="success-icon">✓</div>
+      <h2>Payment Submitted!</h2>
+      <p>Aapki payment details receive ho gayi. Merchant verify karke confirm karega.</p>
+      <div class="order-box">
+        <div class="row"><span class="lbl">Order ID</span><span class="val">${orderId || "—"}</span></div>
+        <div class="row"><span class="lbl">Amount</span><span class="val">₹${amount.toFixed(2)}</span></div>
+        <div class="row"><span class="lbl">UTR</span><span class="val" style="font-family:monospace;font-size:12px;">${escapeHtml(utr)}</span></div>
+        <div class="row"><span class="lbl">Status</span><span class="val" style="color:var(--orange);">Pending Verification</span></div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);max-width:400px;margin:20px auto;">
+        Kripya is page ka screenshot le lein.
+      </p>
+      <button class="btn btn-dark" style="max-width:300px;margin:0 auto;" onclick="window.close()">
+        Close Window
+      </button>
+    </div>
+  `;
+  window.scrollTo(0,0);
+}
+
+function errorPage(title, msg){
+  return `<div class="error-wrap"><div class="error-icon">✕</div><h2>${title}</h2><p>${msg}</p></div>`;
+}
+function escapeHtml(s){
+  return String(s||"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function copyText(text, el){
+  navigator.clipboard.writeText(text).then(()=>{
+    const orig = el.textContent;
+    el.textContent = "✅ Copied!";
+    setTimeout(()=>el.textContent = orig, 1500);
+  }).catch(()=>{ alert("UPI ID: " + text); });
+}
+</script>
+</body>
+</html>
