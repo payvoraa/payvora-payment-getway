@@ -59,11 +59,6 @@ input[type=number]{-moz-appearance:textfield}
 
 .right-panel{padding:40px 44px;display:flex;flex-direction:column;animation:slideInRight .8s ease .1s both}
 .right-panel h2{font-size:26px;font-weight:800;letter-spacing:-.6px;margin-bottom:26px}
-.method-tabs{display:flex;gap:6px;background:#f1f5f9;border-radius:14px;padding:5px;margin-bottom:26px}
-.method-tab{flex:1;padding:12px 14px;border-radius:10px;font-size:13px;font-weight:600;color:var(--muted);transition:all .25s;display:flex;align-items:center;justify-content:center;gap:7px;cursor:pointer;user-select:none}
-.method-tab:hover{color:var(--text)}
-.method-tab.active{background:#fff;color:var(--text);box-shadow:0 2px 10px rgba(0,0,0,.08);font-weight:700}
-.method-tab .icon{font-size:15px}
 .form-group{margin-bottom:22px;animation:fadeUp .6s ease .35s both}
 .form-group label{display:block;font-size:12px;font-weight:700;color:#374151;margin-bottom:9px;letter-spacing:.2px}
 .form-group input{width:100%;padding:15px 18px;border:1.5px solid var(--border);border-radius:13px;font-size:15px;font-weight:500;outline:none;transition:all .25s;background:#fff}
@@ -82,6 +77,7 @@ input[type=number]{-moz-appearance:textfield}
 .qr-section{display:none;animation:qrReveal .55s cubic-bezier(.4,0,.2,1)}
 .qr-section.show{display:block}
 
+/* UPI App Buttons */
 .intent-section{background:linear-gradient(135deg,#f8fafc,#eff6ff);border:1.5px solid #dbeafe;border-radius:16px;padding:18px;margin-bottom:20px;animation:fadeUp .5s ease}
 .intent-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
 .intent-icon{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 8px 20px rgba(59,130,246,.35)}
@@ -169,9 +165,6 @@ input[type=number]{-moz-appearance:textfield}
   .trust-badges{font-size:9.5px;gap:10px;margin-top:16px}
   .right-panel{padding:26px 22px 34px}
   .right-panel h2{font-size:20px;margin-bottom:20px}
-  .method-tabs{padding:4px;margin-bottom:22px;border-radius:12px}
-  .method-tab{font-size:12px;padding:10px 8px;gap:5px;border-radius:9px}
-  .method-tab .icon{font-size:13px}
   .form-group{margin-bottom:18px}
   .form-group label{font-size:11.5px;margin-bottom:8px}
   .form-group input{padding:14px 16px;font-size:14px;border-radius:12px}
@@ -213,7 +206,6 @@ input[type=number]{-moz-appearance:textfield}
   .upi-apps{grid-template-columns:repeat(4,1fr);gap:6px}
   .upi-app-btn{padding:8px 3px;font-size:9.5px}
   .upi-app-btn .app-icon{width:30px;height:30px;font-size:13px}
-  .method-tab{font-size:11px;padding:9px 6px}
   .quick-amounts button{padding:7px 11px;font-size:11px}
 }
 </style>
@@ -230,9 +222,6 @@ input[type=number]{-moz-appearance:textfield}
 <div class="toast" id="toast"></div>
 
 <script>
-/* =========================================================
-   FIREBASE CONFIG
-   ========================================================= */
 const firebaseConfig = {
   apiKey: "AIzaSyDxrqWXt-GKk-RVHoCA8kPdwYU5VVG-ezg",
   authDomain: "payvora-pg.firebaseapp.com",
@@ -255,9 +244,6 @@ const DB = {
   }
 };
 
-/* =========================================================
-   URL PARAMS
-   ========================================================= */
 const params = new URLSearchParams(window.location.search);
 const merchant = (params.get("merchant") || "").trim().toLowerCase();
 const preAmount = parseFloat(params.get("amount") || "0");
@@ -265,11 +251,7 @@ const orderId = params.get("order") || params.get("order_id") || ("ORD_" + Date.
 
 let MERCHANT = null;
 let SETTINGS = {};
-let activeMethod = "qr";
 
-/* =========================================================
-   INIT
-   ========================================================= */
 (async function init(){
   const app = document.getElementById("app");
 
@@ -291,11 +273,10 @@ let activeMethod = "qr";
   const globalSettings = (await DB.get("paySettings","config")) || {};
   SETTINGS = {
     upiId: mySettings.upiId || globalSettings.upiId || "",
-    payeeName: mySettings.payeeName || globalSettings.payeeName || m.name || "Merchant",
-    qrUrl: mySettings.qrUrl || globalSettings.qrUrl || ""
+    payeeName: mySettings.payeeName || globalSettings.payeeName || m.name || "Merchant"
   };
 
-  if(!SETTINGS.upiId && !SETTINGS.qrUrl){
+  if(!SETTINGS.upiId){
     app.innerHTML = errorPage("Payment Not Configured", "The merchant has not set up UPI payment yet. Please contact the merchant.");
     app.style.gridTemplateColumns = "1fr";
     return;
@@ -304,13 +285,9 @@ let activeMethod = "qr";
   renderCheckout();
 })();
 
-/* =========================================================
-   RENDER
-   ========================================================= */
 function renderCheckout(){
   const app = document.getElementById("app");
   const initialAmount = preAmount > 0 ? preAmount : 0;
-  const hasUpi = !!SETTINGS.upiId;
 
   app.innerHTML = `
     <div class="left-panel">
@@ -347,16 +324,7 @@ function renderCheckout(){
     </div>
 
     <div class="right-panel">
-      <h2>Choose Payment Method</h2>
-
-      <div class="method-tabs">
-        <div class="method-tab active" data-method="qr" onclick="switchMethod('qr',this)">
-          <span class="icon">📱</span> UPI / QR
-        </div>
-        <div class="method-tab" data-method="intent" onclick="switchMethod('intent',this)">
-          <span class="icon">⚡</span> Intent
-        </div>
-      </div>
+      <h2>Pay with UPI</h2>
 
       <div class="form-group">
         <label>Amount (₹)</label>
@@ -375,7 +343,6 @@ function renderCheckout(){
 
       <div id="qrSection" class="qr-section ${initialAmount > 0 ? 'show' : ''}">
 
-        ${hasUpi ? `
         <div class="intent-section">
           <div class="intent-head">
             <div class="intent-icon">⚡</div>
@@ -403,7 +370,7 @@ function renderCheckout(){
             </a>
           </div>
           <div class="divider-or">— OR SCAN DYNAMIC QR —</div>
-        </div>` : ''}
+        </div>
 
         <div class="qr-frame">
           <div class="qr-badge">⚡ DYNAMIC</div>
@@ -412,7 +379,6 @@ function renderCheckout(){
           <p>Scan with any UPI app</p>
         </div>
 
-        ${SETTINGS.upiId ? `
         <div class="upi-row">
           <span class="lbl">UPI ID</span>
           <span class="val" onclick="copyText('${SETTINGS.upiId}',this)">${SETTINGS.upiId} 📋</span>
@@ -420,7 +386,7 @@ function renderCheckout(){
         <div class="upi-row">
           <span class="lbl">Payee Name</span>
           <span class="val">${escapeHtml(SETTINGS.payeeName)}</span>
-        </div>` : ''}
+        </div>
 
         <div class="mini-steps">
           <div class="mini-step"><div class="num">1</div><div class="text">Tap a UPI app above, or scan the dynamic QR</div></div>
@@ -449,19 +415,6 @@ function renderCheckout(){
 
 function formatAmount(n){
   return Number(n||0).toLocaleString("en-IN",{minimumFractionDigits:0,maximumFractionDigits:2});
-}
-
-function switchMethod(method, el){
-  activeMethod = method;
-  document.querySelectorAll(".method-tab").forEach(t=>t.classList.remove("active"));
-  el.classList.add("active");
-  if(method === "intent"){
-    showToast("Tap a UPI app to pay instantly");
-    const intentSection = document.querySelector(".intent-section");
-    if(intentSection){ intentSection.scrollIntoView({behavior:"smooth",block:"center"}); }
-  } else {
-    showToast("Scan the dynamic QR to pay");
-  }
 }
 
 function setAmount(v){
@@ -493,15 +446,11 @@ function onAmountChange(){
   }
 }
 
-/* =========================================================
-   LOCAL QR GENERATION (No API needed!)
-   ========================================================= */
 function updateDynamicQr(amount){
   const container = document.getElementById("dynamicQrImg");
   const label = document.getElementById("qrAmountLabel");
   if(!container) return;
 
-  // Validation
   if(!SETTINGS.upiId){
     container.classList.remove("ready");
     container.innerHTML = 'UPI ID not set';
@@ -516,7 +465,6 @@ function updateDynamicQr(amount){
     return;
   }
 
-  // Build UPI deep link
   const pa = SETTINGS.upiId;
   const pn = encodeURIComponent(SETTINGS.payeeName || "Merchant");
   const am = Number(amount).toFixed(2);
@@ -524,10 +472,8 @@ function updateDynamicQr(amount){
   const tn = encodeURIComponent("Payment for " + orderId);
   const upiLink = `upi://pay?pa=${pa}&pn=${pn}&am=${am}&tr=${orderId}&tn=${tn}&cu=${cu}`;
 
-  // Clear container
   container.innerHTML = '';
 
-  // Check library loaded
   if(typeof QRCode === "undefined"){
     container.innerHTML = 'QR library not loaded. Check internet.';
     container.classList.remove("ready");
@@ -535,7 +481,6 @@ function updateDynamicQr(amount){
   }
 
   try{
-    // Generate QR locally
     new QRCode(container, {
       text: upiLink,
       width: 212,
@@ -545,13 +490,9 @@ function updateDynamicQr(amount){
       correctLevel: QRCode.CorrectLevel.M
     });
 
-    // Add ready class for styling
     container.classList.add("ready");
-
     if(label) label.textContent = "₹" + formatAmount(amount);
-
     console.log("✅ Local QR generated for ₹" + amount);
-    console.log("UPI Link:", upiLink);
   }catch(e){
     console.error("QR generation error:", e);
     container.innerHTML = 'QR generation failed';
@@ -559,9 +500,6 @@ function updateDynamicQr(amount){
   }
 }
 
-/* =========================================================
-   UPI INTENT
-   ========================================================= */
 function openIntent(app, event){
   if(event) event.preventDefault();
   const amount = parseFloat(document.getElementById("amountInput").value) || 0;
@@ -605,9 +543,6 @@ function openIntent(app, event){
   }, 2500);
 }
 
-/* =========================================================
-   SUBMIT
-   ========================================================= */
 async function submitPayment(){
   const amount = parseFloat(document.getElementById("amountInput").value) || 0;
   const utr = document.getElementById("utrInput").value.trim();
@@ -627,7 +562,6 @@ async function submitPayment(){
       utr: utr,
       orderId: orderId,
       source: "checkout",
-      method: activeMethod,
       qrType: "dynamic-local",
       status: "pending",
       at: new Date().toLocaleString("en-IN",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"})
