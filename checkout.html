@@ -9,35 +9,15 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',-apple-system,sans-serif;-webkit-tap-highlight-color:transparent}
-:root{
-  --dark:#0a0f1e;--dark-2:#141b2e;
-  --blue:#3b82f6;--purple:#8b5cf6;--green:#10b981;
-  --bg:#eef2f8;--card:#fff;--border:#e5e7eb;
-  --text:#0a0a0a;--muted:#6b7280;--muted-2:#94a3b8;
-  --orange:#f59e0b;--red:#ef4444;
-}
+:root{--dark:#0a0f1e;--dark-2:#141b2e;--blue:#3b82f6;--purple:#8b5cf6;--green:#10b981;--bg:#eef2f8;--card:#fff;--border:#e5e7eb;--text:#0a0a0a;--muted:#6b7280;--orange:#f59e0b;--red:#ef4444}
 html,body{overflow-x:hidden}
-body{
-  background:linear-gradient(135deg,#eef2f8 0%,#f5f7fb 50%,#eef2f8 100%);
-  color:var(--text);-webkit-font-smoothing:antialiased;
-  min-height:100vh;display:flex;align-items:center;justify-content:center;
-  padding:24px 16px;position:relative;
-}
-body::before{
-  content:'';position:fixed;top:-200px;left:-200px;width:500px;height:500px;
-  background:radial-gradient(circle,rgba(59,130,246,.08),transparent 70%);
-  border-radius:50%;pointer-events:none;z-index:0;
-}
-body::after{
-  content:'';position:fixed;bottom:-200px;right:-200px;width:500px;height:500px;
-  background:radial-gradient(circle,rgba(139,92,246,.08),transparent 70%);
-  border-radius:50%;pointer-events:none;z-index:0;
-}
+body{background:linear-gradient(135deg,#eef2f8 0%,#f5f7fb 50%,#eef2f8 100%);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px;position:relative}
+body::before{content:'';position:fixed;top:-200px;left:-200px;width:500px;height:500px;background:radial-gradient(circle,rgba(59,130,246,.08),transparent 70%);border-radius:50%;pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;bottom:-200px;right:-200px;width:500px;height:500px;background:radial-gradient(circle,rgba(139,92,246,.08),transparent 70%);border-radius:50%;pointer-events:none;z-index:0}
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
 input,select{font-family:inherit}
 ::selection{background:var(--blue);color:#fff}
-input[type=number]::-webkit-outer-spin-button,
-input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 input[type=number]{-moz-appearance:textfield}
 
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -51,293 +31,115 @@ input[type=number]{-moz-appearance:textfield}
 @keyframes qrReveal{from{opacity:0;transform:scale(.85) rotate(-6deg)}to{opacity:1;transform:scale(1) rotate(0)}}
 @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.05);opacity:.7}}
 
-.checkout-container{
-  max-width:1080px;width:100%;margin:0 auto;
-  background:#fff;border-radius:28px;overflow:hidden;
-  box-shadow:0 40px 100px rgba(10,15,30,.14), 0 8px 30px rgba(10,15,30,.06);
-  display:grid;grid-template-columns:400px 1fr;
-  animation:fadeUp .8s cubic-bezier(.4,0,.2,1);
-  position:relative;z-index:1;
-}
+.checkout-container{max-width:1080px;width:100%;margin:0 auto;background:#fff;border-radius:28px;overflow:hidden;box-shadow:0 40px 100px rgba(10,15,30,.14), 0 8px 30px rgba(10,15,30,.06);display:grid;grid-template-columns:400px 1fr;animation:fadeUp .8s cubic-bezier(.4,0,.2,1);position:relative;z-index:1}
 
-/* ========== LEFT PANEL ========== */
-.left-panel{
-  background:linear-gradient(155deg,#0a0f1e 0%,#141b2e 55%,#0a0f1e 100%);
-  color:#fff;padding:40px 34px;position:relative;overflow:hidden;
-  display:flex;flex-direction:column;justify-content:space-between;
-  animation:slideInLeft .8s ease .1s both;
-}
-.left-panel::before{
-  content:'';position:absolute;inset:0;
-  background:
-    radial-gradient(circle at 85% 8%, rgba(59,130,246,.3), transparent 45%),
-    radial-gradient(circle at 10% 92%, rgba(139,92,246,.25), transparent 45%);
-  pointer-events:none;
-}
-.left-panel::after{
-  content:'';position:absolute;width:340px;height:340px;border-radius:50%;
-  background:radial-gradient(circle,rgba(59,130,246,.18),transparent 70%);
-  top:-120px;right:-120px;filter:blur(50px);
-  animation:float 9s ease-in-out infinite;
-}
+/* LEFT PANEL */
+.left-panel{background:linear-gradient(155deg,#0a0f1e 0%,#141b2e 55%,#0a0f1e 100%);color:#fff;padding:40px 34px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;animation:slideInLeft .8s ease .1s both}
+.left-panel::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 85% 8%, rgba(59,130,246,.3), transparent 45%),radial-gradient(circle at 10% 92%, rgba(139,92,246,.25), transparent 45%);pointer-events:none}
+.left-panel::after{content:'';position:absolute;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,.18),transparent 70%);top:-120px;right:-120px;filter:blur(50px);animation:float 9s ease-in-out infinite}
 .left-panel > *{position:relative;z-index:1}
-
 .left-head{display:flex;align-items:center;gap:11px;font-weight:700;font-size:14px;margin-bottom:32px}
-.left-head .logo-icon{
-  width:36px;height:36px;border-radius:11px;
-  background:linear-gradient(135deg,#3b82f6,#8b5cf6);
-  display:flex;align-items:center;justify-content:center;
-  font-size:16px;object-fit:cover;flex-shrink:0;
-  box-shadow:0 10px 28px rgba(59,130,246,.5);
-}
-.left-head .text-gradient{
-  background:linear-gradient(90deg,#60a5fa,#a78bfa);
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-  font-weight:800;font-size:13px;letter-spacing:.2px;
-}
-
+.left-head .logo-icon{width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:16px;object-fit:cover;flex-shrink:0;box-shadow:0 10px 28px rgba(59,130,246,.5)}
+.left-head .text-gradient{background:linear-gradient(90deg,#60a5fa,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800;font-size:13px;letter-spacing:.2px}
 .paying-to{margin-bottom:28px}
 .paying-to .lbl{font-size:10px;letter-spacing:2.5px;color:#64748b;font-weight:800;margin-bottom:8px;text-transform:uppercase}
 .paying-to .store{font-size:24px;font-weight:800;letter-spacing:-.6px;line-height:1.2;word-break:break-word}
-
-.amount-display{
-  background:linear-gradient(135deg,rgba(59,130,246,.18),rgba(139,92,246,.18));
-  border:1px solid rgba(96,165,250,.28);
-  border-radius:20px;padding:26px 22px;text-align:center;
-  position:relative;overflow:hidden;margin-bottom:26px;
-  animation:scaleIn .7s ease .35s both;
-}
-.amount-display::before{
-  content:'';position:absolute;top:0;left:-100%;right:0;height:100%;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);
-  animation:shimmer 3.5s infinite;
-}
+.amount-display{background:linear-gradient(135deg,rgba(59,130,246,.18),rgba(139,92,246,.18));border:1px solid rgba(96,165,250,.28);border-radius:20px;padding:26px 22px;text-align:center;position:relative;overflow:hidden;margin-bottom:26px;animation:scaleIn .7s ease .35s both}
+.amount-display::before{content:'';position:absolute;top:0;left:-100%;right:0;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);animation:shimmer 3.5s infinite}
 .amount-display .lbl{font-size:11px;letter-spacing:2.5px;color:#94a3b8;font-weight:800;text-transform:uppercase;margin-bottom:10px}
-.amount-display .amount{
-  font-size:44px;font-weight:900;letter-spacing:-2.5px;
-  background:linear-gradient(90deg,#60a5fa,#a78bfa);
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-  line-height:1;word-break:break-word;
-}
-.amount-display .order-id{
-  font-size:10px;color:#64748b;margin-top:12px;font-family:ui-monospace,monospace;
-  padding:5px 12px;background:rgba(0,0,0,.25);border-radius:99px;display:inline-block;
-  font-weight:700;letter-spacing:.5px;
-}
-
+.amount-display .amount{font-size:44px;font-weight:900;letter-spacing:-2.5px;background:linear-gradient(90deg,#60a5fa,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1;word-break:break-word}
+.amount-display .order-id{font-size:10px;color:#64748b;margin-top:12px;font-family:ui-monospace,monospace;padding:5px 12px;background:rgba(0,0,0,.25);border-radius:99px;display:inline-block;font-weight:700;letter-spacing:.5px}
 .breakdown{margin-bottom:22px}
-.breakdown .row{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:11px 0;font-size:13px;color:#cbd5e1;
-  border-bottom:1px solid rgba(255,255,255,.06);
-}
+.breakdown .row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;font-size:13px;color:#cbd5e1;border-bottom:1px solid rgba(255,255,255,.06)}
 .breakdown .row:last-child{border:none;padding-top:16px;margin-top:8px;border-top:1px solid rgba(255,255,255,.12);font-size:17px;font-weight:800}
 .breakdown .row .val{font-weight:700;color:#fff}
-.breakdown .row.total .val{
-  background:linear-gradient(90deg,#60a5fa,#a78bfa);
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-}
-
+.breakdown .row.total .val{background:linear-gradient(90deg,#60a5fa,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent}
 .trust-badges{display:flex;flex-wrap:wrap;gap:14px;font-size:10.5px;color:#64748b;margin-top:22px;font-weight:600}
 .trust-badges span{display:flex;align-items:center;gap:5px}
 
-/* ========== RIGHT PANEL ========== */
-.right-panel{
-  padding:40px 44px;display:flex;flex-direction:column;
-  animation:slideInRight .8s ease .1s both;
-}
+/* RIGHT PANEL */
+.right-panel{padding:40px 44px;display:flex;flex-direction:column;animation:slideInRight .8s ease .1s both}
 .right-panel h2{font-size:26px;font-weight:800;letter-spacing:-.6px;margin-bottom:26px}
-
-.method-tabs{
-  display:flex;gap:6px;background:#f1f5f9;border-radius:14px;
-  padding:5px;margin-bottom:26px;
-}
-.method-tab{
-  flex:1;padding:12px 14px;border-radius:10px;font-size:13px;font-weight:600;
-  color:var(--muted);transition:all .25s;display:flex;align-items:center;justify-content:center;gap:7px;
-  cursor:pointer;user-select:none;
-}
+.method-tabs{display:flex;gap:6px;background:#f1f5f9;border-radius:14px;padding:5px;margin-bottom:26px}
+.method-tab{flex:1;padding:12px 14px;border-radius:10px;font-size:13px;font-weight:600;color:var(--muted);transition:all .25s;display:flex;align-items:center;justify-content:center;gap:7px;cursor:pointer;user-select:none}
 .method-tab:hover{color:var(--text)}
-.method-tab.active{
-  background:#fff;color:var(--text);
-  box-shadow:0 2px 10px rgba(0,0,0,.08);font-weight:700;
-}
+.method-tab.active{background:#fff;color:var(--text);box-shadow:0 2px 10px rgba(0,0,0,.08);font-weight:700}
 .method-tab .icon{font-size:15px}
-
 .form-group{margin-bottom:22px;animation:fadeUp .6s ease .35s both}
 .form-group label{display:block;font-size:12px;font-weight:700;color:#374151;margin-bottom:9px;letter-spacing:.2px}
-.form-group input{
-  width:100%;padding:15px 18px;border:1.5px solid var(--border);
-  border-radius:13px;font-size:15px;font-weight:500;outline:none;
-  transition:all .25s;background:#fff;
-}
+.form-group input{width:100%;padding:15px 18px;border:1.5px solid var(--border);border-radius:13px;font-size:15px;font-weight:500;outline:none;transition:all .25s;background:#fff}
 .form-group input:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(59,130,246,.12)}
 .form-group input::placeholder{color:#b0b5bd;font-weight:400}
-
 .amount-input-wrap{position:relative;margin-bottom:18px}
-.amount-input-wrap .currency{
-  position:absolute;left:20px;top:50%;transform:translateY(-50%);
-  font-size:28px;font-weight:800;color:#cbd5e1;pointer-events:none;
-  transition:color .25s;
-}
-.amount-input-wrap input{
-  padding:22px 18px 22px 54px;font-size:28px;font-weight:800;letter-spacing:-1px;
-  border:2px solid var(--border);border-radius:16px;width:100%;
-  outline:none;transition:all .25s;
-}
+.amount-input-wrap .currency{position:absolute;left:20px;top:50%;transform:translateY(-50%);font-size:28px;font-weight:800;color:#cbd5e1;pointer-events:none;transition:color .25s}
+.amount-input-wrap input{padding:22px 18px 22px 54px;font-size:28px;font-weight:800;letter-spacing:-1px;border:2px solid var(--border);border-radius:16px;width:100%;outline:none;transition:all .25s}
 .amount-input-wrap input:focus{border-color:var(--blue);box-shadow:0 0 0 5px rgba(59,130,246,.14)}
 .amount-input-wrap:focus-within .currency{color:var(--blue)}
-
 .quick-amounts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:26px}
-.quick-amounts button{
-  padding:9px 16px;background:#f8fafc;border:1.5px solid var(--border);
-  border-radius:99px;font-size:12.5px;font-weight:700;color:#475569;
-  transition:all .2s;
-}
-.quick-amounts button:hover{
-  border-color:var(--blue);background:#eff6ff;color:var(--blue);
-  transform:translateY(-2px);box-shadow:0 6px 16px rgba(59,130,246,.15);
-}
+.quick-amounts button{padding:9px 16px;background:#f8fafc;border:1.5px solid var(--border);border-radius:99px;font-size:12.5px;font-weight:700;color:#475569;transition:all .2s}
+.quick-amounts button:hover{border-color:var(--blue);background:#eff6ff;color:var(--blue);transform:translateY(-2px);box-shadow:0 6px 16px rgba(59,130,246,.15)}
 .quick-amounts button:active{transform:translateY(0)}
 
-.qr-section{
-  display:none;
-  animation:qrReveal .55s cubic-bezier(.4,0,.2,1);
-}
+.qr-section{display:none;animation:qrReveal .55s cubic-bezier(.4,0,.2,1)}
 .qr-section.show{display:block}
 
-.qr-frame{
-  background:linear-gradient(135deg,#f8fafc,#eff6ff);
-  border:2px dashed #cbd5e1;border-radius:18px;
-  padding:26px;text-align:center;margin-bottom:18px;
-  transition:all .3s;
-}
-.qr-frame:hover{border-color:var(--blue);background:linear-gradient(135deg,#f0f7ff,#e0efff)}
-.qr-frame img{
-  width:220px;height:220px;object-fit:contain;max-width:100%;
-  background:#fff;padding:12px;border-radius:14px;
-  box-shadow:0 10px 30px rgba(0,0,0,.08);
-  transition:transform .35s;
-}
-.qr-frame img:hover{transform:scale(1.04)}
+/* UPI Intent Section */
+.intent-section{background:linear-gradient(135deg,#f8fafc,#eff6ff);border:1.5px solid #dbeafe;border-radius:16px;padding:18px;margin-bottom:20px;animation:fadeUp .5s ease}
+.intent-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.intent-icon{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 8px 20px rgba(59,130,246,.35)}
+.intent-title{font-weight:800;font-size:14px;line-height:1.2}
+.intent-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.upi-apps{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.upi-app-btn{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px;background:#fff;border:1.5px solid var(--border);border-radius:12px;text-decoration:none;color:var(--text);font-size:11px;font-weight:700;transition:all .2s;cursor:pointer}
+.upi-app-btn:hover{border-color:var(--blue);background:#eff6ff;transform:translateY(-2px);box-shadow:0 8px 20px rgba(59,130,246,.15)}
+.upi-app-btn:active{transform:translateY(0)}
+.upi-app-btn .app-icon{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;box-shadow:0 3px 10px rgba(0,0,0,.1)}
+.divider-or{text-align:center;margin:18px 0 6px;font-size:11px;color:var(--muted);font-weight:700;letter-spacing:1.5px}
 
-.upi-row{
-  display:flex;justify-content:space-between;align-items:center;gap:10px;
-  padding:14px 16px;background:#f8fafc;border-radius:13px;
-  margin-bottom:10px;font-size:13px;
-  border:1.5px solid var(--border);transition:all .25s;
-}
+.qr-frame{background:linear-gradient(135deg,#f8fafc,#eff6ff);border:2px dashed #cbd5e1;border-radius:18px;padding:26px;text-align:center;margin-bottom:18px;transition:all .3s}
+.qr-frame:hover{border-color:var(--blue);background:linear-gradient(135deg,#f0f7ff,#e0efff)}
+.qr-frame img{width:220px;height:220px;object-fit:contain;max-width:100%;background:#fff;padding:12px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.08);transition:transform .35s}
+.qr-frame img:hover{transform:scale(1.04)}
+.upi-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 16px;background:#f8fafc;border-radius:13px;margin-bottom:10px;font-size:13px;border:1.5px solid var(--border);transition:all .25s}
 .upi-row:hover{border-color:var(--blue);background:#eff6ff}
 .upi-row .lbl{color:var(--muted);font-weight:600;flex-shrink:0}
-.upi-row .val{
-  font-weight:700;font-family:ui-monospace,monospace;font-size:12.5px;
-  cursor:pointer;display:flex;align-items:center;gap:6px;
-  word-break:break-all;text-align:right;
-}
+.upi-row .val{font-weight:700;font-family:ui-monospace,monospace;font-size:12.5px;cursor:pointer;display:flex;align-items:center;gap:6px;word-break:break-all;text-align:right}
 .upi-row .val:hover{color:var(--blue)}
-
-.mini-steps{
-  background:#f8fafc;border-radius:14px;padding:18px;margin-top:14px;
-  border:1px solid var(--border);
-}
+.mini-steps{background:#f8fafc;border-radius:14px;padding:18px;margin-top:14px;border:1px solid var(--border)}
 .mini-step{display:flex;gap:12px;padding:10px 0;font-size:13px;color:#475569}
 .mini-step:not(:last-child){border-bottom:1px solid #e2e8f0}
-.mini-step .num{
-  width:26px;height:26px;border-radius:50%;
-  background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff;
-  font-weight:800;font-size:11.5px;display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;box-shadow:0 4px 10px rgba(59,130,246,.3);
-}
+.mini-step .num{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff;font-weight:800;font-size:11.5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 10px rgba(59,130,246,.3)}
 .mini-step .text{line-height:1.55;padding-top:3px}
 .mini-step .text b{color:var(--blue);font-weight:800}
 
-.btn-submit{
-  width:100%;padding:17px;border-radius:14px;font-weight:800;font-size:15px;
-  background:linear-gradient(135deg,#10b981,#059669);color:#fff;
-  cursor:pointer;transition:all .3s;margin-top:8px;letter-spacing:.3px;
-  box-shadow:0 10px 28px rgba(16,185,129,.35);
-}
+.btn-submit{width:100%;padding:17px;border-radius:14px;font-weight:800;font-size:15px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;cursor:pointer;transition:all .3s;margin-top:8px;letter-spacing:.3px;box-shadow:0 10px 28px rgba(16,185,129,.35)}
 .btn-submit:hover{transform:translateY(-2px);box-shadow:0 14px 36px rgba(16,185,129,.45)}
 .btn-submit:active{transform:translateY(0)}
 .btn-submit:disabled{opacity:.65;cursor:not-allowed;transform:none;box-shadow:none}
+.spinner{display:inline-block;width:16px;height:16px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle}
 
-.spinner{
-  display:inline-block;width:16px;height:16px;
-  border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;
-  border-radius:50%;animation:spin .7s linear infinite;
-  margin-right:8px;vertical-align:middle;
-}
-
-/* ========== SUCCESS ========== */
-.success-wrap{
-  padding:60px 44px;text-align:center;
-  animation:scaleIn .55s cubic-bezier(.4,0,.2,1);
-  grid-column:1/-1;
-}
-.success-icon{
-  width:96px;height:96px;border-radius:50%;
-  background:linear-gradient(135deg,#10b981,#059669);
-  display:flex;align-items:center;justify-content:center;
-  font-size:48px;color:#fff;margin:0 auto 26px;
-  box-shadow:0 20px 50px rgba(16,185,129,.4);
-  animation:scaleIn .65s ease .1s both;
-}
+.success-wrap{padding:60px 44px;text-align:center;animation:scaleIn .55s cubic-bezier(.4,0,.2,1);grid-column:1/-1}
+.success-icon{width:96px;height:96px;border-radius:50%;background:linear-gradient(135deg,#10b981,#059669);display:flex;align-items:center;justify-content:center;font-size:48px;color:#fff;margin:0 auto 26px;box-shadow:0 20px 50px rgba(16,185,129,.4);animation:scaleIn .65s ease .1s both}
 .success-wrap h2{font-size:30px;font-weight:800;margin-bottom:12px;letter-spacing:-.6px}
 .success-wrap p{color:var(--muted);font-size:14px;line-height:1.65;max-width:400px;margin:0 auto 26px}
-
-.order-box{
-  background:#f8fafc;border:1px solid var(--border);
-  border-radius:16px;padding:24px;max-width:440px;margin:0 auto 26px;
-  text-align:left;
-}
-.order-box .row{
-  display:flex;justify-content:space-between;gap:16px;
-  padding:11px 0;font-size:13px;
-  border-bottom:1px solid #e2e8f0;
-}
+.order-box{background:#f8fafc;border:1px solid var(--border);border-radius:16px;padding:24px;max-width:440px;margin:0 auto 26px;text-align:left}
+.order-box .row{display:flex;justify-content:space-between;gap:16px;padding:11px 0;font-size:13px;border-bottom:1px solid #e2e8f0}
 .order-box .row:last-child{border:none}
 .order-box .lbl{color:var(--muted);font-weight:500}
 .order-box .val{font-weight:700;color:var(--text);text-align:right;word-break:break-all}
-
-.btn-close{
-  padding:15px 36px;background:var(--dark);color:#fff;
-  border-radius:13px;font-weight:700;font-size:14px;
-  transition:all .25s;
-}
+.btn-close{padding:15px 36px;background:var(--dark);color:#fff;border-radius:13px;font-weight:700;font-size:14px;transition:all .25s}
 .btn-close:hover{background:#1f2937;transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.15)}
-
 .error-wrap{padding:60px 44px;text-align:center;grid-column:1/-1}
-.error-icon{
-  width:96px;height:96px;border-radius:50%;
-  background:linear-gradient(135deg,#fee2e2,#fecaca);
-  display:flex;align-items:center;justify-content:center;
-  font-size:48px;color:var(--red);margin:0 auto 26px;
-}
+.error-icon{width:96px;height:96px;border-radius:50%;background:linear-gradient(135deg,#fee2e2,#fecaca);display:flex;align-items:center;justify-content:center;font-size:48px;color:var(--red);margin:0 auto 26px}
 .error-wrap h2{font-size:26px;font-weight:800;margin-bottom:12px}
 .error-wrap p{color:var(--muted);font-size:14px;line-height:1.65;max-width:400px;margin:0 auto}
-
 .loading-wrap{padding:80px 44px;text-align:center;grid-column:1/-1}
-.loading-spinner{
-  width:52px;height:52px;border:3px solid var(--border);
-  border-top-color:var(--blue);border-radius:50%;
-  animation:spin .8s linear infinite;margin:0 auto 22px;
-}
-
-.toast{
-  position:fixed;top:24px;right:24px;left:24px;
-  background:var(--dark);color:#fff;padding:15px 22px;
-  border-radius:13px;font-size:13px;font-weight:600;
-  z-index:9999;transform:translateY(-200%);
-  transition:transform .4s cubic-bezier(.4,0,.2,1);
-  box-shadow:0 20px 60px rgba(0,0,0,.25);
-  text-align:center;
-  max-width:400px;margin:0 auto;
-}
+.loading-spinner{width:52px;height:52px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 22px}
+.toast{position:fixed;top:24px;right:24px;left:24px;background:var(--dark);color:#fff;padding:15px 22px;border-radius:13px;font-size:13px;font-weight:600;z-index:9999;transform:translateY(-200%);transition:transform .4s cubic-bezier(.4,0,.2,1);box-shadow:0 20px 60px rgba(0,0,0,.25);text-align:center;max-width:400px;margin:0 auto}
 .toast.show{transform:translateY(0)}
 .toast.success{background:var(--green)}
 .toast.error{background:var(--red)}
 
-/* ========== TABLET ========== */
 @media(max-width:960px){
   .checkout-container{grid-template-columns:340px 1fr}
   .left-panel{padding:34px 28px}
@@ -345,20 +147,10 @@ input[type=number]{-moz-appearance:textfield}
   .right-panel h2{font-size:22px}
   .amount-display .amount{font-size:38px}
 }
-
-/* ========== MOBILE ========== */
 @media(max-width:768px){
   body{padding:0;align-items:stretch}
-  .checkout-container{
-    grid-template-columns:1fr;border-radius:0;
-    min-height:100vh;max-width:100%;
-    box-shadow:none;
-  }
-  .left-panel{
-    padding:28px 22px 26px;
-    border-radius:0 0 26px 26px;
-    min-height:auto;
-  }
+  .checkout-container{grid-template-columns:1fr;border-radius:0;min-height:100vh;max-width:100%;box-shadow:none}
+  .left-panel{padding:28px 22px 26px;border-radius:0 0 26px 26px;min-height:auto}
   .left-head{margin-bottom:22px;font-size:13px}
   .left-head .logo-icon{width:32px;height:32px;border-radius:9px}
   .left-head .text-gradient{font-size:12px}
@@ -372,58 +164,41 @@ input[type=number]{-moz-appearance:textfield}
   .breakdown .row{font-size:12px;padding:9px 0}
   .breakdown .row:last-child{font-size:15px;padding-top:13px}
   .trust-badges{font-size:9.5px;gap:10px;margin-top:16px}
-
   .right-panel{padding:26px 22px 34px}
   .right-panel h2{font-size:20px;margin-bottom:20px}
   .method-tabs{padding:4px;margin-bottom:22px;border-radius:12px}
   .method-tab{font-size:12px;padding:10px 8px;gap:5px;border-radius:9px}
   .method-tab .icon{font-size:13px}
-
   .form-group{margin-bottom:18px}
   .form-group label{font-size:11.5px;margin-bottom:8px}
   .form-group input{padding:14px 16px;font-size:14px;border-radius:12px}
-
   .amount-input-wrap{margin-bottom:16px}
   .amount-input-wrap .currency{font-size:24px;left:16px}
-  .amount-input-wrap input{
-    padding:18px 16px 18px 46px;font-size:24px;
-    border-radius:14px;letter-spacing:-.8px;
-  }
-
+  .amount-input-wrap input{padding:18px 16px 18px 46px;font-size:24px;border-radius:14px;letter-spacing:-.8px}
   .quick-amounts{gap:6px;margin-bottom:22px}
   .quick-amounts button{padding:8px 13px;font-size:11.5px}
-
+  .intent-section{padding:16px;border-radius:14px;margin-bottom:16px}
+  .intent-icon{width:34px;height:34px;border-radius:10px;font-size:16px}
+  .intent-title{font-size:13px}
+  .intent-sub{font-size:10.5px}
+  .upi-apps{grid-template-columns:repeat(4,1fr);gap:8px}
+  .upi-app-btn{padding:10px 4px;border-radius:10px;font-size:10px;gap:5px}
+  .upi-app-btn .app-icon{width:34px;height:34px;border-radius:10px;font-size:14px}
   .qr-frame{padding:20px;border-radius:16px;margin-bottom:16px}
   .qr-frame img{width:200px;height:200px;padding:10px}
-
   .upi-row{padding:12px 14px;font-size:12px;border-radius:11px;margin-bottom:8px}
   .upi-row .val{font-size:11.5px}
-
   .mini-steps{padding:16px;margin-top:12px;border-radius:12px}
   .mini-step{font-size:12px;padding:9px 0;gap:10px}
   .mini-step .num{width:24px;height:24px;font-size:11px}
-  .mini-step .text{line-height:1.5;padding-top:2px}
-
   .btn-submit{padding:15px;font-size:14px;border-radius:13px}
-
   .success-wrap{padding:50px 22px}
   .success-icon{width:80px;height:80px;font-size:40px;margin-bottom:22px}
   .success-wrap h2{font-size:24px}
-  .success-wrap p{font-size:13px}
   .order-box{padding:20px;border-radius:14px}
   .order-box .row{font-size:12.5px;padding:10px 0}
-  .btn-close{padding:14px 30px;font-size:13px}
-
-  .error-wrap{padding:50px 22px}
-  .error-icon{width:80px;height:80px;font-size:40px}
-  .error-wrap h2{font-size:22px}
-
-  .loading-wrap{padding:60px 22px}
-
   .toast{top:16px;right:16px;left:16px;font-size:12.5px;padding:13px 18px}
 }
-
-/* ========== SMALL MOBILE ========== */
 @media(max-width:380px){
   .left-panel{padding:24px 18px 22px}
   .right-panel{padding:22px 18px 30px}
@@ -431,6 +206,9 @@ input[type=number]{-moz-appearance:textfield}
   .amount-input-wrap input{font-size:22px;padding:16px 14px 16px 42px}
   .amount-input-wrap .currency{font-size:22px;left:14px}
   .qr-frame img{width:180px;height:180px}
+  .upi-apps{grid-template-columns:repeat(4,1fr);gap:6px}
+  .upi-app-btn{padding:8px 3px;font-size:9.5px}
+  .upi-app-btn .app-icon{width:30px;height:30px;font-size:13px}
   .method-tab{font-size:11px;padding:9px 6px}
   .quick-amounts button{padding:7px 11px;font-size:11px}
 }
@@ -516,6 +294,8 @@ let activeMethod = "qr";
 function renderCheckout(){
   const app = document.getElementById("app");
   const initialAmount = preAmount > 0 ? preAmount : 0;
+  const hasUpi = !!SETTINGS.upiId;
+  const hasQr = !!SETTINGS.qrUrl;
 
   app.innerHTML = `
     <div class="left-panel">
@@ -559,7 +339,7 @@ function renderCheckout(){
           <span class="icon">📱</span> UPI / QR
         </div>
         <div class="method-tab" data-method="intent" onclick="switchMethod('intent',this)">
-          <span class="icon">🎯</span> Intent
+          <span class="icon">⚡</span> Intent
         </div>
       </div>
 
@@ -579,10 +359,42 @@ function renderCheckout(){
       </div>
 
       <div id="qrSection" class="qr-section ${initialAmount > 0 ? 'show' : ''}">
+
+        ${hasUpi ? `
+        <div class="intent-section">
+          <div class="intent-head">
+            <div class="intent-icon">⚡</div>
+            <div>
+              <div class="intent-title">Pay with UPI App</div>
+              <div class="intent-sub">1-click payment — no QR scan needed</div>
+            </div>
+          </div>
+          <div class="upi-apps">
+            <a href="#" class="upi-app-btn" onclick="openIntent('gpay',event)">
+              <div class="app-icon" style="background:#fff;color:#4285f4;">G</div>
+              <span>GPay</span>
+            </a>
+            <a href="#" class="upi-app-btn" onclick="openIntent('phonepe',event)">
+              <div class="app-icon" style="background:#5f259f;color:#fff;">पे</div>
+              <span>PhonePe</span>
+            </a>
+            <a href="#" class="upi-app-btn" onclick="openIntent('paytm',event)">
+              <div class="app-icon" style="background:#00baf2;color:#fff;">P</div>
+              <span>Paytm</span>
+            </a>
+            <a href="#" class="upi-app-btn" onclick="openIntent('any',event)">
+              <div class="app-icon" style="background:#0a0a0a;color:#fff;">≡</div>
+              <span>Any App</span>
+            </a>
+          </div>
+          ${hasQr ? `<div class="divider-or">— OR SCAN QR —</div>` : ''}
+        </div>` : ''}
+
+        ${hasQr ? `
         <div class="qr-frame">
-          <img src="${SETTINGS.qrUrl || ''}" onerror="this.outerHTML='<div style=&quot;width:220px;height:220px;background:#f1f5f9;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:12px;margin:0 auto;&quot;>QR not set</div>'"/>
+          <img src="${SETTINGS.qrUrl}" onerror="this.outerHTML='<div style=&quot;width:220px;height:220px;background:#f1f5f9;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:12px;margin:0 auto;&quot;>QR not available</div>'"/>
           <p style="font-size:12px;color:var(--muted);margin-top:12px;">Scan with any UPI app</p>
-        </div>
+        </div>` : ''}
 
         ${SETTINGS.upiId ? `
         <div class="upi-row">
@@ -595,7 +407,7 @@ function renderCheckout(){
         </div>` : ''}
 
         <div class="mini-steps">
-          <div class="mini-step"><div class="num">1</div><div class="text">Scan the QR or copy the UPI ID</div></div>
+          <div class="mini-step"><div class="num">1</div><div class="text">Tap a UPI app above, or scan the QR</div></div>
           <div class="mini-step"><div class="num">2</div><div class="text">Pay the exact amount of <b>₹<span id="stepAmount">${initialAmount > 0 ? formatAmount(initialAmount) : "0"}</span></b></div></div>
           <div class="mini-step"><div class="num">3</div><div class="text">Copy the UTR / Reference number from your UPI app</div></div>
         </div>
@@ -625,7 +437,13 @@ function switchMethod(method, el){
   activeMethod = method;
   document.querySelectorAll(".method-tab").forEach(t=>t.classList.remove("active"));
   el.classList.add("active");
-  showToast(method === "qr" ? "QR mode selected" : "UPI Intent mode selected");
+  if(method === "intent"){
+    showToast("Tap a UPI app to pay instantly");
+    const intentSection = document.querySelector(".intent-section");
+    if(intentSection){ intentSection.scrollIntoView({behavior:"smooth",block:"center"}); }
+  } else {
+    showToast("QR mode — scan to pay");
+  }
 }
 
 function setAmount(v){
@@ -651,6 +469,55 @@ function onAmountChange(){
 
   if(val > 0){ sec.classList.add("show"); }
   else { sec.classList.remove("show"); }
+}
+
+/* =========================================================
+   UPI INTENT — OPEN UPI APP
+   ========================================================= */
+function openIntent(app, event){
+  if(event) event.preventDefault();
+  const amount = parseFloat(document.getElementById("amountInput").value) || 0;
+  if(!amount || amount <= 0){
+    showToast("Please enter amount first","error");
+    return;
+  }
+  if(!SETTINGS.upiId){
+    showToast("Merchant UPI ID not set","error");
+    return;
+  }
+
+  const pa = SETTINGS.upiId;
+  const pn = encodeURIComponent(SETTINGS.payeeName || "Merchant");
+  const am = amount.toFixed(2);
+  const tr = orderId;
+  const tn = encodeURIComponent("Payment for " + orderId);
+  const cu = "INR";
+
+  // App-specific deep links (with fallback to generic UPI)
+  let upiLink;
+  if(app === "gpay"){
+    upiLink = `tez://upi/pay?pa=${pa}&pn=${pn}&am=${am}&tr=${tr}&tn=${tn}&cu=${cu}`;
+  } else if(app === "phonepe"){
+    upiLink = `phonepe://pay?pa=${pa}&pn=${pn}&am=${am}&tr=${tr}&tn=${tn}&cu=${cu}`;
+  } else if(app === "paytm"){
+    upiLink = `paytmmp://pay?pa=${pa}&pn=${pn}&am=${am}&tr=${tr}&tn=${tn}&cu=${cu}`;
+  } else {
+    upiLink = `upi://pay?pa=${pa}&pn=${pn}&am=${am}&tr=${tr}&tn=${tn}&cu=${cu}`;
+  }
+
+  try{
+    window.location.href = upiLink;
+  } catch(e){
+    // Fallback to generic
+    window.location.href = `upi://pay?pa=${pa}&pn=${pn}&am=${am}&tr=${tr}&tn=${tn}&cu=${cu}`;
+  }
+
+  // After 2.5 seconds show reminder
+  setTimeout(() => {
+    showToast("After paying, please enter the UTR below","success");
+    const utrEl = document.getElementById("utrInput");
+    if(utrEl){ utrEl.scrollIntoView({behavior:"smooth",block:"center"}); utrEl.focus(); }
+  }, 2500);
 }
 
 async function submitPayment(){
