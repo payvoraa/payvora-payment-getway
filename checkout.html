@@ -34,7 +34,6 @@ input[type=number]{-moz-appearance:textfield}
 
 .checkout-container{max-width:1080px;width:100%;margin:0 auto;background:#fff;border-radius:28px;overflow:hidden;box-shadow:0 40px 100px rgba(10,15,30,.14), 0 8px 30px rgba(10,15,30,.06);display:grid;grid-template-columns:400px 1fr;animation:fadeUp .8s cubic-bezier(.4,0,.2,1);position:relative;z-index:1}
 
-/* LEFT PANEL */
 .left-panel{background:linear-gradient(155deg,#0a0f1e 0%,#141b2e 55%,#0a0f1e 100%);color:#fff;padding:40px 34px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;animation:slideInLeft .8s ease .1s both}
 .left-panel::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 85% 8%, rgba(59,130,246,.3), transparent 45%),radial-gradient(circle at 10% 92%, rgba(139,92,246,.25), transparent 45%);pointer-events:none}
 .left-panel::after{content:'';position:absolute;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,.18),transparent 70%);top:-120px;right:-120px;filter:blur(50px);animation:float 9s ease-in-out infinite}
@@ -58,7 +57,6 @@ input[type=number]{-moz-appearance:textfield}
 .trust-badges{display:flex;flex-wrap:wrap;gap:14px;font-size:10.5px;color:#64748b;margin-top:22px;font-weight:600}
 .trust-badges span{display:flex;align-items:center;gap:5px}
 
-/* RIGHT PANEL */
 .right-panel{padding:40px 44px;display:flex;flex-direction:column;animation:slideInRight .8s ease .1s both}
 .right-panel h2{font-size:26px;font-weight:800;letter-spacing:-.6px;margin-bottom:26px}
 .method-tabs{display:flex;gap:6px;background:#f1f5f9;border-radius:14px;padding:5px;margin-bottom:26px}
@@ -84,7 +82,6 @@ input[type=number]{-moz-appearance:textfield}
 .qr-section{display:none;animation:qrReveal .55s cubic-bezier(.4,0,.2,1)}
 .qr-section.show{display:block}
 
-/* UPI Intent Section */
 .intent-section{background:linear-gradient(135deg,#f8fafc,#eff6ff);border:1.5px solid #dbeafe;border-radius:16px;padding:18px;margin-bottom:20px;animation:fadeUp .5s ease}
 .intent-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
 .intent-icon{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 8px 20px rgba(59,130,246,.35)}
@@ -97,14 +94,14 @@ input[type=number]{-moz-appearance:textfield}
 .upi-app-btn .app-icon{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;box-shadow:0 3px 10px rgba(0,0,0,.1)}
 .divider-or{text-align:center;margin:18px 0 6px;font-size:11px;color:var(--muted);font-weight:700;letter-spacing:1.5px}
 
-/* Dynamic QR Frame */
 .qr-frame{background:linear-gradient(135deg,#f8fafc,#eff6ff);border:2px dashed #cbd5e1;border-radius:18px;padding:24px;text-align:center;margin-bottom:18px;transition:all .3s;position:relative}
 .qr-frame:hover{border-color:var(--blue);background:linear-gradient(135deg,#f0f7ff,#e0efff)}
-.qr-frame img{width:240px;height:240px;object-fit:contain;max-width:100%;background:#fff;padding:14px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.08);transition:transform .35s, box-shadow .35s;animation:qrPulse 2.5s ease-in-out infinite}
-.qr-frame img:hover{transform:scale(1.04)}
-.qr-frame .qr-badge{position:absolute;top:12px;right:12px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-size:10px;font-weight:800;padding:4px 10px;border-radius:99px;letter-spacing:.5px;box-shadow:0 4px 12px rgba(16,185,129,.3)}
+.qr-frame .qr-badge{position:absolute;top:12px;right:12px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-size:10px;font-weight:800;padding:4px 10px;border-radius:99px;letter-spacing:.5px;box-shadow:0 4px 12px rgba(16,185,129,.3);z-index:2}
 .qr-frame .qr-amount{font-size:15px;font-weight:800;color:var(--blue);margin-top:12px;letter-spacing:-.3px}
 .qr-frame p{font-size:12px;color:var(--muted);margin-top:6px}
+#dynamicQrImg{width:240px;height:240px;margin:0 auto;display:flex;align-items:center;justify-content:center;background:#f1f5f9;border-radius:16px;color:#94a3b8;font-size:12px;padding:0;transition:all .3s}
+#dynamicQrImg.ready{background:#fff;padding:14px;box-shadow:0 10px 30px rgba(0,0,0,.08);animation:qrPulse 2.5s ease-in-out infinite}
+#dynamicQrImg img,#dynamicQrImg canvas{display:block;border-radius:8px}
 
 .upi-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 16px;background:#f8fafc;border-radius:13px;margin-bottom:10px;font-size:13px;border:1.5px solid var(--border);transition:all .25s}
 .upi-row:hover{border-color:var(--blue);background:#eff6ff}
@@ -191,7 +188,7 @@ input[type=number]{-moz-appearance:textfield}
   .upi-app-btn{padding:10px 4px;border-radius:10px;font-size:10px;gap:5px}
   .upi-app-btn .app-icon{width:34px;height:34px;border-radius:10px;font-size:14px}
   .qr-frame{padding:20px;border-radius:16px;margin-bottom:16px}
-  .qr-frame img{width:220px;height:220px;padding:12px}
+  #dynamicQrImg{width:220px;height:220px}
   .qr-frame .qr-amount{font-size:14px}
   .upi-row{padding:12px 14px;font-size:12px;border-radius:11px;margin-bottom:8px}
   .upi-row .val{font-size:11.5px}
@@ -212,7 +209,7 @@ input[type=number]{-moz-appearance:textfield}
   .amount-display .amount{font-size:32px}
   .amount-input-wrap input{font-size:22px;padding:16px 14px 16px 42px}
   .amount-input-wrap .currency{font-size:22px;left:14px}
-  .qr-frame img{width:200px;height:200px}
+  #dynamicQrImg{width:200px;height:200px}
   .upi-apps{grid-template-columns:repeat(4,1fr);gap:6px}
   .upi-app-btn{padding:8px 3px;font-size:9.5px}
   .upi-app-btn .app-icon{width:30px;height:30px;font-size:13px}
@@ -233,6 +230,9 @@ input[type=number]{-moz-appearance:textfield}
 <div class="toast" id="toast"></div>
 
 <script>
+/* =========================================================
+   FIREBASE CONFIG
+   ========================================================= */
 const firebaseConfig = {
   apiKey: "AIzaSyDxrqWXt-GKk-RVHoCA8kPdwYU5VVG-ezg",
   authDomain: "payvora-pg.firebaseapp.com",
@@ -255,6 +255,9 @@ const DB = {
   }
 };
 
+/* =========================================================
+   URL PARAMS
+   ========================================================= */
 const params = new URLSearchParams(window.location.search);
 const merchant = (params.get("merchant") || "").trim().toLowerCase();
 const preAmount = parseFloat(params.get("amount") || "0");
@@ -264,6 +267,9 @@ let MERCHANT = null;
 let SETTINGS = {};
 let activeMethod = "qr";
 
+/* =========================================================
+   INIT
+   ========================================================= */
 (async function init(){
   const app = document.getElementById("app");
 
@@ -286,7 +292,7 @@ let activeMethod = "qr";
   SETTINGS = {
     upiId: mySettings.upiId || globalSettings.upiId || "",
     payeeName: mySettings.payeeName || globalSettings.payeeName || m.name || "Merchant",
-    qrUrl: mySettings.qrUrl || globalSettings.qrUrl || "" // fallback only
+    qrUrl: mySettings.qrUrl || globalSettings.qrUrl || ""
   };
 
   if(!SETTINGS.upiId && !SETTINGS.qrUrl){
@@ -299,24 +305,8 @@ let activeMethod = "qr";
 })();
 
 /* =========================================================
-   DYNAMIC QR GENERATOR
+   RENDER
    ========================================================= */
-function generateDynamicQrUrl(upiId, payeeName, amount, orderRef){
-  const pa = upiId;
-  const pn = encodeURIComponent(payeeName || "Merchant");
-  const am = amount > 0 ? Number(amount).toFixed(2) : "";
-  const cu = "INR";
-  const tn = encodeURIComponent("Payment" + (orderRef ? " " + orderRef : ""));
-
-  let upiLink = `upi://pay?pa=${pa}&pn=${pn}&cu=${cu}`;
-  if(am) upiLink += `&am=${am}`;
-  if(orderRef) upiLink += `&tr=${orderRef}`;
-  upiLink += `&tn=${tn}`;
-
-  // Use QR Server API for dynamic generation
-  return `https://api.qrserver.com/v1/create-qr-code/?size=500x500&margin=10&data=${encodeURIComponent(upiLink)}`;
-}
-
 function renderCheckout(){
   const app = document.getElementById("app");
   const initialAmount = preAmount > 0 ? preAmount : 0;
@@ -415,10 +405,9 @@ function renderCheckout(){
           <div class="divider-or">— OR SCAN DYNAMIC QR —</div>
         </div>` : ''}
 
-        <!-- Dynamic QR -->
         <div class="qr-frame">
           <div class="qr-badge">⚡ DYNAMIC</div>
-          <div id="dynamicQrImg" style="width:240px;height:240px;margin:0 auto;display:flex;align-items:center;justify-content:center;background:#f1f5f9;border-radius:16px;color:#94a3b8;font-size:12px;">Enter amount to generate QR</div>
+          <div id="dynamicQrImg">Enter amount to generate QR</div>
           <div class="qr-amount" id="qrAmountLabel">₹0</div>
           <p>Scan with any UPI app</p>
         </div>
@@ -455,7 +444,6 @@ function renderCheckout(){
     </div>
   `;
 
-  // Set initial QR if amount pre-filled
   if(initialAmount > 0) updateDynamicQr(initialAmount);
 }
 
@@ -506,55 +494,69 @@ function onAmountChange(){
 }
 
 /* =========================================================
-   UPDATE DYNAMIC QR (based on amount)
+   LOCAL QR GENERATION (No API needed!)
    ========================================================= */
 function updateDynamicQr(amount){
   const container = document.getElementById("dynamicQrImg");
   const label = document.getElementById("qrAmountLabel");
   if(!container) return;
 
-  if(!SETTINGS.upiId || !amount || amount <= 0){
-    container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;font-size:12px;">Enter amount to generate QR</div>';
-    container.style.background = "#f1f5f9";
-    container.style.padding = "0";
+  // Validation
+  if(!SETTINGS.upiId){
+    container.classList.remove("ready");
+    container.innerHTML = 'UPI ID not set';
     if(label) label.textContent = "₹0";
     return;
   }
 
+  if(!amount || amount <= 0){
+    container.classList.remove("ready");
+    container.innerHTML = 'Enter amount to generate QR';
+    if(label) label.textContent = "₹0";
+    return;
+  }
+
+  // Build UPI deep link
   const pa = SETTINGS.upiId;
   const pn = encodeURIComponent(SETTINGS.payeeName || "Merchant");
   const am = Number(amount).toFixed(2);
   const cu = "INR";
-  const tn = encodeURIComponent("Payment " + orderId);
+  const tn = encodeURIComponent("Payment for " + orderId);
   const upiLink = `upi://pay?pa=${pa}&pn=${pn}&am=${am}&tr=${orderId}&tn=${tn}&cu=${cu}`;
 
+  // Clear container
   container.innerHTML = '';
-  container.style.width = "240px";
-  container.style.height = "240px";
-  container.style.background = "#fff";
-  container.style.borderRadius = "16px";
-  container.style.padding = "14px";
-  container.style.display = "block";
-  container.style.boxShadow = "0 10px 30px rgba(0,0,0,.08)";
 
-  new QRCode(container, {
-    text: upiLink,
-    width: 212,
-    height: 212,
-    colorDark: "#0a0a0a",
-    colorLight: "#ffffff",
-    correctLevel: QRCode.CorrectLevel.M
-  });
+  // Check library loaded
+  if(typeof QRCode === "undefined"){
+    container.innerHTML = 'QR library not loaded. Check internet.';
+    container.classList.remove("ready");
+    return;
+  }
 
-  if(label) label.textContent = "₹" + formatAmount(amount);
-}
+  try{
+    // Generate QR locally
+    new QRCode(container, {
+      text: upiLink,
+      width: 212,
+      height: 212,
+      colorDark: "#0a0a0a",
+      colorLight: "#ffffff",
+      correctLevel: QRCode.CorrectLevel.M
+    });
 
-  // Generate fresh QR URL based on amount
-  const qrUrl = generateDynamicQrUrl(SETTINGS.upiId, SETTINGS.payeeName, amount, orderId);
-  img.src = qrUrl;
-  if(label) label.textContent = "₹" + formatAmount(amount);
+    // Add ready class for styling
+    container.classList.add("ready");
 
-  console.log("Dynamic QR generated for ₹" + amount);
+    if(label) label.textContent = "₹" + formatAmount(amount);
+
+    console.log("✅ Local QR generated for ₹" + amount);
+    console.log("UPI Link:", upiLink);
+  }catch(e){
+    console.error("QR generation error:", e);
+    container.innerHTML = 'QR generation failed';
+    container.classList.remove("ready");
+  }
 }
 
 /* =========================================================
@@ -603,6 +605,9 @@ function openIntent(app, event){
   }, 2500);
 }
 
+/* =========================================================
+   SUBMIT
+   ========================================================= */
 async function submitPayment(){
   const amount = parseFloat(document.getElementById("amountInput").value) || 0;
   const utr = document.getElementById("utrInput").value.trim();
@@ -623,7 +628,7 @@ async function submitPayment(){
       orderId: orderId,
       source: "checkout",
       method: activeMethod,
-      qrType: "dynamic",
+      qrType: "dynamic-local",
       status: "pending",
       at: new Date().toLocaleString("en-IN",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"})
     });
