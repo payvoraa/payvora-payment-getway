@@ -29,7 +29,7 @@ input[type=number]{-moz-appearance:textfield}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
 @keyframes shimmer{0%{background-position:-1000px 0}100%{background-position:1000px 0}}
 @keyframes qrReveal{from{opacity:0;transform:scale(.85) rotate(-6deg)}to{opacity:1;transform:scale(1) rotate(0)}}
-@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.05);opacity:.7}}
+@keyframes qrPulse{0%,100%{box-shadow:0 10px 30px rgba(0,0,0,.08), 0 0 0 0 rgba(59,130,246,.4)}50%{box-shadow:0 10px 30px rgba(0,0,0,.08), 0 0 0 12px rgba(59,130,246,0)}}
 
 .checkout-container{max-width:1080px;width:100%;margin:0 auto;background:#fff;border-radius:28px;overflow:hidden;box-shadow:0 40px 100px rgba(10,15,30,.14), 0 8px 30px rgba(10,15,30,.06);display:grid;grid-template-columns:400px 1fr;animation:fadeUp .8s cubic-bezier(.4,0,.2,1);position:relative;z-index:1}
 
@@ -96,10 +96,15 @@ input[type=number]{-moz-appearance:textfield}
 .upi-app-btn .app-icon{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;box-shadow:0 3px 10px rgba(0,0,0,.1)}
 .divider-or{text-align:center;margin:18px 0 6px;font-size:11px;color:var(--muted);font-weight:700;letter-spacing:1.5px}
 
-.qr-frame{background:linear-gradient(135deg,#f8fafc,#eff6ff);border:2px dashed #cbd5e1;border-radius:18px;padding:26px;text-align:center;margin-bottom:18px;transition:all .3s}
+/* Dynamic QR Frame */
+.qr-frame{background:linear-gradient(135deg,#f8fafc,#eff6ff);border:2px dashed #cbd5e1;border-radius:18px;padding:24px;text-align:center;margin-bottom:18px;transition:all .3s;position:relative}
 .qr-frame:hover{border-color:var(--blue);background:linear-gradient(135deg,#f0f7ff,#e0efff)}
-.qr-frame img{width:220px;height:220px;object-fit:contain;max-width:100%;background:#fff;padding:12px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.08);transition:transform .35s}
+.qr-frame img{width:240px;height:240px;object-fit:contain;max-width:100%;background:#fff;padding:14px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.08);transition:transform .35s, box-shadow .35s;animation:qrPulse 2.5s ease-in-out infinite}
 .qr-frame img:hover{transform:scale(1.04)}
+.qr-frame .qr-badge{position:absolute;top:12px;right:12px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-size:10px;font-weight:800;padding:4px 10px;border-radius:99px;letter-spacing:.5px;box-shadow:0 4px 12px rgba(16,185,129,.3)}
+.qr-frame .qr-amount{font-size:15px;font-weight:800;color:var(--blue);margin-top:12px;letter-spacing:-.3px}
+.qr-frame p{font-size:12px;color:var(--muted);margin-top:6px}
+
 .upi-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 16px;background:#f8fafc;border-radius:13px;margin-bottom:10px;font-size:13px;border:1.5px solid var(--border);transition:all .25s}
 .upi-row:hover{border-color:var(--blue);background:#eff6ff}
 .upi-row .lbl{color:var(--muted);font-weight:600;flex-shrink:0}
@@ -185,7 +190,8 @@ input[type=number]{-moz-appearance:textfield}
   .upi-app-btn{padding:10px 4px;border-radius:10px;font-size:10px;gap:5px}
   .upi-app-btn .app-icon{width:34px;height:34px;border-radius:10px;font-size:14px}
   .qr-frame{padding:20px;border-radius:16px;margin-bottom:16px}
-  .qr-frame img{width:200px;height:200px;padding:10px}
+  .qr-frame img{width:220px;height:220px;padding:12px}
+  .qr-frame .qr-amount{font-size:14px}
   .upi-row{padding:12px 14px;font-size:12px;border-radius:11px;margin-bottom:8px}
   .upi-row .val{font-size:11.5px}
   .mini-steps{padding:16px;margin-top:12px;border-radius:12px}
@@ -205,7 +211,7 @@ input[type=number]{-moz-appearance:textfield}
   .amount-display .amount{font-size:32px}
   .amount-input-wrap input{font-size:22px;padding:16px 14px 16px 42px}
   .amount-input-wrap .currency{font-size:22px;left:14px}
-  .qr-frame img{width:180px;height:180px}
+  .qr-frame img{width:200px;height:200px}
   .upi-apps{grid-template-columns:repeat(4,1fr);gap:6px}
   .upi-app-btn{padding:8px 3px;font-size:9.5px}
   .upi-app-btn .app-icon{width:30px;height:30px;font-size:13px}
@@ -279,11 +285,11 @@ let activeMethod = "qr";
   SETTINGS = {
     upiId: mySettings.upiId || globalSettings.upiId || "",
     payeeName: mySettings.payeeName || globalSettings.payeeName || m.name || "Merchant",
-    qrUrl: mySettings.qrUrl || globalSettings.qrUrl || ""
+    qrUrl: mySettings.qrUrl || globalSettings.qrUrl || "" // fallback only
   };
 
   if(!SETTINGS.upiId && !SETTINGS.qrUrl){
-    app.innerHTML = errorPage("Payment Not Configured", "The merchant has not set up UPI/QR payment yet. Please contact the merchant.");
+    app.innerHTML = errorPage("Payment Not Configured", "The merchant has not set up UPI payment yet. Please contact the merchant.");
     app.style.gridTemplateColumns = "1fr";
     return;
   }
@@ -291,11 +297,29 @@ let activeMethod = "qr";
   renderCheckout();
 })();
 
+/* =========================================================
+   DYNAMIC QR GENERATOR
+   ========================================================= */
+function generateDynamicQrUrl(upiId, payeeName, amount, orderRef){
+  const pa = upiId;
+  const pn = encodeURIComponent(payeeName || "Merchant");
+  const am = amount > 0 ? Number(amount).toFixed(2) : "";
+  const cu = "INR";
+  const tn = encodeURIComponent("Payment" + (orderRef ? " " + orderRef : ""));
+
+  let upiLink = `upi://pay?pa=${pa}&pn=${pn}&cu=${cu}`;
+  if(am) upiLink += `&am=${am}`;
+  if(orderRef) upiLink += `&tr=${orderRef}`;
+  upiLink += `&tn=${tn}`;
+
+  // Use QR Server API for dynamic generation
+  return `https://api.qrserver.com/v1/create-qr-code/?size=500x500&margin=10&data=${encodeURIComponent(upiLink)}`;
+}
+
 function renderCheckout(){
   const app = document.getElementById("app");
   const initialAmount = preAmount > 0 ? preAmount : 0;
   const hasUpi = !!SETTINGS.upiId;
-  const hasQr = !!SETTINGS.qrUrl;
 
   app.innerHTML = `
     <div class="left-panel">
@@ -387,14 +411,16 @@ function renderCheckout(){
               <span>Any App</span>
             </a>
           </div>
-          ${hasQr ? `<div class="divider-or">— OR SCAN QR —</div>` : ''}
+          <div class="divider-or">— OR SCAN DYNAMIC QR —</div>
         </div>` : ''}
 
-        ${hasQr ? `
+        <!-- Dynamic QR -->
         <div class="qr-frame">
-          <img src="${SETTINGS.qrUrl}" onerror="this.outerHTML='<div style=&quot;width:220px;height:220px;background:#f1f5f9;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:12px;margin:0 auto;&quot;>QR not available</div>'"/>
-          <p style="font-size:12px;color:var(--muted);margin-top:12px;">Scan with any UPI app</p>
-        </div>` : ''}
+          <div class="qr-badge">⚡ DYNAMIC</div>
+          <img id="dynamicQrImg" src="" alt="QR" onerror="this.outerHTML='<div style=&quot;width:240px;height:240px;background:#f1f5f9;border-radius:16px;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:12px;margin:0 auto;&quot;>QR generation failed</div>'"/>
+          <div class="qr-amount" id="qrAmountLabel">₹0</div>
+          <p>Scan with any UPI app</p>
+        </div>
 
         ${SETTINGS.upiId ? `
         <div class="upi-row">
@@ -407,7 +433,7 @@ function renderCheckout(){
         </div>` : ''}
 
         <div class="mini-steps">
-          <div class="mini-step"><div class="num">1</div><div class="text">Tap a UPI app above, or scan the QR</div></div>
+          <div class="mini-step"><div class="num">1</div><div class="text">Tap a UPI app above, or scan the dynamic QR</div></div>
           <div class="mini-step"><div class="num">2</div><div class="text">Pay the exact amount of <b>₹<span id="stepAmount">${initialAmount > 0 ? formatAmount(initialAmount) : "0"}</span></b></div></div>
           <div class="mini-step"><div class="num">3</div><div class="text">Copy the UTR / Reference number from your UPI app</div></div>
         </div>
@@ -427,6 +453,9 @@ function renderCheckout(){
       </p>
     </div>
   `;
+
+  // Set initial QR if amount pre-filled
+  if(initialAmount > 0) updateDynamicQr(initialAmount);
 }
 
 function formatAmount(n){
@@ -442,7 +471,7 @@ function switchMethod(method, el){
     const intentSection = document.querySelector(".intent-section");
     if(intentSection){ intentSection.scrollIntoView({behavior:"smooth",block:"center"}); }
   } else {
-    showToast("QR mode — scan to pay");
+    showToast("Scan the dynamic QR to pay");
   }
 }
 
@@ -467,12 +496,44 @@ function onAmountChange(){
   if(bdTot) bdTot.textContent = formatted;
   if(step) step.textContent = formatAmount(val);
 
-  if(val > 0){ sec.classList.add("show"); }
-  else { sec.classList.remove("show"); }
+  if(val > 0){
+    sec.classList.add("show");
+    updateDynamicQr(val);
+  } else {
+    sec.classList.remove("show");
+  }
 }
 
 /* =========================================================
-   UPI INTENT — OPEN UPI APP
+   UPDATE DYNAMIC QR (based on amount)
+   ========================================================= */
+function updateDynamicQr(amount){
+  const img = document.getElementById("dynamicQrImg");
+  const label = document.getElementById("qrAmountLabel");
+  if(!img) return;
+
+  if(!SETTINGS.upiId){
+    img.src = "";
+    if(label) label.textContent = "UPI not set";
+    return;
+  }
+
+  if(!amount || amount <= 0){
+    if(label) label.textContent = "₹0";
+    img.src = "";
+    return;
+  }
+
+  // Generate fresh QR URL based on amount
+  const qrUrl = generateDynamicQrUrl(SETTINGS.upiId, SETTINGS.payeeName, amount, orderId);
+  img.src = qrUrl;
+  if(label) label.textContent = "₹" + formatAmount(amount);
+
+  console.log("Dynamic QR generated for ₹" + amount);
+}
+
+/* =========================================================
+   UPI INTENT
    ========================================================= */
 function openIntent(app, event){
   if(event) event.preventDefault();
@@ -493,7 +554,6 @@ function openIntent(app, event){
   const tn = encodeURIComponent("Payment for " + orderId);
   const cu = "INR";
 
-  // App-specific deep links (with fallback to generic UPI)
   let upiLink;
   if(app === "gpay"){
     upiLink = `tez://upi/pay?pa=${pa}&pn=${pn}&am=${am}&tr=${tr}&tn=${tn}&cu=${cu}`;
@@ -507,12 +567,10 @@ function openIntent(app, event){
 
   try{
     window.location.href = upiLink;
-  } catch(e){
-    // Fallback to generic
+  }catch(e){
     window.location.href = `upi://pay?pa=${pa}&pn=${pn}&am=${am}&tr=${tr}&tn=${tn}&cu=${cu}`;
   }
 
-  // After 2.5 seconds show reminder
   setTimeout(() => {
     showToast("After paying, please enter the UTR below","success");
     const utrEl = document.getElementById("utrInput");
@@ -540,6 +598,7 @@ async function submitPayment(){
       orderId: orderId,
       source: "checkout",
       method: activeMethod,
+      qrType: "dynamic",
       status: "pending",
       at: new Date().toLocaleString("en-IN",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"})
     });
