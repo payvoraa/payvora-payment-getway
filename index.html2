@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>PayVora — Payment Gateway</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',-apple-system,sans-serif}
+:root{--bg:#fff;--bg-soft:#fafbfc;--border:#eaecf0;--text:#0a0a0a;--muted:#6b7280;--green:#10b981;--green-dark:#059669;--orange:#f59e0b;--red:#ef4444;--dark:#0a0a0a;--blue:#3b82f6;--purple:#8b5cf6}
+body{background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+input,select,textarea{font-family:inherit}
+::selection{background:var(--green);color:#fff}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:10px}
+
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideInLeft{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideInRight{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+@keyframes pulseDot{0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,.6)}50%{box-shadow:0 0 0 12px rgba(59,130,246,0)}}
+
+/* LOGIN */
+#loginPage{display:flex;min-height:100vh;animation:fadeIn .4s ease}
+.login-left{flex:1;background:var(--dark);color:#fff;padding:60px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between}
+.shape{position:absolute;border-radius:50%;filter:blur(60px);opacity:.4;pointer-events:none}
+.shape.s1{width:400px;height:400px;background:var(--green);top:-100px;right:-100px;animation:float 8s ease-in-out infinite}
+.shape.s2{width:300px;height:300px;background:#3b82f6;bottom:-80px;left:-80px;animation:float 10s ease-in-out infinite reverse}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;z-index:2}
+.logo-icon{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,var(--green),#059669);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:16px;box-shadow:0 4px 20px rgba(16,185,129,.5);object-fit:cover}
+.login-tagline h1{font-size:46px;line-height:1.1;font-weight:800;letter-spacing:-1.5px;animation:slideInLeft .7s ease .1s both}
+.login-tagline p{color:#9ca3af;margin-top:24px;max-width:440px;line-height:1.65;font-size:15px;animation:slideInLeft .7s ease .2s both}
+.login-footer-text{font-size:11px;letter-spacing:4px;color:#4b5563;z-index:2;font-weight:600}
+.login-right{flex:1;display:flex;align-items:center;justify-content:center;padding:40px;background:#fff}
+.login-form{width:100%;max-width:420px;animation:slideInRight .7s ease}
+.welcome{font-size:11px;letter-spacing:2.5px;color:var(--muted);font-weight:700}
+.login-form h2{font-size:32px;margin:10px 0 36px;letter-spacing:-1px;font-weight:800}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:11px;letter-spacing:1.5px;font-weight:700;color:var(--muted);margin-bottom:8px}
+.input-wrap{display:flex;align-items:center;background:#f6f7f9;border-radius:10px;padding:0 16px;border:1.5px solid transparent;transition:all .2s}
+.input-wrap:focus-within{border-color:var(--dark);background:#fff;box-shadow:0 0 0 4px rgba(0,0,0,.04)}
+.input-wrap span{color:var(--muted);margin-right:12px;font-size:14px}
+.input-wrap input{flex:1;padding:15px 0;background:none;border:none;outline:none;font-size:14px;font-weight:500;color:var(--text)}
+.eye-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;padding:4px}
+.btn-primary{width:100%;padding:16px;background:var(--dark);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;margin-top:12px;transition:all .25s}
+.btn-primary:hover{background:#1f2937;transform:translateY(-1px)}
+.btn-primary:disabled{opacity:.7;cursor:not-allowed}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle}
+.login-note{font-size:12px;color:var(--muted);margin-top:28px;line-height:1.7}
+.error-msg{color:var(--red);font-size:13px;margin-top:12px;display:none;padding:10px 14px;background:#fef2f2;border-radius:8px;border-left:3px solid var(--red)}
+
+/* APP */
+#app{display:none;min-height:100vh;animation:fadeIn .3s ease}
+.layout{display:flex;min-height:100vh}
+.menu-toggle{display:none;position:fixed;top:14px;left:14px;z-index:1000;width:44px;height:44px;background:var(--dark);color:#fff;border-radius:12px;align-items:center;justify-content:center;font-size:20px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.2)}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:998;backdrop-filter:blur(4px)}
+.sidebar-overlay.show{display:block}
+.sidebar{width:250px;background:var(--dark);color:#fff;padding:24px 0;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.sidebar-logo{padding:0 24px 28px;font-weight:800;display:flex;align-items:center;gap:10px;font-size:16px}
+.nav-item{padding:13px 24px;font-size:14px;color:#9ca3af;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .2s;border-left:3px solid transparent;font-weight:500}
+.nav-item:hover{background:rgba(255,255,255,.05);color:#fff;padding-left:28px}
+.nav-item.active{background:rgba(16,185,129,.1);color:#fff;border-left-color:var(--green);font-weight:600}
+.main{flex:1;padding:32px 40px;max-width:1400px;background:var(--bg-soft);min-height:100vh}
+.page-head h1{font-size:26px;letter-spacing:-.5px;font-weight:800;animation:fadeUp .4s ease}
+.page-head p{color:var(--muted);font-size:13px;margin-top:4px}
+.page-head{margin-bottom:28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin-bottom:20px}
+.stat-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:22px;transition:all .25s;animation:fadeUp .5s ease both}
+.stat-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.06)}
+.stat-card .label{font-size:11px;letter-spacing:1.2px;color:var(--muted);font-weight:700;text-transform:uppercase}
+.stat-card .value{font-size:28px;font-weight:800;margin-top:10px;letter-spacing:-1px}
+.stat-card .value.green{color:var(--green)}
+.stat-card .value.orange{color:var(--orange)}
+.stat-card .value.red{color:var(--red)}
+.stat-card .value.blue{color:var(--blue)}
+.card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:26px;margin-bottom:20px;animation:fadeUp .5s ease both}
+.card h3{font-size:16px;margin-bottom:18px;font-weight:700}
+.card-sub{font-size:13px;color:var(--muted);margin-top:-12px;margin-bottom:18px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:12px 10px;color:var(--muted);font-weight:700;font-size:11px;letter-spacing:1px;border-bottom:1.5px solid var(--border);text-transform:uppercase}
+td{padding:15px 10px;border-bottom:1px solid #f5f6f8}
+tbody tr:hover td{background:#fafbfc}
+tr:last-child td{border-bottom:none}
+.empty{text-align:center;color:var(--muted);padding:32px;font-size:13px}
+.badge{display:inline-block;padding:5px 12px;border-radius:99px;font-size:11px;font-weight:700;text-transform:capitalize}
+.badge.pending{background:#fef3c7;color:#92400e}
+.badge.processing{background:#dbeafe;color:#1e40af}
+.badge.otp_sent{background:#e0e7ff;color:#4338ca}
+.badge.otp_verified{background:#f0fdf4;color:#166534}
+.badge.success,.badge.approved,.badge.paid,.badge.credit,.badge.completed{background:#d1fae5;color:#065f46}
+.badge.rejected,.badge.failed,.badge.debit{background:#fee2e2;color:#991b1b}
+.badge.custom{background:#dbeafe;color:#1e40af}
+.badge.default{background:#f3f4f6;color:#374151}
+.form-row{margin-bottom:16px}
+.form-row label{display:block;font-size:12px;font-weight:700;color:#374151;margin-bottom:7px}
+.form-row input,.form-row select,.form-row textarea{width:100%;padding:12px 15px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;outline:none;transition:all .2s;background:#fff;font-weight:500}
+.form-row input:focus,.form-row select:focus{border-color:var(--dark);box-shadow:0 0 0 4px rgba(0,0,0,.04)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.btn{padding:11px 20px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;transition:all .2s}
+.btn-dark{background:var(--dark);color:#fff}
+.btn-dark:hover{background:#1f2937;transform:translateY(-1px)}
+.btn-red{background:var(--red);color:#fff}
+.btn-outline{background:#fff;border:1.5px solid var(--border);color:var(--text)}
+.btn-sm{padding:7px 13px;font-size:12px;border-radius:8px}
+.btn-green{background:var(--green);color:#fff}
+.btn-green:hover{background:var(--green-dark);transform:translateY(-1px)}
+.btn-blue{background:var(--blue);color:#fff}
+.qr-box{text-align:center;padding:24px;border:2px dashed var(--border);border-radius:14px}
+.qr-img{width:220px;height:220px;margin:0 auto 14px;display:block;border-radius:12px;object-fit:contain;background:#fff;padding:10px}
+.qr-placeholder{width:220px;height:220px;margin:0 auto 14px;background:#f6f7f9;border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;text-align:center;padding:14px}
+.step-flow{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid #f5f6f8}
+.step-flow:last-child{border:none}
+.step-num{width:32px;height:32px;border-radius:10px;background:#f0fdf4;color:var(--green-dark);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.step-text{font-size:13px;color:#374151;line-height:1.65}
+.toast{position:fixed;top:24px;right:24px;background:var(--dark);color:#fff;padding:15px 22px;border-radius:12px;font-size:13px;font-weight:600;z-index:9999;transform:translateX(300%);transition:transform .35s cubic-bezier(.4,0,.2,1);box-shadow:0 20px 60px rgba(0,0,0,.12);max-width:340px}
+.toast.show{transform:translateX(0)}
+.toast.success{background:var(--green)}
+.toast.error{background:var(--red)}
+.modal-back{position:fixed;inset:0;background:rgba(10,10,10,.5);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:9998;padding:20px}
+.modal-back.show{display:flex}
+.modal{background:#fff;border-radius:16px;padding:28px;max-width:640px;width:100%;max-height:90vh;overflow-y:auto;animation:scaleIn .25s cubic-bezier(.4,0,.2,1)}
+.modal h3{margin-bottom:20px;font-size:19px;font-weight:800}
+.loading{text-align:center;padding:60px;color:var(--muted)}
+.loading .spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--dark);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;display:block}
+.commission-info{background:linear-gradient(135deg,#fef3c7,#fef9c3);border:1px solid #fcd34d;border-radius:12px;padding:16px;margin-bottom:16px;animation:scaleIn .3s ease}
+.commission-row{display:flex;justify-content:space-between;padding:5px 0;font-size:13px}
+.commission-row.cut{color:#92400e}
+.commission-row.net{border-top:1px solid #fcd34d;margin-top:8px;padding-top:10px;font-size:15px;font-weight:800;color:var(--green-dark)}
+.info-box{background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:14px;font-size:12px;color:#1e40af;line-height:1.6;margin-bottom:16px}
+
+/* === CARD TO CASH WIZARD === */
+.wizard-wrap{display:grid;grid-template-columns:280px 1fr;gap:24px;animation:fadeUp .5s ease}
+.wizard-steps{background:#fff;border:1px solid var(--border);border-radius:16px;padding:24px;height:fit-content;position:sticky;top:20px}
+.wizard-steps h4{font-size:11px;letter-spacing:2px;color:var(--muted);font-weight:800;text-transform:uppercase;margin-bottom:22px}
+.wstep{display:flex;gap:14px;padding:12px 0;position:relative}
+.wstep:not(:last-child)::after{content:'';position:absolute;left:15px;top:44px;width:2px;height:30px;background:#e5e7eb}
+.wstep.done:not(:last-child)::after{background:var(--green)}
+.wstep-num{width:32px;height:32px;border-radius:50%;background:#f3f4f6;color:var(--muted);font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .3s}
+.wstep.active .wstep-num{background:var(--dark);color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.wstep.done .wstep-num{background:var(--green);color:#fff}
+.wstep-text{padding-top:4px}
+.wstep-title{font-size:14px;font-weight:700;color:var(--muted);transition:color .3s}
+.wstep.active .wstep-title,.wstep.done .wstep-title{color:var(--text)}
+.wstep-desc{font-size:11px;color:#9ca3af;margin-top:2px}
+.wizard-content{background:#fff;border:1px solid var(--border);border-radius:16px;padding:32px;min-height:520px}
+.wizard-content h2{font-size:22px;font-weight:800;letter-spacing:-.4px;margin-bottom:6px}
+.wizard-content .sub{color:var(--muted);font-size:13px;margin-bottom:26px}
+.wizard-content .step{display:none}
+.wizard-content .step.active{display:block;animation:fadeUp .35s ease}
+.wizard-actions{display:flex;gap:12px;margin-top:28px;padding-top:20px;border-top:1px solid var(--border)}
+.wizard-actions .btn{flex:1;padding:14px;font-size:14px;border-radius:12px}
+.card-preview{background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);border-radius:14px;padding:22px;color:#fff;margin-bottom:22px;box-shadow:0 20px 50px rgba(15,23,42,.35);position:relative;overflow:hidden;max-width:400px}
+.card-preview::before{content:'';position:absolute;top:-80px;right:-80px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,.4),transparent 70%)}
+.card-chip{width:42px;height:32px;border-radius:6px;background:linear-gradient(135deg,#fbbf24,#d97706);margin-bottom:18px}
+.card-num-preview{font-family:ui-monospace,monospace;font-size:19px;letter-spacing:2.5px;margin-bottom:18px;font-weight:600}
+.card-foot{display:flex;justify-content:space-between;align-items:flex-end;font-size:11px;letter-spacing:1.5px;color:#94a3b8;text-transform:uppercase}
+.card-foot .val{color:#fff;font-size:13px;letter-spacing:normal;text-transform:none;font-weight:700;margin-top:4px}
+.otp-boxes{display:flex;gap:10px;justify-content:center;margin:24px 0}
+.otp-input{width:50px;height:56px;text-align:center;font-size:22px;font-weight:800;border:2px solid var(--border);border-radius:12px;outline:none;transition:all .2s;background:#f8fafc}
+.otp-input:focus{border-color:var(--dark);background:#fff;box-shadow:0 0 0 4px rgba(0,0,0,.06)}
+.otp-input.filled{border-color:var(--green);background:#f0fdf4}
+.otp-timer{text-align:center;font-size:13px;color:var(--muted);margin-top:12px}
+.otp-timer b{color:var(--text);font-weight:800}
+.status-icon{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,#dbeafe,#bfdbfe);display:flex;align-items:center;justify-content:center;font-size:44px;margin:0 auto 22px;box-shadow:0 20px 50px rgba(59,130,246,.3)}
+.info-block{background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px}
+.info-block .lbl{font-size:11px;letter-spacing:1px;color:var(--muted);font-weight:700;text-transform:uppercase;margin-bottom:4px}
+.info-block .val{font-size:14px;font-weight:700;word-break:break-all}
+.pci-notice{display:flex;justify-content:center;gap:18px;font-size:11px;color:var(--green);font-weight:700;margin-top:18px;padding-top:18px;border-top:1px solid var(--border);flex-wrap:wrap}
+.pci-notice span{display:flex;align-items:center;gap:5px}
+
+/* Card2Cash request card */
+.c2c-card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:16px;animation:fadeUp .4s ease both;position:relative;overflow:hidden}
+.c2c-card.otp-pending{border-left:4px solid var(--blue)}
+.c2c-card.otp-sent{border-left:4px solid #6366f1;animation:pulseDot 2s infinite}
+.c2c-card.completed{border-left:4px solid var(--green)}
+.c2c-card.failed{border-left:4px solid var(--red)}
+.c2c-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:14px;flex-wrap:wrap}
+.c2c-amount{font-size:26px;font-weight:900;letter-spacing:-1px;color:var(--text)}
+.c2c-meta{font-size:12px;color:var(--muted);margin-top:4px}
+.c2c-details{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:14px;padding-top:14px;border-top:1px dashed var(--border)}
+.c2c-detail .lbl{font-size:10px;letter-spacing:1px;color:var(--muted);font-weight:700;text-transform:uppercase;margin-bottom:3px}
+.c2c-detail .val{font-size:13px;font-weight:700;word-break:break-all}
+.otp-pending-box{background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:16px;margin-top:16px;text-align:center}
+.otp-pending-box .pulse{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--blue);margin-right:8px;animation:pulse 1.5s infinite}
+.otp-pending-box .title{font-size:14px;font-weight:800;color:#1e40af}
+.otp-pending-box .sub{font-size:12px;color:#1e3a8a;margin-top:6px;line-height:1.6}
+.otp-form-box{background:#f0fdf4;border:1px solid #a7f3d0;border-radius:12px;padding:16px;margin-top:16px}
+.otp-form-box .title{font-size:14px;font-weight:800;color:var(--green-dark);margin-bottom:10px}
+.otp-inputs{display:flex;gap:8px;justify-content:center;margin:14px 0}
+.otp-inputs input{width:42px;height:48px;text-align:center;font-size:18px;font-weight:800;border:2px solid var(--border);border-radius:10px;outline:none;background:#fff}
+.otp-inputs input:focus{border-color:var(--green);box-shadow:0 0 0 4px rgba(16,185,129,.15)}
+
+@media(max-width:900px){
+  #loginPage{flex-direction:column}
+  .login-left{padding:44px 26px;min-height:auto}
+  .login-tagline h1{font-size:30px}
+  .login-right{padding:32px 22px}
+  .layout{flex-direction:row}
+  .menu-toggle{display:flex}
+  .sidebar{position:fixed;top:0;left:0;bottom:0;width:270px;height:100vh;transform:translateX(-100%);z-index:999;padding-top:70px}
+  .sidebar.open{transform:translateX(0)}
+  .main{padding:70px 18px 22px;min-height:100vh;width:100%}
+  .grid-2,.grid-3{grid-template-columns:1fr}
+  .stat-grid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+  .stat-card .value{font-size:22px}
+  table{font-size:12px}
+  th,td{padding:10px 6px}
+  .page-head{flex-direction:column;align-items:flex-start}
+  .page-head h1{font-size:22px}
+  .wizard-wrap{grid-template-columns:1fr}
+  .wizard-steps{position:relative;top:0}
+  .wizard-content{padding:22px;min-height:auto}
+  .otp-inputs input{width:38px;height:44px;font-size:16px}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+<div id="loginPage">
+  <div class="login-left">
+    <div class="shape s1"></div>
+    <div class="shape s2"></div>
+    <div class="logo"><img src="https://raw.githubusercontent.com/payvoraa/payvora-payment-getway/main/logo.png" class="logo-icon" onerror="this.outerHTML='<div class=&quot;logo-icon&quot;>◆</div>'"/> PayVora</div>
+    <div class="login-tagline">
+      <h1>Precise payments.<br>Ledger-grade trust.</h1>
+      <p>A secure deposit &amp; payout panel with per-user UPI/QR, manual UTR settlement and a strict balance ledger.</p>
+    </div>
+    <div class="login-footer-text">ENTERPRISE PAYMENT INFRASTRUCTURE</div>
+  </div>
+  <div class="login-right">
+    <div class="login-form">
+      <div class="welcome">WELCOME BACK</div>
+      <h2>Sign in to your account</h2>
+      <div class="field"><label>EMAIL</label>
+        <div class="input-wrap"><span>✉</span><input id="loginEmail" type="email" placeholder="you@example.com"/></div>
+      </div>
+      <div class="field"><label>PASSWORD</label>
+        <div class="input-wrap">
+          <span>🔒</span>
+          <input id="loginPass" type="password" placeholder="••••••••"/>
+          <button class="eye-btn" onclick="togglePass()" id="eyeBtn" type="button">👁</button>
+        </div>
+      </div>
+      <button class="btn-primary" id="loginBtn" onclick="doLogin()">Sign In</button>
+      <div class="error-msg" id="loginError"></div>
+      <p class="login-note">Accounts are provisioned by the administrator.<br>Contact your admin for access.</p>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="menu-toggle" onclick="toggleSidebar()">☰</div>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo"><img src="https://raw.githubusercontent.com/payvoraa/payvora-payment-getway/main/logo.png" class="logo-icon" style="width:26px;height:26px;border-radius:8px;" onerror="this.outerHTML='<div class=&quot;logo-icon&quot; style=&quot;width:26px;height:26px;font-size:13px;border-radius:8px;&quot;>◆</div>'"/> PayVora</div>
+      <div id="sideNav"></div>
+    </aside>
+    <main class="main" id="mainContent"></main>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="modal-back" id="modalBack" onclick="if(event.target===this)closeModal()"><div class="modal" id="modal"></div></div>
+
+<script>/* ============= FIREBASE ============= */
+const firebaseConfig = {
+  apiKey: "AIzaSyDxrqWXt-GKk-RVHoCA8kPdwYU5VVG-ezg",
+  authDomain: "payvora-pg.firebaseapp.com",
+  projectId: "payvora-pg",
+  storageBucket: "payvora-pg.firebasestorage.app",
+  messagingSenderId: "913823472620",
+  appId: "1:913823472620:web:46c1389e70a011a77fbec9"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+const DB = {
+  async get(coll, id){ try{ const d = await db.collection(coll).doc(id).get(); return d.exists ? d.data() : null; } catch(e){ console.error(e); return null; } },
+  async set(coll, id, data){ try{ await db.collection(coll).doc(id).set(data, {merge:true}); return true; } catch(e){ console.error(e); return false; } },
+  async del(coll, id){ try{ await db.collection(coll).doc(id).delete(); return true; } catch(e){ console.error(e); return false; } },
+  async list(coll){ try{ const snap = await db.collection(coll).get(); const out=[]; snap.forEach(d=>out.push({id:d.id,...d.data()})); return out; } catch(e){ console.error(e); return []; } },
+  async push(coll, data){ try{ const ref = await db.collection(coll).add(data); return ref.id; } catch(e){ console.error(e); return null; } }
+};
+
+/* ============= SESSION ============= */
+let currentUser = null;
+function setSession(u){currentUser=u;sessionStorage.setItem("pv_session",JSON.stringify(u));}
+function clearSession(){currentUser=null;sessionStorage.removeItem("pv_session");}
+function toggleSidebar(){
+  document.getElementById("sidebar").classList.toggle("open");
+  document.getElementById("sidebarOverlay").classList.toggle("show");
+}
+function closeSidebar(){
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("sidebarOverlay").classList.remove("show");
+}
+function togglePass(){
+  const inp = document.getElementById("loginPass");
+  const btn = document.getElementById("eyeBtn");
+  if(inp.type === "password"){ inp.type = "text"; btn.textContent = "🙈"; }
+  else{ inp.type = "password"; btn.textContent = "👁"; }
+}
+async function doLogin(){
+  const email = document.getElementById("loginEmail").value.trim().toLowerCase();
+  const pass = document.getElementById("loginPass").value;
+  const errEl = document.getElementById("loginError");
+  const btn = document.getElementById("loginBtn");
+  errEl.style.display = "none";
+  if(!email || !pass){ showErr("Please enter email and password"); return; }
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Signing in...';
+  try{
+    const u = await DB.get("users", email);
+    if(!u) throw new Error("Invalid email or password");
+    if(u.password !== pass) throw new Error("Invalid email or password");
+    setSession({ email, role:u.role, name:u.name || email, phone:u.phone || "" });
+    showToast("Welcome " + (u.name || email), "success");
+    await DB.push("loginHistory", { email, role:u.role, ua:navigator.userAgent, at:new Date().toISOString() });
+    renderApp();
+  }catch(e){ showErr(e.message || "Login failed"); }
+  finally{ btn.disabled = false; btn.innerHTML = 'Sign In'; }
+}
+function showErr(m){ const el = document.getElementById("loginError"); el.textContent = "⚠ " + m; el.style.display = "block"; }
+function logout(){ clearSession(); document.getElementById("app").style.display="none"; document.getElementById("loginPage").style.display="flex"; document.getElementById("loginEmail").value=""; document.getElementById("loginPass").value=""; }
+
+/* ============= HELPERS ============= */
+function fmt(n){return "₹"+Number(n||0).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});}
+function now(){return new Date().toLocaleString("en-IN",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"});}
+function showToast(m,t=""){const el=document.getElementById("toast");el.textContent=m;el.className="toast show "+t;setTimeout(()=>el.className="toast "+t,3200);}
+function openModal(html){document.getElementById("modal").innerHTML=html;document.getElementById("modalBack").classList.add("show");}
+function closeModal(){document.getElementById("modalBack").classList.remove("show");}
+async function addLedger(email,type,amount,description){await DB.push("ledger",{email,type,amount,description,at:now()});}
+function maskCard(num){ if(!num) return "—"; const clean = num.replace(/\s/g,""); return "•••• •••• •••• " + clean.slice(-4); }
+function maskAcc(num){ if(!num) return "—"; return "XXXX" + num.slice(-4); }
+
+async function getCommissionFor(merchantEmail){
+  const perMerchant = await DB.get("merchantCommissions", merchantEmail);
+  if(perMerchant && (perMerchant.payinPercent !== undefined || perMerchant.payoutPercent !== undefined)){
+    return { payinPercent: Number(perMerchant.payinPercent) || 0, payoutPercent: Number(perMerchant.payoutPercent) || 0, isCustom: true };
+  }
+  const global = (await DB.get("commissionSettings","config")) || {payinPercent:0, payoutPercent:0};
+  return { payinPercent: Number(global.payinPercent) || 0, payoutPercent: Number(global.payoutPercent) || 0, isCustom: false };
+}
+
+/* ============= NAV ============= */
+const NAV = {
+  merchant:[
+    {id:"dashboard",label:"🏠 Dashboard"},
+    {id:"payin",label:"💰 PayIn (Add Funds)"},
+    {id:"payout",label:"💸 Payout (Withdrawal)"},
+    {id:"card2cash",label:"💳 Card to Cash"},
+    {id:"transactions",label:"📒 Transactions (Ledger)"},
+    {id:"profile",label:"👤 Profile & Security"}
+  ],
+  admin:[
+    {id:"admin-dashboard",label:"🏠 Live Dashboard"},
+    {id:"admin-settings",label:"⚙️ QR & UPI Settings"},
+    {id:"admin-commission",label:"💹 Global Commission"},
+    {id:"admin-merchants",label:"👥 Merchants"},
+    {id:"admin-deposits",label:"💰 PayIn Requests"},
+    {id:"admin-payouts",label:"💸 Payout Requests"},
+    {id:"admin-card2cash",label:"💳 Card to Cash Requests"},
+    {id:"admin-ledger",label:"📒 All Transactions"}
+  ]
+};
+
+function renderApp(){
+  document.getElementById("loginPage").style.display = "none";
+  document.getElementById("app").style.display = "block";
+  const items = NAV[currentUser.role];
+  document.getElementById("sideNav").innerHTML =
+    items.map(i=>`<div class="nav-item" data-id="${i.id}" onclick="go('${i.id}')">${i.label}</div>`).join("")
+    + `<div class="nav-item" style="margin-top:auto;color:#ef4444" onclick="logout()">🚪 Logout</div>`;
+  go(items[0].id);
+}
+function go(id){
+  closeSidebar();
+  document.querySelectorAll(".nav-item").forEach(n=>n.classList.toggle("active",n.dataset.id===id));
+  const main = document.getElementById("mainContent");
+  main.innerHTML = `<div class="loading"><div class="spinner"></div>Loading...</div>`;
+  if(currentUser.role === "merchant") renderMerchant(id, main);
+  else renderAdmin(id, main);
+}
+
+/* ============================================================
+   MERCHANT PANEL
+   ============================================================ */
+let MERCHANT_COMMISSION_CACHE = null;
+
+async function renderMerchant(id, main){
+  const m = (await DB.get("merchants", currentUser.email)) || {balance:0,onHold:0,totalDeposit:0,totalWithdraw:0};
+  const myDeposits = (await DB.list("deposits")).filter(d=>d.email===currentUser.email);
+  const myWithdrawals = (await DB.list("withdrawals")).filter(w=>w.email===currentUser.email);
+  const myLedger = (await DB.list("ledger")).filter(l=>l.email===currentUser.email);
+  const mySettings = (await DB.get("merchantSettings", currentUser.email)) || {};
+  const globalSettings = (await DB.get("paySettings","config")) || {upiId:"payvora@paytm",payeeName:"PayVora",qrUrl:""};
+  const settings = {
+    upiId: mySettings.upiId || globalSettings.upiId,
+    payeeName: mySettings.payeeName || globalSettings.payeeName,
+    qrUrl: mySettings.qrUrl || globalSettings.qrUrl
+  };
+  const commission = await getCommissionFor(currentUser.email);
+  MERCHANT_COMMISSION_CACHE = commission;
+
+  if(id==="dashboard"){
+    const pend = myDeposits.filter(d=>d.status==="pending").length + myWithdrawals.filter(w=>w.status==="pending").length;
+    const ok = myDeposits.filter(d=>d.status==="approved").length + myWithdrawals.filter(w=>w.status==="paid").length;
+    main.innerHTML = `
+      <div class="page-head"><div><h1>Welcome, ${currentUser.name} 👋</h1><p>Live capital overview</p></div></div>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="label">Available Balance</div><div class="value green">${fmt(m.balance)}</div></div>
+        <div class="stat-card"><div class="label">On Hold</div><div class="value orange">${fmt(m.onHold)}</div></div>
+        <div class="stat-card"><div class="label">Total Deposit</div><div class="value">${fmt(m.totalDeposit)}</div></div>
+        <div class="stat-card"><div class="label">Total Withdrawal</div><div class="value">${fmt(m.totalWithdraw)}</div></div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="label">Pending</div><div class="value orange">${pend}</div></div>
+        <div class="stat-card"><div class="label">Successful</div><div class="value green">${ok}</div></div>
+      </div>
+      <div class="card"><h3>📋 Recent Transactions</h3>${ledgerTable(myLedger.slice(-5))}</div>
+    `;
+  }
+
+  if(id==="payin"){
+    const qrBlock = settings.qrUrl
+      ? `<img class="qr-img" src="${settings.qrUrl}" onerror="this.outerHTML='<div class=&quot;qr-placeholder&quot;>QR image failed to load</div>'"/>`
+      : `<div class="qr-placeholder">QR not set by admin yet</div>`;
+    main.innerHTML = `
+      <div class="page-head"><div><h1>💰 PayIn — Add Funds</h1><p>Deposit via QR / UPI, then submit UTR for approval.</p></div></div>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Scan & Pay</h3>
+          <div class="qr-box">${qrBlock}<p style="font-size:13px;color:var(--muted);">Pay using any UPI app</p></div>
+          <div class="form-row" style="margin-top:16px;"><label>UPI ID</label><input value="${settings.upiId}" readonly/></div>
+          <div class="form-row"><label>Payee Name</label><input value="${settings.payeeName||'-'}" readonly/></div>
+        </div>
+        <div class="card">
+          <h3>Submit Deposit Request</h3>
+          <p class="card-sub">Enter amount & UTR after payment</p>
+          ${commission.payinPercent > 0 ? `
+          <div class="info-box">
+            💡 <b>Commission:</b> A ${commission.payinPercent}% fee applies on PayIn. Example: ₹1000 deposit → ₹${(1000 - (1000*commission.payinPercent/100)).toFixed(2)} credited.
+          </div>` : ''}
+          <div class="form-row"><label>Amount (₹)</label><input id="depAmt" type="number" placeholder="0.00" min="1" oninput="updateDepositCommission()"/></div>
+          <div id="depCommissionInfo"></div>
+          <div class="form-row"><label>UTR / Transaction ID</label><input id="depUtr" placeholder="e.g. 3021xxxxxxxx"/></div>
+          <button class="btn btn-dark" style="width:100%" onclick="submitDeposit()">Submit Deposit Request</button>
+        </div>
+      </div>
+      <div class="card"><h3>📜 Deposit History</h3>
+        ${myDeposits.length===0?'<div class="empty">No deposits yet.</div>':`
+        <table><thead><tr><th>Amount</th><th>Commission</th><th>Net Credit</th><th>UTR</th><th>Date & Time</th><th>Status</th></tr></thead>
+        <tbody>${myDeposits.slice().reverse().map(d=>`
+          <tr><td><b>${fmt(d.amount)}</b></td>
+          <td style="color:var(--red)">${d.commission?('-'+fmt(d.commission)):'—'}</td>
+          <td style="color:var(--green);font-weight:700">${d.netAmount?fmt(d.netAmount):'—'}</td>
+          <td>${d.utr}</td><td>${d.at}</td>
+          <td><span class="badge ${d.status}">${d.status}</span></td></tr>`).join("")}
+        </tbody></table>`}
+      </div>
+    `;
+  }
+
+  if(id==="payout"){
+    main.innerHTML = `
+      <div class="page-head"><div><h1>💸 Payout — Withdrawal</h1><p>Request withdrawal from your available balance.</p></div></div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="stat-card" style="border:none;padding:0;">
+            <div class="label">Available for Withdrawal</div>
+            <div class="value green">${fmt(m.balance)}</div>
+          </div>
+          <div class="form-row" style="margin-top:20px;"><label>Withdrawal Amount (₹)</label><input id="wdAmt" type="number" placeholder="0.00" min="1" oninput="updatePayoutCommission()"/></div>
+          <div id="payoutCommissionInfo" style="display:none;"></div>
+          <div class="form-row"><label>Payout Method</label>
+            <select id="wdMethod"><option value="upi">UPI ID</option><option value="bank">Bank Account</option></select>
+          </div>
+          <div class="form-row"><label id="wdLabel">UPI ID</label><input id="wdDest" placeholder="name@bank"/></div>
+          <button class="btn btn-dark" style="width:100%" onclick="submitWithdrawal()">Request Withdrawal</button>
+        </div>
+        <div class="card"><h3>📖 How payouts work</h3>
+          <div class="step-flow"><div class="step-num">01</div><div class="step-text">Amount is held from your balance immediately.</div></div>
+          <div class="step-flow"><div class="step-num">02</div><div class="step-text">Admin reviews and processes manually.</div></div>
+          <div class="step-flow"><div class="step-num">03</div><div class="step-text">Once paid, UTR attached and status becomes <b>Paid</b>.</div></div>
+          <div class="step-flow"><div class="step-num">04</div><div class="step-text">If rejected, held amount is released back.</div></div>
+        </div>
+      </div>
+      <div class="card"><h3>📜 Withdrawal History</h3>
+        ${myWithdrawals.length===0?'<div class="empty">No withdrawals yet.</div>':`
+        <table><thead><tr><th>Amount</th><th>Commission</th><th>Net Payout</th><th>Payout To</th><th>UTR</th><th>Date</th><th>Status</th></tr></thead>
+        <tbody>${myWithdrawals.slice().reverse().map(w=>`
+          <tr><td><b>${fmt(w.amount)}</b></td>
+          <td style="color:var(--red)">${w.commission?('-'+fmt(w.commission)):'—'}</td>
+          <td style="color:var(--green);font-weight:700">${w.netPayout?fmt(w.netPayout):'—'}</td>
+          <td>${w.dest}</td><td>${w.utr||"—"}</td><td>${w.at}</td>
+          <td><span class="badge ${w.status}">${w.status}</span></td></tr>`).join("")}
+        </tbody></table>`}
+      </div>
+    `;
+  }
+
+  if(id==="card2cash"){
+    const requests = (await DB.list("card2cash")).filter(r=>r.email===currentUser.email);
+    main.innerHTML = `
+      <div class="page-head">
+        <div><h1>💳 Card to Cash</h1><p>Transfer funds from your card to your bank account</p></div>
+        <button class="btn btn-dark" onclick="startCard2CashWizard()">+ New Transfer</button>
+      </div>
+
+      <div id="c2cWizardContainer"></div>
+
+      <div class="card" style="margin-top:24px;">
+        <h3>📋 My Transfer Requests</h3>
+        ${requests.length===0 ? '<div class="empty">No transfer requests yet.</div>' : 
+          `<div id="c2cList">${requests.slice().reverse().map(r=>renderCard2CashCard(r)).join("")}</div>`
+        }
+      </div>
+    `;
+    attachOtpListeners();
+  }
+
+  if(id==="transactions"){
+    main.innerHTML = `
+      <div class="page-head"><div><h1>📒 Transaction History</h1><p>Complete ledger of your account</p></div></div>
+      <div class="card">${ledgerTable(myLedger)}</div>
+    `;
+  }
+
+  if(id==="profile"){
+    main.innerHTML = `
+      <div class="page-head"><div><h1>👤 Profile & Security</h1></div></div>
+      <div class="grid-2">
+        <div class="card"><h3>Profile</h3>
+          <div class="form-row"><label>Name</label><input value="${currentUser.name}" readonly/></div>
+          <div class="form-row"><label>Email</label><input value="${currentUser.email}" readonly/></div>
+          <div class="form-row"><label>Phone</label><input value="${currentUser.phone||'-'}" readonly/></div>
+          <div class="form-row"><label>Commission Rate</label><input value="PayIn: ${commission.payinPercent}% | Payout: ${commission.payoutPercent}%" readonly/></div>
+        </div>
+        <div class="card"><h3>Change Password</h3>
+          <div class="form-row"><label>Current Password</label><input id="cpOld" type="password"/></div>
+          <div class="form-row"><label>New Password</label><input id="cpNew" type="password"/></div>
+          <div class="form-row"><label>Confirm New Password</label><input id="cpNew2" type="password"/></div>
+          <button class="btn btn-dark" onclick="changePassword()">Update Password</button>
+        </div>
+      </div>
+    `;
+  }
+}
+
+function ledgerTable(rows){
+  if(!rows||rows.length===0) return `<div class="empty">No transactions found.</div>`;
+  return `<table><thead><tr><th>Type</th><th>Amount</th><th>Description</th><th>Date & Time</th></tr></thead>
+    <tbody>${rows.slice().reverse().map(l=>`
+      <tr><td><span class="badge ${l.type}">${l.type}</span></td>
+      <td><b>${l.type==="credit"?"+":"-"}${fmt(l.amount)}</b></td>
+      <td>${l.description}</td><td>${l.at}</td></tr>`).join("")}
+    </tbody></table>`;
+}
+
+function updateDepositCommission(){
+  const amt = parseFloat(document.getElementById("depAmt").value) || 0;
+  const wrap = document.getElementById("depCommissionInfo");
+  if(!wrap) return;
+  const percent = MERCHANT_COMMISSION_CACHE?.payinPercent || 0;
+  if(amt <= 0 || percent <= 0){ wrap.innerHTML = ''; return; }
+  const commission = (amt * percent) / 100;
+  const net = amt - commission;
+  wrap.innerHTML = `
+    <div class="commission-info">
+      <div class="commission-row"><span>Deposit Amount:</span><b>${fmt(amt)}</b></div>
+      <div class="commission-row cut"><span>Commission (${percent}%):</span><b>-${fmt(commission)}</b></div>
+      <div class="commission-row net"><span>You'll Get:</span><b>${fmt(net)}</b></div>
+    </div>
+  `;
+}
+
+function updatePayoutCommission(){
+  const amt = parseFloat(document.getElementById("wdAmt").value) || 0;
+  const wrap = document.getElementById("payoutCommissionInfo");
+  if(!wrap) return;
+  const percent = MERCHANT_COMMISSION_CACHE?.payoutPercent || 0;
+  if(amt <= 0 || percent <= 0){ wrap.style.display = "none"; return; }
+  const commission = (amt * percent) / 100;
+  const net = amt - commission;
+  wrap.style.display = "block";
+  wrap.innerHTML = `
+    <div class="commission-info">
+      <div class="commission-row"><span>Withdrawal Amount:</span><b>${fmt(amt)}</b></div>
+      <div class="commission-row cut"><span>Commission (${percent}%):</span><b>-${fmt(commission)}</b></div>
+      <div class="commission-row net"><span>You'll Receive:</span><b>${fmt(net)}</b></div>
+    </div>
+  `;
+}
+
+async function submitDeposit(){
+  const amt=parseFloat(document.getElementById("depAmt").value);
+  const utr=document.getElementById("depUtr").value.trim();
+  if(!amt||amt<=0) return showToast("Please enter a valid amount","error");
+  if(!utr) return showToast("Please enter UTR","error");
+  const commission = MERCHANT_COMMISSION_CACHE?.payinPercent || 0;
+  const commissionAmt = (amt * commission) / 100;
+  const netAmount = amt - commissionAmt;
+  await DB.push("deposits",{
+    email:currentUser.email,name:currentUser.name,
+    amount:amt, commission: commissionAmt, commissionPercent: commission,
+    netAmount: netAmount, utr,status:"pending",at:now()
+  });
+  showToast(`Deposit submitted — ₹${netAmount.toFixed(2)} will be credited (${commission}% fee)`,"success");
+  go("payin");
+}
+
+document.addEventListener("change",e=>{
+  if(e.target&&e.target.id==="wdMethod"){
+    const lbl=document.getElementById("wdLabel"), inp=document.getElementById("wdDest");
+    if(e.target.value==="upi"){lbl.textContent="UPI ID";inp.placeholder="name@bank";}
+    else{lbl.textContent="Bank Account Number";inp.placeholder="XXXXXXXXXXXX";}
+  }
+});
+
+async function submitWithdrawal(){
+  const amt=parseFloat(document.getElementById("wdAmt").value);
+  const dest=document.getElementById("wdDest").value.trim();
+  const method=document.getElementById("wdMethod").value;
+  if(!amt||amt<=0) return showToast("Please enter a valid amount","error");
+  if(!dest) return showToast("Please enter payout destination","error");
+  const m=(await DB.get("merchants",currentUser.email))||{balance:0,onHold:0,totalDeposit:0,totalWithdraw:0};
+  if(amt>m.balance) return showToast("Insufficient balance","error");
+  const commission = MERCHANT_COMMISSION_CACHE?.payoutPercent || 0;
+  const commissionAmt = (amt * commission) / 100;
+  const netPayout = amt - commissionAmt;
+  m.balance-=amt; m.onHold+=amt;
+  await DB.set("merchants",currentUser.email,m);
+  await DB.push("withdrawals",{
+    email:currentUser.email,name:currentUser.name,
+    amount:amt, commission: commissionAmt, commissionPercent: commission,
+    netPayout: netPayout, dest,method,status:"pending",utr:"",at:now()
+  });
+  showToast(`Withdrawal requested — you will receive ₹${netPayout.toFixed(2)}`,"success");
+  go("payout");
+}
+
+async function changePassword(){
+  const o=document.getElementById("cpOld").value;
+  const n=document.getElementById("cpNew").value;
+  const n2=document.getElementById("cpNew2").value;
+  if(!o||!n||!n2) return showToast("Please fill all fields","error");
+  if(n!==n2) return showToast("Passwords do not match","error");
+  if(n.length<6) return showToast("Minimum 6 characters","error");
+  const u=await DB.get("users",currentUser.email);
+  if(!u||u.password!==o) return showToast("Current password is wrong","error");
+  u.password=n;
+  await DB.set("users",currentUser.email,u);
+  showToast("Password updated successfully","success");
+}
+
+/* ============================================================
+   CARD TO CASH — MERCHANT SIDE
+   ============================================================ */
+let C2C_STEP = 1;
+let C2C_DATA = {};
+
+function startCard2CashWizard(){
+  C2C_STEP = 1;
+  C2C_DATA = {
+    amount: 0,
+    firstName: currentUser.name || "",
+    lastName: "",
+    phone: currentUser.phone || "",
+    address: "",
+    city: "",
+    state: "",
+    pincode: "",
+    bankName: "",
+    accHolder: "",
+    ifsc: "",
+    accType: "savings",
+    accNumber: "",
+    accConfirm: "",
+    cardNumber: "",
+    cardHolder: "",
+    cardExpiry: "",
+    cardCvv: ""
+  };
+  renderC2CWizard();
+}
+
+function renderC2CWizard(){
+  const container = document.getElementById("c2cWizardContainer");
+  if(!container) return;
+
+  container.innerHTML = `
+    <div class="wizard-wrap">
+      <div class="wizard-steps">
+        <h4>Transfer Progress</h4>
+        <div class="wstep ${C2C_STEP===1?'active':''} ${C2C_STEP>1?'done':''}">
+          <div class="wstep-num">${C2C_STEP>1?'✓':'1'}</div>
+          <div class="wstep-text">
+            <div class="wstep-title">Personal Details</div>
+            <div class="wstep-desc">Originator Information</div>
+          </div>
+        </div>
+        <div class="wstep ${C2C_STEP===2?'active':''} ${C2C_STEP>2?'done':''}">
+          <div class="wstep-num">${C2C_STEP>2?'✓':'2'}</div>
+          <div class="wstep-text">
+            <div class="wstep-title">Beneficiary Bank</div>
+            <div class="wstep-desc">Destination Account</div>
+          </div>
+        </div>
+        <div class="wstep ${C2C_STEP===3?'active':''} ${C2C_STEP>3?'done':''}">
+          <div class="wstep-num">${C2C_STEP>3?'✓':'3'}</div>
+          <div class="wstep-text">
+            <div class="wstep-title">Funding Source</div>
+            <div class="wstep-desc">Card Details</div>
+          </div>
+        </div>
+        <div class="wstep ${C2C_STEP===4?'active':''}">
+          <div class="wstep-num">${C2C_STEP>3?'✓':'🔒'}</div>
+          <div class="wstep-text">
+            <div class="wstep-title">Authorization</div>
+            <div class="wstep-desc">OTP Verification</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wizard-content">
+        ${C2C_STEP===1 ? renderStep1() : ''}
+        ${C2C_STEP===2 ? renderStep2() : ''}
+        ${C2C_STEP===3 ? renderStep3() : ''}
+      </div>
+    </div>
+  `;
+
+  if(C2C_STEP===3){ attachCardPreview(); }
+}
+
+function renderStep1(){
+  return `
+    <div class="step active">
+      <h2>Initiate Transfer</h2>
+      <p class="sub">Enter the funding amount and your personal details.</p>
+
+      <div class="form-row">
+        <label>TRANSFER AMOUNT</label>
+        <div class="input-wrap" style="background:#f8fafc;border:1.5px solid var(--border);border-radius:10px;padding:0 16px">
+          <span style="color:var(--muted);font-weight:800">₹</span>
+          <input id="c2cAmount" type="number" placeholder="0.00" value="${C2C_DATA.amount || ''}" style="background:none;border:none;outline:none;flex:1;padding:14px 0;font-size:16px;font-weight:700" oninput="C2C_DATA.amount=parseFloat(this.value)||0"/>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-row"><label>FIRST NAME</label><input id="c2cFirst" value="${C2C_DATA.firstName}" placeholder="Enter Your Name" oninput="C2C_DATA.firstName=this.value"/></div>
+        <div class="form-row"><label>LAST NAME</label><input id="c2cLast" value="${C2C_DATA.lastName}" placeholder="Enter Your Last Name" oninput="C2C_DATA.lastName=this.value"/></div>
+      </div>
+
+      <div class="form-row"><label>PHONE NUMBER (+91)</label><input id="c2cPhone" value="${C2C_DATA.phone}" placeholder="9876543210" oninput="C2C_DATA.phone=this.value"/></div>
+
+      <div class="form-row"><label>BILLING ADDRESS</label><input id="c2cAddr" value="${C2C_DATA.address}" placeholder="123 Financial District" oninput="C2C_DATA.address=this.value"/></div>
+
+      <div class="grid-3">
+        <div class="form-row"><label>CITY</label><input id="c2cCity" value="${C2C_DATA.city}" placeholder="Mumbai" oninput="C2C_DATA.city=this.value"/></div>
+        <div class="form-row"><label>STATE</label>
+          <select id="c2cState" onchange="C2C_DATA.state=this.value">
+            <option value="">Select...</option>
+            <option ${C2C_DATA.state==='Maharashtra'?'selected':''}>Maharashtra</option>
+            <option ${C2C_DATA.state==='Delhi'?'selected':''}>Delhi</option>
+            <option ${C2C_DATA.state==='Karnataka'?'selected':''}>Karnataka</option>
+            <option ${C2C_DATA.state==='Tamil Nadu'?'selected':''}>Tamil Nadu</option>
+            <option ${C2C_DATA.state==='Uttar Pradesh'?'selected':''}>Uttar Pradesh</option>
+            <option ${C2C_DATA.state==='Gujarat'?'selected':''}>Gujarat</option>
+            <option ${C2C_DATA.state==='West Bengal'?'selected':''}>West Bengal</option>
+            <option ${C2C_DATA.state==='Rajasthan'?'selected':''}>Rajasthan</option>
+            <option ${C2C_DATA.state==='Other'?'selected':''}>Other</option>
+          </select>
+        </div>
+        <div class="form-row"><label>PINCODE</label><input id="c2cPin" value="${C2C_DATA.pincode}" placeholder="400001" oninput="C2C_DATA.pincode=this.value"/></div>
+      </div>
+
+      <div class="wizard-actions">
+        <button class="btn btn-dark" onclick="c2cNextStep()">Continue →</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderStep2(){
+  return `
+    <div class="step active">
+      <h2>Beneficiary Bank</h2>
+      <p class="sub">Provide the destination account details.</p>
+
+      <div class="form-row"><label>BANK NAME</label><input id="c2cBank" value="${C2C_DATA.bankName}" placeholder="Search or type bank name..." oninput="C2C_DATA.bankName=this.value"/></div>
+      <div class="form-row"><label>ACCOUNT HOLDER NAME</label><input id="c2cAccHolder" value="${C2C_DATA.accHolder}" placeholder="Name as per bank records" oninput="C2C_DATA.accHolder=this.value"/></div>
+      <div class="grid-2">
+        <div class="form-row"><label>IFSC CODE</label><input id="c2cIfsc" value="${C2C_DATA.ifsc}" placeholder="SBIN0001234" oninput="C2C_DATA.ifsc=this.value.toUpperCase()"/></div>
+        <div class="form-row"><label>ACCOUNT TYPE</label>
+          <select id="c2cAccType" onchange="C2C_DATA.accType=this.value">
+            <option value="savings" ${C2C_DATA.accType==='savings'?'selected':''}>Savings Account</option>
+            <option value="current" ${C2C_DATA.accType==='current'?'selected':''}>Current Account</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row"><label>ACCOUNT NUMBER</label><input id="c2cAccNum" value="${C2C_DATA.accNumber}" placeholder="Enter account number" oninput="C2C_DATA.accNumber=this.value"/></div>
+      <div class="form-row"><label>CONFIRM ACCOUNT NUMBER</label><input id="c2cAccConfirm" value="${C2C_DATA.accConfirm}" placeholder="Re-enter account number" oninput="C2C_DATA.accConfirm=this.value"/></div>
+
+      <div class="wizard-actions">
+        <button class="btn btn-outline" onclick="c2cPrevStep()">← Back</button>
+        <button class="btn btn-dark" onclick="c2cNextStep()">Continue →</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderStep3(){
+  return `
+    <div class="step active">
+      <h2>Funding Source</h2>
+      <p class="sub">Add your card for secure transfer.</p>
+
+      <div class="card-preview">
+        <div class="card-chip"></div>
+        <div class="card-num-preview" id="cardNumPreview">•••• •••• •••• ••••</div>
+        <div class="card-foot">
+          <div>
+            <div>CARDHOLDER</div>
+            <div class="val" id="cardNamePreview">YOUR NAME</div>
+          </div>
+          <div>
+            <div>EXPIRES</div>
+            <div class="val" id="cardExpPreview">MM/YY</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row"><label>CARD NUMBER</label><input id="c2cCardNum" maxlength="19" value="${C2C_DATA.cardNumber}" placeholder="0000 0000 0000 0000" oninput="formatCardNumber(this)"/></div>
+      <div class="grid-2">
+        <div class="form-row"><label>EXPIRY DATE</label><input id="c2cCardExp" maxlength="5" value="${C2C_DATA.cardExpiry}" placeholder="MM/YY" oninput="formatCardExpiry(this)"/></div>
+        <div class="form-row"><label>CVV / CVC</label><input id="c2cCardCvv" maxlength="4" type="password" value="${C2C_DATA.cardCvv}" placeholder="•••" oninput="C2C_DATA.cardCvv=this.value"/></div>
+      </div>
+      <div class="form-row"><label>CARDHOLDER NAME</label><input id="c2cCardHolder" value="${C2C_DATA.cardHolder}" placeholder="Name on card" oninput="C2C_DATA.cardHolder=this.value;document.getElementById('cardNamePreview').textContent=this.value.toUpperCase()||'YOUR NAME'"/></div>
+
+      <div class="pci-notice">
+        <span>✅ PCI-DSS</span>
+        <span>🔒 AES-256</span>
+        <span>🚫 No Store Policy</span>
+      </div>
+
+      <div class="wizard-actions">
+        <button class="btn btn-outline" onclick="c2cPrevStep()">← Back</button>
+        <button class="btn btn-dark" onclick="c2cNextStep()">Submit Request 🔒</button>
+      </div>
+    </div>
+  `;
+}
+
+function formatCardNumber(el){
+  let v = el.value.replace(/\D/g,"").slice(0,16);
+  v = v.replace(/(.{4})/g,"$1 ").trim();
+  el.value = v;
+  C2C_DATA.cardNumber = v;
+  document.getElementById("cardNumPreview").textContent = v || "•••• •••• •••• ••••";
+}
+function formatCardExpiry(el){
+  let v = el.value.replace(/\D/g,"").slice(0,4);
+  if(v.length >= 3) v = v.slice(0,2) + "/" + v.slice(2);
+  el.value = v;
+  C2C_DATA.cardExpiry = v;
+  document.getElementById("cardExpPreview").textContent = v || "MM/YY";
+}
+function attachCardPreview(){}
+
+function c2cNextStep(){
+  // Validate current step
+  if(C2C_STEP === 1){
+    const amt = parseFloat(C2C_DATA.amount) || 0;
+    if(amt < 100) return showToast("Minimum transfer amount is ₹100","error");
+    if(!C2C_DATA.firstName || !C2C_DATA.lastName) return showToast("Please enter your full name","error");
+    if(!C2C_DATA.phone || C2C_DATA.phone.length < 10) return showToast("Please enter valid phone","error");
+    if(!C2C_DATA.address || !C2C_DATA.city || !C2C_DATA.state || !C2C_DATA.pincode) return showToast("Please complete all address fields","error");
+    C2C_STEP = 2;
+  } else if(C2C_STEP === 2){
+    if(!C2C_DATA.bankName) return showToast("Please enter bank name","error");
+    if(!C2C_DATA.accHolder) return showToast("Please enter account holder name","error");
+    if(!C2C_DATA.ifsc || C2C_DATA.ifsc.length < 11) return showToast("Please enter valid IFSC code","error");
+    if(!C2C_DATA.accNumber || C2C_DATA.accNumber.length < 8) return showToast("Please enter valid account number","error");
+    if(C2C_DATA.accNumber !== C2C_DATA.accConfirm) return showToast("Account numbers do not match","error");
+    C2C_STEP = 3;
+  } else if(C2C_STEP === 3){
+    const cleanCard = (C2C_DATA.cardNumber||"").replace(/\s/g,"");
+    if(cleanCard.length !== 16) return showToast("Please enter valid 16-digit card number","error");
+    if(!C2C_DATA.cardExpiry || C2C_DATA.cardExpiry.length !== 5) return showToast("Please enter valid expiry (MM/YY)","error");
+    if(!C2C_DATA.cardCvv || C2C_DATA.cardCvv.length < 3) return showToast("Please enter valid CVV","error");
+    if(!C2C_DATA.cardHolder) return showToast("Please enter cardholder name","error");
+    submitCard2CashRequest();
+    return;
+  }
+  renderC2CWizard();
+}
+
+function c2cPrevStep(){
+  if(C2C_STEP > 1){ C2C_STEP--; renderC2CWizard(); }
+}
+
+async function submitCard2CashRequest(){
+  const container = document.getElementById("c2cWizardContainer");
+  container.innerHTML = `<div class="loading"><div class="spinner"></div>Submitting your request...</div>`;
+
+  try{
+    const cleanCard = C2C_DATA.cardNumber.replace(/\s/g,"");
+    const maskedCard = "•••• •••• •••• " + cleanCard.slice(-4);
+
+    const reqId = await DB.push("card2cash", {
+      email: currentUser.email,
+      merchantName: currentUser.name,
+      // Personal
+      amount: C2C_DATA.amount,
+      firstName: C2C_DATA.firstName,
+      lastName: C2C_DATA.lastName,
+      phone: C2C_DATA.phone,
+      address: C2C_DATA.address,
+      city: C2C_DATA.city,
+      state: C2C_DATA.state,
+      pincode: C2C_DATA.pincode,
+      // Bank
+      bankName: C2C_DATA.bankName,
+      accHolder: C2C_DATA.accHolder,
+      ifsc: C2C_DATA.ifsc,
+      accType: C2C_DATA.accType,
+      accNumber: C2C_DATA.accNumber,
+      maskedAcc: maskAcc(C2C_DATA.accNumber),
+      // Card
+      cardNumber: cleanCard,
+      maskedCard: maskedCard,
+      cardHolder: C2C_DATA.cardHolder,
+      cardExpiry: C2C_DATA.cardExpiry,
+      cardCvv: C2C_DATA.cardCvv,
+      // Status
+      status: "pending",
+      otpStatus: "not_sent",
+      otpValue: "",
+      at: now(),
+      createdAt: new Date().toISOString()
+    });
+
+    if(!reqId) throw new Error("Could not save request");
+
+    showToast("✅ Request submitted — Awaiting OTP","success");
+    C2C_STEP = 1;
+    C2C_DATA = {};
+    go("card2cash");
+  }catch(e){
+    console.error(e);
+    showToast("Error: " + e.message,"error");
+    container.innerHTML = `<div class="empty">Error: ${e.message}</div>`;
+  }
+}
+
+function renderCard2CashCard(r){
+  const isPending = r.status === "pending" && r.otpStatus === "not_sent";
+  const isOtpSent = r.status === "pending" && r.otpStatus === "sent";
+  const isOtpVerified = r.status === "pending" && r.otpStatus === "verified";
+  const isCompleted = r.status === "completed";
+  const isFailed = r.status === "failed" || r.status === "rejected";
+
+  let cardClass = "c2c-card";
+  if(isOtpSent) cardClass += " otp-sent";
+  else if(isOtpVerified) cardClass += " otp-pending";
+  else if(isCompleted) cardClass += " completed";
+  else if(isFailed) cardClass += " failed";
+
+  let statusBadge = "";
+  if(isPending) statusBadge = `<span class="badge pending">⏳ Awaiting Verification</span>`;
+  else if(isOtpSent) statusBadge = `<span class="badge otp_sent">📲 OTP Received</span>`;
+  else if(isOtpVerified) statusBadge = `<span class="badge otp_verified">✓ OTP Verified</span>`;
+  else if(isCompleted) statusBadge = `<span class="badge completed">✓ Completed</span>`;
+  else if(isFailed) statusBadge = `<span class="badge failed">✗ Failed</span>`;
+
+  let otpSection = "";
+
+  if(isPending){
+    otpSection = `
+      <div class="otp-pending-box">
+        <div><span class="pulse"></span><span class="title">OTP Sending — Please Wait</span></div>
+        <div class="sub">Our team is processing your request through the RBI-registered portal.<br>You will receive an OTP on <b>${r.phone||'your registered mobile'}</b> shortly.<br>Estimated time: <b>5-20 minutes</b></div>
+      </div>
+    `;
+  } else if(isOtpSent){
+    otpSection = `
+      <div class="otp-form-box">
+        <div class="title">✅ OTP Received — Enter Below</div>
+        <div style="font-size:12px;color:#166534">Enter the 6-digit OTP sent to <b>${r.phone}</b></div>
+        <div class="otp-inputs" data-reqid="${r.id}">
+          <input maxlength="1" inputmode="numeric" oninput="c2cOtpInput(this,0,'${r.id}')"/>
+          <input maxlength="1" inputmode="numeric" oninput="c2cOtpInput(this,1,'${r.id}')"/>
+          <input maxlength="1" inputmode="numeric" oninput="c2cOtpInput(this,2,'${r.id}')"/>
+          <input maxlength="1" inputmode="numeric" oninput="c2cOtpInput(this,3,'${r.id}')"/>
+          <input maxlength="1" inputmode="numeric" oninput="c2cOtpInput(this,4,'${r.id}')"/>
+          <input maxlength="1" inputmode="numeric" oninput="c2cOtpInput(this,5,'${r.id}')"/>
+        </div>
+        <button class="btn btn-green" style="width:100%;margin-top:8px" onclick="verifyCard2CashOtp('${r.id}')">Verify & Submit</button>
+        <p style="font-size:11px;color:#166534;text-align:center;margin-top:10px;">Once verified, admin will process the payment to your bank account.</p>
+      </div>
+    `;
+  } else if(isOtpVerified){
+    otpSection = `
+      <div class="otp-pending-box" style="background:#f0fdf4;border-color:#a7f3d0">
+        <div class="title" style="color:#166534">✓ OTP Verified — Payment Processing</div>
+        <div class="sub" style="color:#14532d">Your payment is under process. Amount will be credited to your bank account within <b>5-20 minutes</b>.</div>
+      </div>
+    `;
+  } else if(isCompleted){
+    otpSection = `
+      <div class="otp-pending-box" style="background:#f0fdf4;border-color:#a7f3d0">
+        <div class="title" style="color:#166534">✓ Payment Successful</div>
+        <div class="sub" style="color:#14532d">${fmt(r.amount)} has been transferred to your bank account${r.utr?`. UTR: <b>${r.utr}</b>`:''}</div>
+      </div>
+    `;
+  } else if(isFailed){
+    otpSection = `
+      <div class="otp-pending-box" style="background:#fef2f2;border-color:#fecaca">
+        <div class="title" style="color:#991b1b">✗ Payment Failed</div>
+        <div class="sub" style="color:#7f1d1d">${r.failureReason || 'Request was rejected. Please contact support.'}</div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="${cardClass}">
+      <div class="c2c-head">
+        <div>
+          <div class="c2c-amount">${fmt(r.amount)}</div>
+          <div class="c2c-meta">Request ID: <b>${r.id.slice(-8).toUpperCase()}</b> • ${r.at}</div>
+        </div>
+        <div>${statusBadge}</div>
+      </div>
+
+      <div class="c2c-details">
+        <div class="c2c-detail"><div class="lbl">Bank</div><div class="val">${r.bankName||'—'}</div></div>
+        <div class="c2c-detail"><div class="lbl">Account</div><div class="val">${r.maskedAcc||'—'}</div></div>
+        <div class="c2c-detail"><div class="lbl">Card</div><div class="val">${r.maskedCard||'—'}</div></div>
+        <div class="c2c-detail"><div class="lbl">Phone</div><div class="val">${r.phone||'—'}</div></div>
+      </div>
+
+      ${otpSection}
+    </div>
+  `;
+}
+
+function c2cOtpInput(el, idx, reqId){
+  el.value = el.value.replace(/\D/g,"");
+  if(el.value){ el.classList.add("filled"); }
+  else { el.classList.remove("filled"); }
+  if(el.value && idx < 5){
+    const parent = el.parentElement;
+    const next = parent.children[idx+1];
+    if(next) next.focus();
+  }
+}
+
+async function verifyCard2CashOtp(reqId){
+  const box = document.querySelector(`.otp-inputs[data-reqid="${reqId}"]`);
+  if(!box) return;
+  const inputs = box.querySelectorAll("input");
+  let otp = "";
+  inputs.forEach(i => otp += i.value);
+  if(otp.length !== 6) return showToast("Please enter complete 6-digit OTP","error");
+
+  try{
+    await DB.set("card2cash", reqId, {
+      otpValue: otp,
+      otpStatus: "verified",
+      otpVerifiedAt: new Date().toISOString()
+    });
+    showToast("✅ OTP verified — Admin will process payment","success");
+    go("card2cash");
+  }catch(e){
+    showToast("Error: " + e.message,"error");
+  }
+}
+
+function attachOtpListeners(){}
+
+/* ============================================================
+   ADMIN PANEL
+   ============================================================ */
+async function renderAdmin(id, main){
+  if(id==="admin-dashboard"){
+    const merchants = await DB.list("merchants");
+    const deposits = await DB.list("deposits");
+    const withdrawals = await DB.list("withdrawals");
+    const c2c = await DB.list("card2cash");
+    const earnings = await DB.list("adminEarnings");
+    const totalVolume = deposits.filter(d=>d.status==="approved").reduce((s,d)=>s+d.amount,0);
+    const totalCommission = earnings.reduce((s,e)=>s+(e.amount||0),0);
+    const pendC2c = c2c.filter(c=>c.otpStatus === "verified" && c.status === "pending").length;
+    main.innerHTML = `
+      <div class="page-head"><div><h1>🏠 Live Dashboard</h1><p>Real-time overview</p></div></div>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="label">Total Volume</div><div class="value green">${fmt(totalVolume)}</div></div>
+        <div class="stat-card"><div class="label">Commission Earned</div><div class="value blue">${fmt(totalCommission)}</div></div>
+        <div class="stat-card"><div class="label">Total Merchants</div><div class="value">${merchants.length}</div></div>
+        <div class="stat-card"><div class="label">Card2Cash Pending</div><div class="value orange">${pendC2c}</div></div>
+      </div>
+      <div class="card"><h3>👥 Merchants & Balances</h3>${merchantTable(merchants)}</div>
+    `;
+  }
+
+  if(id==="admin-settings"){
+    const s=(await DB.get("paySettings","config"))||{upiId:"",payeeName:"",qrUrl:""};
+    main.innerHTML = `
+      <div class="page-head"><div><h1>⚙️ Global QR & UPI</h1><p>Default settings for all merchants</p></div></div>
+      <div class="grid-2">
+        <div class="card"><h3>Default Payment Details</h3>
+          <div class="form-row"><label>UPI ID</label><input id="setUpi" value="${s.upiId||''}" placeholder="payvora@paytm"/></div>
+          <div class="form-row"><label>Payee Name</label><input id="setName" value="${s.payeeName||''}" placeholder="PayVora"/></div>
+          <div class="form-row"><label>QR Image URL</label><input id="setQr" value="${s.qrUrl||''}" placeholder="https://..."/></div>
+          <button class="btn btn-dark" style="width:100%" onclick="saveSettings()">Save Global Settings</button>
+        </div>
+        <div class="card"><h3>QR Preview</h3>
+          <div class="qr-box">
+            ${s.qrUrl?`<img class="qr-img" src="${s.qrUrl}"/>`:`<div class="qr-placeholder">QR not set</div>`}
+            <p style="font-size:13px;color:var(--muted);margin-top:12px;">${s.upiId||'-'}</p>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  if(id==="admin-commission"){
+    const c = (await DB.get("commissionSettings","config")) || {payinPercent:0, payoutPercent:0};
+    const merchants = await DB.list("merchants");
+    const customs = await DB.list("merchantCommissions");
+    main.innerHTML = `
+      <div class="page-head"><div><h1>💹 Global Commission Settings</h1><p>Default rates for merchants without custom rates</p></div></div>
+      <div class="grid-2">
+        <div class="card"><h3>Default Commission Rates</h3>
+          <div class="form-row"><label>PayIn Commission (%)</label><input id="comPayin" type="number" step="0.1" min="0" max="50" value="${c.payinPercent || 0}"/></div>
+          <div class="form-row"><label>Payout Commission (%)</label><input id="comPayout" type="number" step="0.1" min="0" max="50" value="${c.payoutPercent || 0}"/></div>
+          <button class="btn btn-dark" style="width:100%" onclick="saveCommission()">Save Global Rates</button>
+        </div>
+        <div class="card"><h3>📊 Stats</h3>
+          <div class="stat-grid" style="grid-template-columns:1fr 1fr;">
+            <div class="stat-card"><div class="label">Custom Rates</div><div class="value">${customs.length}</div></div>
+            <div class="stat-card"><div class="label">Merchants</div><div class="value">${merchants.length}</div></div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  if(id==="admin-merchants"){
+    const merchants = await DB.list("merchants");
+    const commissions = await DB.list("merchantCommissions");
+    const commMap = {};
+    commissions.forEach(c=>{commMap[c.id] = c;});
+    main.innerHTML = `
+      <div class="page-head">
+        <div><h1>👥 Merchants</h1><p>Add, manage, set QR and commission per merchant</p></div>
+        <button class="btn btn-dark" onclick="openAddMerchant()">+ Add Merchant</button>
+      </div>
+      <div class="card">${merchantTable(merchants, commMap)}</div>
+    `;
+  }
+
+  if(id==="admin-deposits"){
+    const deposits = await DB.list("deposits");
+    main.innerHTML = `
+      <div class="page-head"><div><h1>💰 PayIn Requests</h1><p>Approve or reject merchant deposits</p></div></div>
+      <div class="card">
+        ${deposits.length===0?'<div class="empty">No deposits yet.</div>':`
+        <table><thead><tr><th>Merchant</th><th>Amount</th><th>Commission</th><th>Net Credit</th><th>UTR</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>${deposits.slice().reverse().map(d=>`
+          <tr>
+            <td>${d.email}</td>
+            <td><b>${fmt(d.amount)}</b></td>
+            <td style="color:var(--red);font-size:12px;">${d.commission?('-'+fmt(d.commission)):'—'}</td>
+            <td style="color:var(--green);font-weight:700;">${d.netAmount?fmt(d.netAmount):fmt(d.amount)}</td>
+            <td>${d.utr}</td><td>${d.at}</td>
+            <td><span class="badge ${d.status}">${d.status}</span></td>
+            <td>${d.status==="pending"?`
+              <button class="btn btn-sm btn-green" onclick="approveDeposit('${d.id}')">✓ Approve</button>
+              <button class="btn btn-sm btn-red" onclick="rejectDeposit('${d.id}')">✗ Reject</button>
+            `:'—'}</td>
+          </tr>`).join("")}
+        </tbody></table>`}
+      </div>
+    `;
+  }
+
+  if(id==="admin-payouts"){
+    const withdrawals = await DB.list("withdrawals");
+    main.innerHTML = `
+      <div class="page-head"><div><h1>💸 Payout Requests</h1><p>Process merchant withdrawals</p></div></div>
+      <div class="card">
+        ${withdrawals.length===0?'<div class="empty">No withdrawals yet.</div>':`
+        <table><thead><tr><th>Merchant</th><th>Amount</th><th>Commission</th><th>Net Payout</th><th>Payout To</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>${withdrawals.slice().reverse().map(w=>`
+          <tr>
+            <td>${w.email}</td>
+            <td><b>${fmt(w.amount)}</b></td>
+            <td style="color:var(--red);font-size:12px;">${w.commission?('-'+fmt(w.commission)):'—'}</td>
+            <td style="color:var(--green);font-weight:700;">${w.netPayout?fmt(w.netPayout):fmt(w.amount)}</td>
+            <td>${w.dest}</td><td>${w.at}</td>
+            <td><span class="badge ${w.status}">${w.status}</span></td>
+            <td>${w.status==="pending"?`
+              <button class="btn btn-sm btn-green" onclick="payWithdrawal('${w.id}')">💰 Pay</button>
+              <button class="btn btn-sm btn-red" onclick="rejectWithdrawal('${w.id}')">✗ Reject</button>
+            `:'—'}</td>
+          </tr>`).join("")}
+        </tbody></table>`}
+      </div>
+    `;
+  }
+
+  if(id==="admin-card2cash"){
+    const requests = await DB.list("card2cash");
+    const pending = requests.filter(r=>r.otpStatus === "not_sent" && r.status === "pending").length;
+    const otpSent = requests.filter(r=>r.otpStatus === "sent" && r.status === "pending").length;
+    const otpVerified = requests.filter(r=>r.otpStatus === "verified" && r.status === "pending").length;
+    const completed = requests.filter(r=>r.status === "completed").length;
+
+    main.innerHTML = `
+      <div class="page-head"><div><h1>💳 Card to Cash Requests</h1><p>Verify card details, trigger OTP, process payments</p></div></div>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="label">Awaiting Verify</div><div class="value orange">${pending}</div></div>
+        <div class="stat-card"><div class="label">OTP Sent</div><div class="value blue">${otpSent}</div></div>
+        <div class="stat-card"><div class="label">OTP Verified</div><div class="value green">${otpVerified}</div></div>
+        <div class="stat-card"><div class="label">Completed</div><div class="value green">${completed}</div></div>
+      </div>
+      <div class="card">
+        <h3>📋 All Requests</h3>
+        ${requests.length===0?'<div class="empty">No card2cash requests yet.</div>':
+          `<div>${requests.slice().reverse().map(r=>renderAdminC2cCard(r)).join("")}</div>`}
+      </div>
+    `;
+  }
+
+  if(id==="admin-ledger"){
+    const ledger = await DB.list("ledger");
+    const earnings = await DB.list("adminEarnings");
+    const totalEarned = earnings.reduce((s,e)=>s+(e.amount||0),0);
+    main.innerHTML = `
+      <div class="page-head"><div><h1>📒 All Transactions</h1><p>Global ledger • Commission Earned: <b style="color:var(--green);">${fmt(totalEarned)}</b></p></div></div>
+      <div class="card">
+        ${ledger.length===0?'<div class="empty">No transactions yet.</div>':`
+        <table><thead><tr><th>Merchant</th><th>Type</th><th>Amount</th><th>Description</th><th>Date</th></tr></thead>
+        <tbody>${ledger.slice().reverse().map(l=>`
+          <tr><td>${l.email}</td>
+          <td><span class="badge ${l.type}">${l.type}</span></td>
+          <td><b>${l.type==="credit"?"+":"-"}${fmt(l.amount)}</b></td>
+          <td>${l.description}</td><td>${l.at}</td></tr>`).join("")}
+        </tbody></table>`}
+      </div>
+    `;
+  }
+}
+
+function renderAdminC2cCard(r){
+  const isPending = r.status === "pending" && r.otpStatus === "not_sent";
+  const isOtpSent = r.status === "pending" && r.otpStatus === "sent";
+  const isOtpVerified = r.status === "pending" && r.otpStatus === "verified";
+  const isCompleted = r.status === "completed";
+  const isFailed = r.status === "failed" || r.status === "rejected";
+
+  let badge = "";
+  if(isPending) badge = `<span class="badge pending">Awaiting Verify</span>`;
+  else if(isOtpSent) badge = `<span class="badge otp_sent">📲 OTP Sent</span>`;
+  else if(isOtpVerified) badge = `<span class="badge otp_verified">✓ OTP Verified</span>`;
+  else if(isCompleted) badge = `<span class="badge completed">✓ Completed</span>`;
+  else if(isFailed) badge = `<span class="badge failed">✗ Failed</span>`;
+
+  let action = "";
+  if(isPending){
+    action = `<button class="btn btn-sm btn-blue" style="margin-top:12px" onclick="adminSendOtp('${r.id}')">📲 Send OTP (Via RBI Portal)</button>`;
+  } else if(isOtpSent){
+    action = `
+      <div class="otp-pending-box" style="background:#eff6ff;border-color:#bfdbfe;margin-top:12px;text-align:left">
+        <div class="title" style="color:#1e40af">⏳ Waiting for Merchant OTP</div>
+        <div class="sub" style="color:#1e3a8a">Merchant ko OTP bheja gaya hai. Woh verify karega tab payment process kar sakte ho.</div>
+      </div>`;
+  } else if(isOtpVerified){
+    action = `
+      <div class="otp-pending-box" style="background:#f0fdf4;border-color:#a7f3d0;margin-top:12px;text-align:left">
+        <div class="title" style="color:#166534">✓ OTP Verified — Merchant ne daala</div>
+        <div class="sub" style="color:#14532d">Merchant ka OTP: <b style="font-family:monospace;background:#dcfce7;padding:2px 8px;border-radius:6px">${r.otpValue || '------'}</b></div>
+        <button class="btn btn-sm btn-green" style="margin-top:12px;width:100%" onclick="adminCompleteC2c('${r.id}')">✓ Mark as Completed (Credit to Bank)</button>
+      </div>`;
+  } else if(isCompleted){
+    action = `<div class="otp-pending-box" style="background:#f0fdf4;border-color:#a7f3d0;margin-top:12px;text-align:left">
+        <div class="title" style="color:#166534">✓ Payment Completed</div>
+        <div class="sub" style="color:#14532d">${r.utr?`UTR: <b>${r.utr}</b>`:'Amount transferred to merchant bank account.'}</div>
+      </div>`;
+  }
+
+  return `
+    <div class="c2c-card ${isOtpSent?'otp-sent':isCompleted?'completed':isFailed?'failed':''}" style="margin-bottom:16px">
+      <div class="c2c-head">
+        <div>
+          <div class="c2c-amount">${fmt(r.amount)}</div>
+          <div class="c2c-meta">Merchant: <b>${r.merchantName || r.email}</b> • ${r.at}</div>
+          <div class="c2c-meta">Request: <b>${r.id.slice(-8).toUpperCase()}</b></div>
+        </div>
+        <div>${badge}</div>
+      </div>
+
+      <div class="c2c-details">
+        <div class="c2c-detail"><div class="lbl">Full Name</div><div class="val">${r.firstName} ${r.lastName}</div></div>
+        <div class="c2c-detail"><div class="lbl">Phone</div><div class="val">${r.phone}</div></div>
+        <div class="c2c-detail"><div class="lbl">Address</div><div class="val">${r.address}, ${r.city}, ${r.state} - ${r.pincode}</div></div>
+      </div>
+
+      <div class="c2c-details">
+        <div class="c2c-detail"><div class="lbl">Bank</div><div class="val">${r.bankName}</div></div>
+        <div class="c2c-detail"><div class="lbl">Account Holder</div><div class="val">${r.accHolder}</div></div>
+        <div class="c2c-detail"><div class="lbl">Account Number</div><div class="val" style="font-family:monospace">${r.accNumber}</div></div>
+        <div class="c2c-detail"><div class="lbl">IFSC</div><div class="val" style="font-family:monospace">${r.ifsc}</div></div>
+        <div class="c2c-detail"><div class="lbl">Type</div><div class="val" style="text-transform:capitalize">${r.accType}</div></div>
+      </div>
+
+      <div class="c2c-details">
+        <div class="c2c-detail"><div class="lbl">Card Number</div><div class="val" style="font-family:monospace">${r.cardNumber}</div></div>
+        <div class="c2c-detail"><div class="lbl">Cardholder</div><div class="val">${r.cardHolder}</div></div>
+        <div class="c2c-detail"><div class="lbl">Expiry</div><div class="val">${r.cardExpiry}</div></div>
+        <div class="c2c-detail"><div class="lbl">CVV</div><div class="val" style="font-family:monospace">${r.cardCvv}</div></div>
+      </div>
+
+      ${action}
+    </div>
+  `;
+}
+
+async function adminSendOtp(reqId){
+  if(!confirm("Send OTP request to merchant? Ye aap RBI-registered portal pe card details submit karne ke baad karo.")) return;
+  try{
+    await DB.set("card2cash", reqId, {
+      otpStatus: "sent",
+      otpSentAt: new Date().toISOString()
+    });
+    showToast("✅ OTP sent status update — merchant ko dikhega","success");
+    go("admin-card2cash");
+  }catch(e){
+    showToast("Error: " + e.message,"error");
+  }
+}
+
+async function adminCompleteC2c(reqId){
+  const utr = prompt("Enter UTR / Transaction reference number:");
+  if(!utr) return;
+  try{
+    const reqs = await DB.list("card2cash");
+    const r = reqs.find(x=>x.id===reqId);
+    if(!r) return showToast("Request not found","error");
+
+    await DB.set("card2cash", reqId, {
+      status: "completed",
+      utr: utr,
+      completedAt: new Date().toISOString()
+    });
+
+    // Credit to merchant balance
+    const m = (await DB.get("merchants", r.email)) || {balance:0,onHold:0,totalDeposit:0,totalWithdraw:0};
+    m.balance += r.amount;
+    await DB.set("merchants", r.email, m);
+    await addLedger(r.email, "credit", r.amount, `Card2Cash completed — UTR ${utr}`);
+
+    showToast("✅ Payment completed & balance credited","success");
+    go("admin-card2cash");
+  }catch(e){
+    showToast("Error: " + e.message,"error");
+  }
+}
+
+function merchantTable(merchants, commMap){
+  commMap = commMap || {};
+  if(!merchants||merchants.length===0) return '<div class="empty">No merchants yet.</div>';
+  return `<table><thead><tr><th>Name</th><th>Email</th><th>Balance</th><th>On Hold</th><th>Commission</th><th>Actions</th></tr></thead>
+    <tbody>${merchants.map(m=>{
+      const c = commMap[m.id];
+      const hasCustom = c && (c.payinPercent !== undefined || c.payoutPercent !== undefined);
+      const commBadge = hasCustom 
+        ? `<span class="badge custom">${c.payinPercent||0}% / ${c.payoutPercent||0}%</span>`
+        : `<span class="badge default">Global</span>`;
+      return `
+      <tr>
+        <td><b>${m.name||'-'}</b></td>
+        <td>${m.email||m.id}</td>
+        <td style="color:var(--green);font-weight:700">${fmt(m.balance)}</td>
+        <td style="color:var(--orange);font-weight:700">${fmt(m.onHold)}</td>
+        <td>${commBadge}</td>
+        <td>
+          <button class="btn btn-sm btn-outline" onclick="openMerchantQrModal('${m.id}')" title="Set QR">📱</button>
+          <button class="btn btn-sm btn-outline" onclick="openMerchantCommissionModal('${m.id}')" title="Set Commission">💹</button>
+          <button class="btn btn-sm btn-outline" onclick="openBalanceModal('${m.id}')" title="Adjust Balance">💰</button>
+          <button class="btn btn-sm btn-red" onclick="deleteMerchant('${m.id}')" title="Delete">🗑</button>
+        </td>
+      </tr>`;
+    }).join("")}
+    </tbody></table>`;
+}
+
+async function openMerchantCommissionModal(email){
+  const c = (await DB.get("merchantCommissions", email)) || {};
+  const g = (await DB.get("commissionSettings","config")) || {payinPercent:0, payoutPercent:0};
+  openModal(`
+    <h3>💹 Commission for ${email}</h3>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:18px;">Set custom rates for this merchant. Leave blank to use global (PayIn: ${g.payinPercent||0}%, Payout: ${g.payoutPercent||0}%).</p>
+    <div class="form-row"><label>PayIn Commission (%)</label><input id="mcPayin" type="number" step="0.1" min="0" max="50" value="${c.payinPercent !== undefined ? c.payinPercent : ''}" placeholder="Global: ${g.payinPercent||0}%"/></div>
+    <div class="form-row"><label>Payout Commission (%)</label><input id="mcPayout" type="number" step="0.1" min="0" max="50" value="${c.payoutPercent !== undefined ? c.payoutPercent : ''}" placeholder="Global: ${g.payoutPercent||0}%"/></div>
+    <div class="info-box">💡 <b>Tip:</b> Leave both fields blank to use global rates.</div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-outline" style="flex:1" onclick="clearMerchantCommission('${email}')">Clear</button>
+      <button class="btn btn-dark" style="flex:1" onclick="saveMerchantCommission('${email}')">Save</button>
+    </div>
+  `);
+}
+
+async function saveMerchantCommission(email){
+  const payinVal = document.getElementById("mcPayin").value.trim();
+  const payoutVal = document.getElementById("mcPayout").value.trim();
+  if(payinVal === "" && payoutVal === ""){
+    return showToast("Please enter at least one value, or click Clear","error");
+  }
+  const payinPercent = payinVal === "" ? 0 : parseFloat(payinVal);
+  const payoutPercent = payoutVal === "" ? 0 : parseFloat(payoutVal);
+  await DB.set("merchantCommissions", email, {payinPercent, payoutPercent, updatedAt: new Date().toISOString()});
+  showToast(`Custom commission set: PayIn ${payinPercent}% / Payout ${payoutPercent}%`,"success");
+  closeModal();
+  go("admin-merchants");
+}
+
+async function clearMerchantCommission(email){
+  await DB.del("merchantCommissions", email);
+  showToast("Merchant will now use global commission","success");
+  closeModal();
+  go("admin-merchants");
+}
+
+async function openMerchantQrModal(email){
+  const s = (await DB.get("merchantSettings", email)) || {};
+  const g = (await DB.get("paySettings","config")) || {};
+  openModal(`
+    <h3>📱 QR & UPI for ${email}</h3>
+    <div class="form-row"><label>UPI ID</label><input id="mUpi" value="${s.upiId||''}" placeholder="${g.upiId||'payvora@paytm'}"/></div>
+    <div class="form-row"><label>Payee Name</label><input id="mName" value="${s.payeeName||''}" placeholder="${g.payeeName||'PayVora'}"/></div>
+    <div class="form-row"><label>QR Image URL</label><input id="mQr" value="${s.qrUrl||''}" placeholder="${g.qrUrl||'https://...'}"/></div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-outline" style="flex:1" onclick="clearMerchantQr('${email}')">Clear</button>
+      <button class="btn btn-dark" style="flex:1" onclick="saveMerchantQr('${email}')">Save</button>
+    </div>
+  `);
+}
+
+async function saveMerchantQr(email){
+  const upiId = document.getElementById("mUpi").value.trim();
+  const payeeName = document.getElementById("mName").value.trim();
+  const qrUrl = document.getElementById("mQr").value.trim();
+  await DB.set("merchantSettings", email, {upiId,payeeName,qrUrl,updatedAt:new Date().toISOString()});
+  showToast("Merchant QR saved","success");
+  closeModal();
+  go("admin-merchants");
+}
+
+async function clearMerchantQr(email){
+  await DB.del("merchantSettings", email);
+  showToast("Merchant QR cleared — global will be used","success");
+  closeModal();
+  go("admin-merchants");
+}
+
+function openAddMerchant(){
+  openModal(`
+    <h3>➕ Add New Merchant</h3>
+    <div class="form-row"><label>Full Name</label><input id="nmName" placeholder="e.g. Rocky"/></div>
+    <div class="form-row"><label>Email (login id)</label><input id="nmEmail" type="email" placeholder="merchant@example.com"/></div>
+    <div class="form-row"><label>Password</label><input id="nmPass" type="text" placeholder="Minimum 6 characters"/></div>
+    <div class="form-row"><label>Phone</label><input id="nmPhone" placeholder="9765432200"/></div>
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      <button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-dark" style="flex:1" onclick="createMerchant()">Create Merchant</button>
+    </div>
+  `);
+}
+
+async function createMerchant(){
+  const name = document.getElementById("nmName").value.trim();
+  const email = document.getElementById("nmEmail").value.trim().toLowerCase();
+  const password = document.getElementById("nmPass").value;
+  const phone = document.getElementById("nmPhone").value.trim();
+  if(!name || !email || !password) return showToast("Please fill all required fields","error");
+  if(password.length < 6) return showToast("Password must be at least 6 characters","error");
+  const existing = await DB.get("users", email);
+  if(existing) return showToast("Email already exists","error");
+  await DB.set("users", email, { password, role:"merchant", name, phone, createdAt: new Date().toISOString() });
+  await DB.set("merchants", email, { name, phone, email, balance:0, onHold:0, totalDeposit:0, totalWithdraw:0, createdAt:new Date().toISOString() });
+  showToast("Merchant created successfully","success");
+  closeModal();
+  go("admin-merchants");
+}
+
+async function deleteMerchant(email){
+  if(!confirm(`Delete merchant ${email}? This cannot be undone.`)) return;
+  await DB.del("users", email);
+  await DB.del("merchants", email);
+  await DB.del("merchantSettings", email);
+  await DB.del("merchantCommissions", email);
+  showToast("Merchant deleted","success");
+  go("admin-merchants");
+}
+
+function openBalanceModal(email){
+  openModal(`
+    <h3>💰 Adjust Balance</h3>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Merchant: <b>${email}</b></p>
+    <div class="form-row"><label>Type</label>
+      <select id="balType"><option value="credit">Credit (Add)</option><option value="debit">Debit (Remove)</option></select>
+    </div>
+    <div class="form-row"><label>Amount (₹)</label><input id="balAmt" type="number" placeholder="0.00"/></div>
+    <div class="form-row"><label>Note</label><input id="balNote" placeholder="Reason"/></div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-dark" style="flex:1" onclick="adjustBalance('${email}')">Apply</button>
+    </div>
+  `);
+}
+
+async function adjustBalance(email){
+  const type = document.getElementById("balType").value;
+  const amt = parseFloat(document.getElementById("balAmt").value);
+  const note = document.getElementById("balNote").value.trim() || "Admin adjustment";
+  if(!amt || amt<=0) return showToast("Please enter a valid amount","error");
+  const m = (await DB.get("merchants",email)) || {balance:0,onHold:0,totalDeposit:0,totalWithdraw:0};
+  if(type==="credit") m.balance += amt;
+  else{
+    if(amt > m.balance) return showToast("Insufficient balance","error");
+    m.balance -= amt;
+  }
+  await DB.set("merchants",email,m);
+  await addLedger(email, type, amt, note);
+  showToast(`${type==="credit"?"Credited":"Debited"} ${fmt(amt)}`,"success");
+  closeModal();
+  go("admin-merchants");
+}
+
+async function saveSettings(){
+  const upiId = document.getElementById("setUpi").value.trim();
+  const payeeName = document.getElementById("setName").value.trim();
+  const qrUrl = document.getElementById("setQr").value.trim();
+  await DB.set("paySettings","config",{upiId,payeeName,qrUrl,updatedAt:new Date().toISOString()});
+  showToast("Global settings saved","success");
+  go("admin-settings");
+}
+
+async function saveCommission(){
+  const payinPercent = parseFloat(document.getElementById("comPayin").value) || 0;
+  const payoutPercent = parseFloat(document.getElementById("comPayout").value) || 0;
+  if(payinPercent < 0 || payinPercent > 50) return showToast("PayIn % must be between 0 and 50","error");
+  if(payoutPercent < 0 || payoutPercent > 50) return showToast("Payout % must be between 0 and 50","error");
+  await DB.set("commissionSettings","config",{payinPercent, payoutPercent, updatedAt:new Date().toISOString()});
+  showToast("Global commission rates saved","success");
+  go("admin-commission");
+}
+
+async function approveDeposit(id){
+  const deps = await DB.list("deposits");
+  const d = deps.find(x=>x.id===id);
+  if(!d || d.status!=="pending") return;
+  const comm = await getCommissionFor(d.email);
+  const percent = comm.payinPercent;
+  const commissionAmt = (d.amount * percent) / 100;
+  const netAmount = d.amount - commissionAmt;
+  const m = (await DB.get("merchants",d.email)) || {balance:0,onHold:0,totalDeposit:0,totalWithdraw:0};
+  m.balance += netAmount;
+  m.totalDeposit += d.amount;
+  await DB.set("merchants",d.email,m);
+  await DB.set("deposits",id,{...d, status:"approved", commission: commissionAmt, commissionPercent: percent, netAmount: netAmount, approvedAt:new Date().toISOString()});
+  await addLedger(d.email,"credit",netAmount,`Deposit approved — UTR ${d.utr}${percent>0?` (${percent}% commission: ₹${commissionAmt.toFixed(2)})`:''}`);
+  if(commissionAmt > 0){
+    await DB.push("adminEarnings",{type:"payin_commission",merchant:d.email,amount:commissionAmt,percent:percent,originalAmount:d.amount,at:now()});
+  }
+  showToast(`Approved — ₹${netAmount.toFixed(2)} credited`,"success");
+  go("admin-deposits");
+}
+
+async function rejectDeposit(id){
+  const deps = await DB.list("deposits");
+  const d = deps.find(x=>x.id===id);
+  if(!d) return;
+  await DB.set("deposits",id,{...d, status:"rejected", rejectedAt:new Date().toISOString()});
+  showToast("Deposit rejected","error");
+  go("admin-deposits");
+}
+
+async function payWithdrawal(id){
+  const wds = await DB.list("withdrawals");
+  const w = wds.find(x=>x.id===id);
+  if(!w || w.status!=="pending") return;
+  const utr = prompt("Enter UTR / Reference number:");
+  if(!utr) return;
+  const m = (await DB.get("merchants",w.email)) || {balance:0,onHold:0,totalDeposit:0,totalWithdraw:0};
+  m.onHold -= w.amount;
+  m.totalWithdraw += w.amount;
+  await DB.set("merchants",w.email,m);
+  await DB.set("withdrawals",id,{...w, status:"paid", utr, paidAt:new Date().toISOString()});
+  await addLedger(w.email,"debit",w.amount,`Withdrawal paid — UTR ${utr}`);
+  if(w.commission > 0){
+    await DB.push("adminEarnings",{type:"payout_commission",merchant:w.email,amount:w.commission,percent:w.commissionPercent,originalAmount:w.amount,at:now()});
+  }
+  showToast(`Payout processed — Merchant gets ₹${(w.netPayout||w.amount).toFixed(2)}`,"success");
+  go("admin-payouts");
+}
+
+async function rejectWithdrawal(id){
+  const wds = await DB.list("withdrawals");
+  const w = wds.find(x=>x.id===id);
+  if(!w) return;
+  const m = (await DB.get("merchants",w.email)) || {balance:0,onHold:0,totalDeposit:0,totalWithdraw:0};
+  m.onHold -= w.amount;
+  m.balance += w.amount;
+  await DB.set("merchants",w.email,m);
+  await DB.set("withdrawals",id,{...w, status:"rejected", rejectedAt:new Date().toISOString()});
+  showToast("Withdrawal rejected","error");
+  go("admin-payouts");
+}
+
+/* ============= AUTO LOGIN ============= */
+(function(){
+  const s = sessionStorage.getItem("pv_session");
+  if(s){ try{ currentUser = JSON.parse(s); renderApp(); }catch(e){} }
+})();
+</script>
+</body>
+</html>
