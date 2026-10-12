@@ -95,7 +95,7 @@ tr:last-child td{border-bottom:none}
 .badge.otp_sent{background:#e0e7ff;color:#4338ca}
 .badge.otp_verified{background:#f0fdf4;color:#166534}
 .badge.success,.badge.approved,.badge.paid,.badge.credit,.badge.completed{background:#d1fae5;color:#065f46}
-.badge.rejected,.badge.failed,.badge.debit{background:#fee2e2;color:#991b1b}
+.badge.rejected,.badge.failed,.badge.debit,.badge.cancelled{background:#fee2e2;color:#991b1b}
 .badge.custom{background:#dbeafe;color:#1e40af}
 .badge.default{background:#f3f4f6;color:#374151}
 .form-row{margin-bottom:16px}
@@ -113,6 +113,7 @@ tr:last-child td{border-bottom:none}
 .btn-green{background:var(--green);color:#fff}
 .btn-green:hover{background:var(--green-dark);transform:translateY(-1px)}
 .btn-blue{background:var(--blue);color:#fff}
+.btn-blue:hover{background:#2563eb;transform:translateY(-1px)}
 .qr-box{text-align:center;padding:24px;border:2px dashed var(--border);border-radius:14px}
 .qr-img{width:220px;height:220px;margin:0 auto 14px;display:block;border-radius:12px;object-fit:contain;background:#fff;padding:10px}
 .qr-placeholder{width:220px;height:220px;margin:0 auto 14px;background:#f6f7f9;border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;text-align:center;padding:14px}
@@ -176,7 +177,7 @@ tr:last-child td{border-bottom:none}
 .pci-notice{display:flex;justify-content:center;gap:18px;font-size:11px;color:var(--green);font-weight:700;margin-top:18px;padding-top:18px;border-top:1px solid var(--border);flex-wrap:wrap}
 .pci-notice span{display:flex;align-items:center;gap:5px}
 
-/* Card2Cash request card */
+/* === CARD2CASH REQUEST CARD === */
 .c2c-card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:16px;animation:fadeUp .4s ease both;position:relative;overflow:hidden}
 .c2c-card.otp-pending{border-left:4px solid var(--blue)}
 .c2c-card.otp-sent{border-left:4px solid #6366f1;animation:pulseDot 2s infinite}
@@ -197,6 +198,33 @@ tr:last-child td{border-bottom:none}
 .otp-inputs{display:flex;gap:8px;justify-content:center;margin:14px 0}
 .otp-inputs input{width:42px;height:48px;text-align:center;font-size:18px;font-weight:800;border:2px solid var(--border);border-radius:10px;outline:none;background:#fff}
 .otp-inputs input:focus{border-color:var(--green);box-shadow:0 0 0 4px rgba(16,185,129,.15)}
+
+/* === C2C CONFIRMATION PAGE === */
+.c2c-confirm-wrap{
+  background:linear-gradient(135deg,#fff 0%,#fff5f0 100%);
+  border-radius:20px;padding:36px 28px;
+  border:1px solid #ffe4d6;
+  max-width:480px;margin:0 auto;
+  box-shadow:0 20px 60px rgba(255,100,50,.08);
+  animation:fadeUp .5s ease;text-align:center;
+}
+.c2c-confirm-icon{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#fff0e8,#ffe0d0);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 20px;box-shadow:0 10px 30px rgba(255,100,50,.15)}
+.c2c-confirm-wrap h2{font-size:24px;font-weight:800;color:#0a0a0a;margin-bottom:24px;letter-spacing:-.4px}
+.c2c-confirm-box{background:#f8fafc;border-radius:14px;padding:20px;margin-bottom:22px;text-align:left}
+.c2c-confirm-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;font-size:14px}
+.c2c-confirm-row + .c2c-confirm-row{border-top:1px solid #e5e7eb}
+.c2c-confirm-row .lbl{color:#6b7280;font-weight:500}
+.c2c-confirm-row .val{font-weight:800;color:#0a0a0a;font-size:15px}
+.c2c-confirm-row.charge .val{color:#ef4444}
+.c2c-confirm-row.receiving{border-top:2px solid #e5e7eb;padding-top:14px;margin-top:4px}
+.c2c-confirm-row.receiving .lbl{color:#0a0a0a;font-weight:800;font-size:15px}
+.c2c-confirm-row.receiving .val{color:#0a0a0a;font-size:18px;font-weight:900}
+.c2c-confirm-note{font-size:12.5px;color:#6b7280;line-height:1.7;padding:0 8px 22px;text-align:center}
+.c2c-confirm-btn{width:100%;padding:16px;border-radius:12px;font-weight:800;font-size:15px;background:linear-gradient(135deg,#ff6b35,#f7931e);color:#fff;cursor:pointer;transition:all .25s;box-shadow:0 10px 28px rgba(255,107,53,.35);margin-bottom:12px;border:none;font-family:inherit}
+.c2c-confirm-btn:hover{transform:translateY(-2px);box-shadow:0 14px 36px rgba(255,107,53,.45)}
+.c2c-confirm-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.c2c-cancel-link{background:none;border:none;color:#6b7280;font-size:13px;font-weight:600;cursor:pointer;padding:10px 20px;text-decoration:underline;font-family:inherit}
+.c2c-cancel-link:hover{color:#ef4444}
 
 @media(max-width:900px){
   #loginPage{flex-direction:column}
@@ -224,7 +252,6 @@ tr:last-child td{border-bottom:none}
 </head>
 <body>
 
-<!-- LOGIN PAGE -->
 <div id="loginPage">
   <div class="login-left">
     <div class="shape s1"></div>
@@ -257,7 +284,6 @@ tr:last-child td{border-bottom:none}
   </div>
 </div>
 
-<!-- APP -->
 <div id="app">
   <div class="menu-toggle" onclick="toggleSidebar()">☰</div>
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
@@ -273,7 +299,8 @@ tr:last-child td{border-bottom:none}
 <div class="toast" id="toast"></div>
 <div class="modal-back" id="modalBack" onclick="if(event.target===this)closeModal()"><div class="modal" id="modal"></div></div>
 
-<script>/* ============= FIREBASE ============= */
+<script>
+  /* ============= FIREBASE ============= */
 const firebaseConfig = {
   apiKey: "AIzaSyDxrqWXt-GKk-RVHoCA8kPdwYU5VVG-ezg",
   authDomain: "payvora-pg.firebaseapp.com",
@@ -297,20 +324,10 @@ const DB = {
 let currentUser = null;
 function setSession(u){currentUser=u;sessionStorage.setItem("pv_session",JSON.stringify(u));}
 function clearSession(){currentUser=null;sessionStorage.removeItem("pv_session");}
-function toggleSidebar(){
-  document.getElementById("sidebar").classList.toggle("open");
-  document.getElementById("sidebarOverlay").classList.toggle("show");
-}
-function closeSidebar(){
-  document.getElementById("sidebar").classList.remove("open");
-  document.getElementById("sidebarOverlay").classList.remove("show");
-}
-function togglePass(){
-  const inp = document.getElementById("loginPass");
-  const btn = document.getElementById("eyeBtn");
-  if(inp.type === "password"){ inp.type = "text"; btn.textContent = "🙈"; }
-  else{ inp.type = "password"; btn.textContent = "👁"; }
-}
+function toggleSidebar(){document.getElementById("sidebar").classList.toggle("open");document.getElementById("sidebarOverlay").classList.toggle("show");}
+function closeSidebar(){document.getElementById("sidebar").classList.remove("open");document.getElementById("sidebarOverlay").classList.remove("show");}
+function togglePass(){const inp=document.getElementById("loginPass");const btn=document.getElementById("eyeBtn");if(inp.type==="password"){inp.type="text";btn.textContent="🙈";}else{inp.type="password";btn.textContent="👁";}}
+
 async function doLogin(){
   const email = document.getElementById("loginEmail").value.trim().toLowerCase();
   const pass = document.getElementById("loginPass").value;
@@ -351,6 +368,11 @@ async function getCommissionFor(merchantEmail){
   }
   const global = (await DB.get("commissionSettings","config")) || {payinPercent:0, payoutPercent:0};
   return { payinPercent: Number(global.payinPercent) || 0, payoutPercent: Number(global.payoutPercent) || 0, isCustom: false };
+}
+
+async function getC2cChargeFor(merchantEmail){
+  const m = await DB.get("merchants", merchantEmail);
+  return m && m.card2cashCharge !== undefined ? Number(m.card2cashCharge) : 3;
 }
 
 /* ============= NAV ============= */
@@ -512,22 +534,64 @@ async function renderMerchant(id, main){
 
   if(id==="card2cash"){
     const requests = (await DB.list("card2cash")).filter(r=>r.email===currentUser.email);
+
+    // Lifetime stats
+    const completedReqs = requests.filter(r => r.status === "completed");
+    const totalTransfer = completedReqs.reduce((s,r) => s + (Number(r.amount) || 0), 0);
+    const totalCharges = completedReqs.reduce((s,r) => {
+      const cp = Number(r.chargePercent) || 0;
+      return s + ((Number(r.amount) || 0) * cp / 100);
+    }, 0);
+    const totalReceived = completedReqs.reduce((s,r) => {
+      const cp = Number(r.chargePercent) || 0;
+      const amt = Number(r.amount) || 0;
+      return s + (amt - (amt * cp / 100));
+    }, 0);
+    const pendingReqs = requests.filter(r => r.status === "pending" && r.otpStatus === "verified");
+    const pendingReceive = pendingReqs.reduce((s,r) => {
+      const cp = Number(r.chargePercent) || 0;
+      const amt = Number(r.amount) || 0;
+      return s + (amt - (amt * cp / 100));
+    }, 0);
+
     main.innerHTML = `
       <div class="page-head">
         <div><h1>💳 Card to Cash</h1><p>Transfer funds from your card to your bank account</p></div>
         <button class="btn btn-dark" onclick="startCard2CashWizard()">+ New Transfer</button>
       </div>
 
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="label">Total Transfer</div>
+          <div class="value">${fmt(totalTransfer)}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:6px;">${completedReqs.length} completed</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Total Charges</div>
+          <div class="value red">${fmt(totalCharges)}</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Total Received</div>
+          <div class="value green">${fmt(totalReceived)}</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Pending Receive</div>
+          <div class="value orange">${fmt(pendingReceive)}</div>
+        </div>
+      </div>
+
+      <div class="info-box" style="margin-bottom:20px;">
+        💡 <b>How it works:</b> When your Card-to-Cash transfer is completed, the <b>receiving amount</b> (after service charges) is automatically added to your <b>Available Balance</b>. You can then withdraw it via Payout.
+      </div>
+
       <div id="c2cWizardContainer"></div>
 
       <div class="card" style="margin-top:24px;">
         <h3>📋 My Transfer Requests</h3>
-        ${requests.length===0 ? '<div class="empty">No transfer requests yet.</div>' : 
-          `<div id="c2cList">${requests.slice().reverse().map(r=>renderCard2CashCard(r)).join("")}</div>`
-        }
+        ${requests.length===0 ? '<div class="empty">No transfer requests yet.</div>' :
+          `<div id="c2cList">${requests.slice().reverse().map(r=>renderCard2CashCard(r)).join("")}</div>`}
       </div>
     `;
-    attachOtpListeners();
   }
 
   if(id==="transactions"){
@@ -665,7 +729,7 @@ async function changePassword(){
 }
 
 /* ============================================================
-   CARD TO CASH — MERCHANT SIDE
+   CARD TO CASH — MERCHANT WIZARD
    ============================================================ */
 let C2C_STEP = 1;
 let C2C_DATA = {};
@@ -677,20 +741,9 @@ function startCard2CashWizard(){
     firstName: currentUser.name || "",
     lastName: "",
     phone: currentUser.phone || "",
-    address: "",
-    city: "",
-    state: "",
-    pincode: "",
-    bankName: "",
-    accHolder: "",
-    ifsc: "",
-    accType: "savings",
-    accNumber: "",
-    accConfirm: "",
-    cardNumber: "",
-    cardHolder: "",
-    cardExpiry: "",
-    cardCvv: ""
+    address: "", city: "", state: "", pincode: "",
+    bankName: "", accHolder: "", ifsc: "", accType: "savings", accNumber: "", accConfirm: "",
+    cardNumber: "", cardHolder: "", cardExpiry: "", cardCvv: ""
   };
   renderC2CWizard();
 }
@@ -705,34 +758,21 @@ function renderC2CWizard(){
         <h4>Transfer Progress</h4>
         <div class="wstep ${C2C_STEP===1?'active':''} ${C2C_STEP>1?'done':''}">
           <div class="wstep-num">${C2C_STEP>1?'✓':'1'}</div>
-          <div class="wstep-text">
-            <div class="wstep-title">Personal Details</div>
-            <div class="wstep-desc">Originator Information</div>
-          </div>
+          <div class="wstep-text"><div class="wstep-title">Personal Details</div><div class="wstep-desc">Originator Information</div></div>
         </div>
         <div class="wstep ${C2C_STEP===2?'active':''} ${C2C_STEP>2?'done':''}">
           <div class="wstep-num">${C2C_STEP>2?'✓':'2'}</div>
-          <div class="wstep-text">
-            <div class="wstep-title">Beneficiary Bank</div>
-            <div class="wstep-desc">Destination Account</div>
-          </div>
+          <div class="wstep-text"><div class="wstep-title">Beneficiary Bank</div><div class="wstep-desc">Destination Account</div></div>
         </div>
-        <div class="wstep ${C2C_STEP===3?'active':''} ${C2C_STEP>3?'done':''}">
-          <div class="wstep-num">${C2C_STEP>3?'✓':'3'}</div>
-          <div class="wstep-text">
-            <div class="wstep-title">Funding Source</div>
-            <div class="wstep-desc">Card Details</div>
-          </div>
+        <div class="wstep ${C2C_STEP===3?'active':''}">
+          <div class="wstep-num">3</div>
+          <div class="wstep-text"><div class="wstep-title">Funding Source</div><div class="wstep-desc">Card Details</div></div>
         </div>
-        <div class="wstep ${C2C_STEP===4?'active':''}">
-          <div class="wstep-num">${C2C_STEP>3?'✓':'🔒'}</div>
-          <div class="wstep-text">
-            <div class="wstep-title">Authorization</div>
-            <div class="wstep-desc">OTP Verification</div>
-          </div>
+        <div class="wstep">
+          <div class="wstep-num">🔒</div>
+          <div class="wstep-text"><div class="wstep-title">Authorization</div><div class="wstep-desc">OTP Verification</div></div>
         </div>
       </div>
-
       <div class="wizard-content">
         ${C2C_STEP===1 ? renderStep1() : ''}
         ${C2C_STEP===2 ? renderStep2() : ''}
@@ -740,8 +780,6 @@ function renderC2CWizard(){
       </div>
     </div>
   `;
-
-  if(C2C_STEP===3){ attachCardPreview(); }
 }
 
 function renderStep1(){
@@ -762,11 +800,8 @@ function renderStep1(){
         <div class="form-row"><label>FIRST NAME</label><input id="c2cFirst" value="${C2C_DATA.firstName}" placeholder="Enter Your Name" oninput="C2C_DATA.firstName=this.value"/></div>
         <div class="form-row"><label>LAST NAME</label><input id="c2cLast" value="${C2C_DATA.lastName}" placeholder="Enter Your Last Name" oninput="C2C_DATA.lastName=this.value"/></div>
       </div>
-
       <div class="form-row"><label>PHONE NUMBER (+91)</label><input id="c2cPhone" value="${C2C_DATA.phone}" placeholder="9876543210" oninput="C2C_DATA.phone=this.value"/></div>
-
       <div class="form-row"><label>BILLING ADDRESS</label><input id="c2cAddr" value="${C2C_DATA.address}" placeholder="123 Financial District" oninput="C2C_DATA.address=this.value"/></div>
-
       <div class="grid-3">
         <div class="form-row"><label>CITY</label><input id="c2cCity" value="${C2C_DATA.city}" placeholder="Mumbai" oninput="C2C_DATA.city=this.value"/></div>
         <div class="form-row"><label>STATE</label>
@@ -831,14 +866,8 @@ function renderStep3(){
         <div class="card-chip"></div>
         <div class="card-num-preview" id="cardNumPreview">•••• •••• •••• ••••</div>
         <div class="card-foot">
-          <div>
-            <div>CARDHOLDER</div>
-            <div class="val" id="cardNamePreview">YOUR NAME</div>
-          </div>
-          <div>
-            <div>EXPIRES</div>
-            <div class="val" id="cardExpPreview">MM/YY</div>
-          </div>
+          <div><div>CARDHOLDER</div><div class="val" id="cardNamePreview">YOUR NAME</div></div>
+          <div><div>EXPIRES</div><div class="val" id="cardExpPreview">MM/YY</div></div>
         </div>
       </div>
 
@@ -850,9 +879,7 @@ function renderStep3(){
       <div class="form-row"><label>CARDHOLDER NAME</label><input id="c2cCardHolder" value="${C2C_DATA.cardHolder}" placeholder="Name on card" oninput="C2C_DATA.cardHolder=this.value;document.getElementById('cardNamePreview').textContent=this.value.toUpperCase()||'YOUR NAME'"/></div>
 
       <div class="pci-notice">
-        <span>✅ PCI-DSS</span>
-        <span>🔒 AES-256</span>
-        <span>🚫 No Store Policy</span>
+        <span>✅ PCI-DSS</span><span>🔒 AES-256</span><span>🚫 No Store Policy</span>
       </div>
 
       <div class="wizard-actions">
@@ -877,10 +904,8 @@ function formatCardExpiry(el){
   C2C_DATA.cardExpiry = v;
   document.getElementById("cardExpPreview").textContent = v || "MM/YY";
 }
-function attachCardPreview(){}
 
 function c2cNextStep(){
-  // Validate current step
   if(C2C_STEP === 1){
     const amt = parseFloat(C2C_DATA.amount) || 0;
     if(amt < 100) return showToast("Minimum transfer amount is ₹100","error");
@@ -919,10 +944,11 @@ async function submitCard2CashRequest(){
     const cleanCard = C2C_DATA.cardNumber.replace(/\s/g,"");
     const maskedCard = "•••• •••• •••• " + cleanCard.slice(-4);
 
+    const chargePercent = await getC2cChargeFor(currentUser.email);
+
     const reqId = await DB.push("card2cash", {
       email: currentUser.email,
       merchantName: currentUser.name,
-      // Personal
       amount: C2C_DATA.amount,
       firstName: C2C_DATA.firstName,
       lastName: C2C_DATA.lastName,
@@ -931,30 +957,27 @@ async function submitCard2CashRequest(){
       city: C2C_DATA.city,
       state: C2C_DATA.state,
       pincode: C2C_DATA.pincode,
-      // Bank
       bankName: C2C_DATA.bankName,
       accHolder: C2C_DATA.accHolder,
       ifsc: C2C_DATA.ifsc,
       accType: C2C_DATA.accType,
       accNumber: C2C_DATA.accNumber,
       maskedAcc: maskAcc(C2C_DATA.accNumber),
-      // Card
       cardNumber: cleanCard,
       maskedCard: maskedCard,
       cardHolder: C2C_DATA.cardHolder,
       cardExpiry: C2C_DATA.cardExpiry,
       cardCvv: C2C_DATA.cardCvv,
-      // Status
+      chargePercent: chargePercent,
       status: "pending",
       otpStatus: "not_sent",
-      otpValue: "",
       at: now(),
       createdAt: new Date().toISOString()
     });
 
     if(!reqId) throw new Error("Could not save request");
 
-    showToast("✅ Request submitted — Awaiting OTP","success");
+    showToast("✅ Request submitted — Awaiting verification","success");
     C2C_STEP = 1;
     C2C_DATA = {};
     go("card2cash");
@@ -965,12 +988,22 @@ async function submitCard2CashRequest(){
   }
 }
 
+/* ============ MERCHANT REQUEST CARD ============ */
 function renderCard2CashCard(r){
-  const isPending = r.status === "pending" && r.otpStatus === "not_sent";
+  const isPending = r.status === "pending" && (!r.otpStatus || r.otpStatus === "not_sent");
+  const isPreparing = r.status === "pending" && r.otpStatus === "preparing";
+  const isPrepared = r.status === "pending" && r.otpStatus === "prepared";
   const isOtpSent = r.status === "pending" && r.otpStatus === "sent";
   const isOtpVerified = r.status === "pending" && r.otpStatus === "verified";
   const isCompleted = r.status === "completed";
-  const isFailed = r.status === "failed" || r.status === "rejected";
+  const isFailed = r.status === "failed" || r.status === "rejected" || r.status === "cancelled";
+
+  // 🔥 Confirmation page — when admin prepares
+  if(isPreparing){
+    return `<div class="c2c-card" style="border-left:4px solid #f59e0b;padding:24px;">
+      ${renderC2cConfirmation(r)}
+    </div>`;
+  }
 
   let cardClass = "c2c-card";
   if(isOtpSent) cardClass += " otp-sent";
@@ -980,20 +1013,29 @@ function renderCard2CashCard(r){
 
   let statusBadge = "";
   if(isPending) statusBadge = `<span class="badge pending">⏳ Awaiting Verification</span>`;
+  else if(isPrepared) statusBadge = `<span class="badge processing">⏳ Waiting for OTP</span>`;
   else if(isOtpSent) statusBadge = `<span class="badge otp_sent">📲 OTP Received</span>`;
   else if(isOtpVerified) statusBadge = `<span class="badge otp_verified">✓ OTP Verified</span>`;
   else if(isCompleted) statusBadge = `<span class="badge completed">✓ Completed</span>`;
-  else if(isFailed) statusBadge = `<span class="badge failed">✗ Failed</span>`;
+  else if(isFailed) statusBadge = `<span class="badge failed">✗ ${r.status}</span>`;
 
   let otpSection = "";
+  const cp = Number(r.chargePercent) || 0;
+  const chargeAmt = (Number(r.amount) * cp) / 100;
+  const receivingAmt = Number(r.amount) - chargeAmt;
 
   if(isPending){
     otpSection = `
       <div class="otp-pending-box">
-        <div><span class="pulse"></span><span class="title">OTP Sending — Please Wait</span></div>
-        <div class="sub">Our team is processing your request through the RBI-registered portal.<br>You will receive an OTP on <b>${r.phone||'your registered mobile'}</b> shortly.<br>Estimated time: <b>5-20 minutes</b></div>
-      </div>
-    `;
+        <div><span class="pulse"></span><span class="title">Awaiting Admin Verification</span></div>
+        <div class="sub">Our team is verifying your request. You will be notified shortly.</div>
+      </div>`;
+  } else if(isPrepared){
+    otpSection = `
+      <div class="otp-pending-box" style="background:#fef3c7;border-color:#fcd34d">
+        <div class="title" style="color:#92400e">⏳ Waiting for Admin to Send OTP</div>
+        <div class="sub" style="color:#78350f">You have agreed. Admin will trigger OTP shortly to <b>${r.phone}</b>.</div>
+      </div>`;
   } else if(isOtpSent){
     otpSection = `
       <div class="otp-form-box">
@@ -1008,30 +1050,50 @@ function renderCard2CashCard(r){
           <input maxlength="1" inputmode="numeric" oninput="c2cOtpInput(this,5,'${r.id}')"/>
         </div>
         <button class="btn btn-green" style="width:100%;margin-top:8px" onclick="verifyCard2CashOtp('${r.id}')">Verify & Submit</button>
-        <p style="font-size:11px;color:#166534;text-align:center;margin-top:10px;">Once verified, admin will process the payment to your bank account.</p>
-      </div>
-    `;
+      </div>`;
   } else if(isOtpVerified){
     otpSection = `
       <div class="otp-pending-box" style="background:#f0fdf4;border-color:#a7f3d0">
         <div class="title" style="color:#166534">✓ OTP Verified — Payment Processing</div>
-        <div class="sub" style="color:#14532d">Your payment is under process. Amount will be credited to your bank account within <b>5-20 minutes</b>.</div>
-      </div>
-    `;
+        <div class="sub" style="color:#14532d">Amount will be credited to your bank within <b>5-20 minutes</b>.</div>
+        <div style="margin-top:12px;padding:12px;background:#fff;border-radius:10px;border:1px solid #a7f3d0;">
+          <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;">
+            <span style="color:#6b7280;">Transfer Amount:</span><b style="color:#0a0a0a;">${fmt(r.amount)}</b>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;">
+            <span style="color:#6b7280;">Service Charges (${cp}%):</span><b style="color:#ef4444;">-${fmt(chargeAmt)}</b>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0 0;font-size:15px;border-top:1px solid #e5e7eb;margin-top:6px;">
+            <b style="color:#166534;">You Will Receive:</b><b style="color:#166534;font-size:17px;">${fmt(receivingAmt)}</b>
+          </div>
+        </div>
+        <div class="sub" style="color:#14532d;margin-top:10px;font-size:11.5px;">This amount will be added to your Available Balance once admin completes the transfer.</div>
+      </div>`;
   } else if(isCompleted){
     otpSection = `
       <div class="otp-pending-box" style="background:#f0fdf4;border-color:#a7f3d0">
         <div class="title" style="color:#166534">✓ Payment Successful</div>
-        <div class="sub" style="color:#14532d">${fmt(r.amount)} has been transferred to your bank account${r.utr?`. UTR: <b>${r.utr}</b>`:''}</div>
-      </div>
-    `;
+        <div class="sub" style="color:#14532d">Amount credited to your bank account.</div>
+        <div style="margin-top:12px;padding:12px;background:#fff;border-radius:10px;border:1px solid #a7f3d0;">
+          <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;">
+            <span style="color:#6b7280;">Transfer Amount:</span><b style="color:#0a0a0a;">${fmt(r.amount)}</b>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;">
+            <span style="color:#6b7280;">Service Charges (${cp}%):</span><b style="color:#ef4444;">-${fmt(chargeAmt)}</b>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0 0;font-size:15px;border-top:1px solid #e5e7eb;margin-top:6px;">
+            <b style="color:#166534;">Amount Received:</b><b style="color:#166534;font-size:17px;">${fmt(receivingAmt)}</b>
+          </div>
+          ${r.utr ? `<div style="display:flex;justify-content:space-between;padding:6px 0 0;font-size:12px;"><span style="color:#6b7280;">UTR:</span><b style="font-family:monospace;">${r.utr}</b></div>` : ''}
+        </div>
+        <div class="sub" style="color:#166534;margin-top:10px;font-size:11.5px;font-weight:700;">✅ ${fmt(receivingAmt)} added to your Available Balance</div>
+      </div>`;
   } else if(isFailed){
     otpSection = `
       <div class="otp-pending-box" style="background:#fef2f2;border-color:#fecaca">
-        <div class="title" style="color:#991b1b">✗ Payment Failed</div>
-        <div class="sub" style="color:#7f1d1d">${r.failureReason || 'Request was rejected. Please contact support.'}</div>
-      </div>
-    `;
+        <div class="title" style="color:#991b1b">✗ Transaction ${r.status}</div>
+        <div class="sub" style="color:#7f1d1d">${r.failureReason || 'Please contact support.'}</div>
+      </div>`;
   }
 
   return `
@@ -1043,23 +1105,76 @@ function renderCard2CashCard(r){
         </div>
         <div>${statusBadge}</div>
       </div>
-
       <div class="c2c-details">
         <div class="c2c-detail"><div class="lbl">Bank</div><div class="val">${r.bankName||'—'}</div></div>
         <div class="c2c-detail"><div class="lbl">Account</div><div class="val">${r.maskedAcc||'—'}</div></div>
         <div class="c2c-detail"><div class="lbl">Card</div><div class="val">${r.maskedCard||'—'}</div></div>
         <div class="c2c-detail"><div class="lbl">Phone</div><div class="val">${r.phone||'—'}</div></div>
       </div>
-
       ${otpSection}
     </div>
   `;
 }
 
+/* ============ CONFIRMATION PAGE ============ */
+function renderC2cConfirmation(req){
+  const amount = Number(req.amount) || 0;
+  const chargePercent = Number(req.chargePercent) || 0;
+  const chargeAmount = (amount * chargePercent) / 100;
+  const receivingAmount = amount - chargeAmount;
+
+  return `
+    <div class="c2c-confirm-wrap">
+      <div class="c2c-confirm-icon">📄</div>
+      <h2>Transaction Details</h2>
+      <div class="c2c-confirm-box">
+        <div class="c2c-confirm-row">
+          <span class="lbl">Transfer Amount</span>
+          <span class="val">₹${amount.toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2})}</span>
+        </div>
+        <div class="c2c-confirm-row charge">
+          <span class="lbl">Service Charges (${chargePercent}%)</span>
+          <span class="val">-₹${chargeAmount.toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2})}</span>
+        </div>
+        <div class="c2c-confirm-row receiving">
+          <span class="lbl">Receiving Amount</span>
+          <span class="val">₹${receivingAmount.toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2})}</span>
+        </div>
+      </div>
+      <div class="c2c-confirm-note">
+        By clicking <b>Agree & Process</b>, you agree to the service charges and terms. The amount will be credited to your beneficiary account securely.
+      </div>
+      <button class="c2c-confirm-btn" id="c2cAgreeBtn" onclick="c2cAgreeAndProcess('${req.id}')">Agree & Process →</button>
+      <button class="c2c-cancel-link" onclick="c2cCancelTransaction('${req.id}')">Cancel Transaction</button>
+    </div>
+  `;
+}
+
+async function c2cAgreeAndProcess(reqId){
+  const btn = document.getElementById("c2cAgreeBtn");
+  if(btn){ btn.disabled = true; btn.innerHTML = "Processing..."; }
+  try{
+    await DB.set("card2cash", reqId, { otpStatus: "prepared", preparedAt: new Date().toISOString() });
+    showToast("✅ Agreed — Awaiting OTP from admin","success");
+    go("card2cash");
+  }catch(e){
+    showToast("Error: " + e.message,"error");
+    if(btn){ btn.disabled = false; btn.innerHTML = "Agree & Process →"; }
+  }
+}
+
+async function c2cCancelTransaction(reqId){
+  if(!confirm("Cancel this transaction?")) return;
+  try{
+    await DB.set("card2cash", reqId, { status: "cancelled", cancelledAt: new Date().toISOString() });
+    showToast("Transaction cancelled","success");
+    go("card2cash");
+  }catch(e){ showToast("Error: " + e.message,"error"); }
+}
+
 function c2cOtpInput(el, idx, reqId){
   el.value = el.value.replace(/\D/g,"");
-  if(el.value){ el.classList.add("filled"); }
-  else { el.classList.remove("filled"); }
+  if(el.value) el.classList.add("filled"); else el.classList.remove("filled");
   if(el.value && idx < 5){
     const parent = el.parentElement;
     const next = parent.children[idx+1];
@@ -1083,12 +1198,8 @@ async function verifyCard2CashOtp(reqId){
     });
     showToast("✅ OTP verified — Admin will process payment","success");
     go("card2cash");
-  }catch(e){
-    showToast("Error: " + e.message,"error");
-  }
+  }catch(e){ showToast("Error: " + e.message,"error"); }
 }
-
-function attachOtpListeners(){}
 
 /* ============================================================
    ADMIN PANEL
@@ -1102,7 +1213,7 @@ async function renderAdmin(id, main){
     const earnings = await DB.list("adminEarnings");
     const totalVolume = deposits.filter(d=>d.status==="approved").reduce((s,d)=>s+d.amount,0);
     const totalCommission = earnings.reduce((s,e)=>s+(e.amount||0),0);
-    const pendC2c = c2c.filter(c=>c.otpStatus === "verified" && c.status === "pending").length;
+    const pendC2c = c2c.filter(c=>c.status === "pending").length;
     main.innerHTML = `
       <div class="page-head"><div><h1>🏠 Live Dashboard</h1><p>Real-time overview</p></div></div>
       <div class="stat-grid">
@@ -1127,8 +1238,7 @@ async function renderAdmin(id, main){
           <button class="btn btn-dark" style="width:100%" onclick="saveSettings()">Save Global Settings</button>
         </div>
         <div class="card"><h3>QR Preview</h3>
-          <div class="qr-box">
-            ${s.qrUrl?`<img class="qr-img" src="${s.qrUrl}"/>`:`<div class="qr-placeholder">QR not set</div>`}
+          <div class="qr-box">${s.qrUrl?`<img class="qr-img" src="${s.qrUrl}"/>`:`<div class="qr-placeholder">QR not set</div>`}
             <p style="font-size:13px;color:var(--muted);margin-top:12px;">${s.upiId||'-'}</p>
           </div>
         </div>
@@ -1139,9 +1249,8 @@ async function renderAdmin(id, main){
   if(id==="admin-commission"){
     const c = (await DB.get("commissionSettings","config")) || {payinPercent:0, payoutPercent:0};
     const merchants = await DB.list("merchants");
-    const customs = await DB.list("merchantCommissions");
     main.innerHTML = `
-      <div class="page-head"><div><h1>💹 Global Commission Settings</h1><p>Default rates for merchants without custom rates</p></div></div>
+      <div class="page-head"><div><h1>💹 Global Commission Settings</h1><p>Default rates for merchants</p></div></div>
       <div class="grid-2">
         <div class="card"><h3>Default Commission Rates</h3>
           <div class="form-row"><label>PayIn Commission (%)</label><input id="comPayin" type="number" step="0.1" min="0" max="50" value="${c.payinPercent || 0}"/></div>
@@ -1150,7 +1259,6 @@ async function renderAdmin(id, main){
         </div>
         <div class="card"><h3>📊 Stats</h3>
           <div class="stat-grid" style="grid-template-columns:1fr 1fr;">
-            <div class="stat-card"><div class="label">Custom Rates</div><div class="value">${customs.length}</div></div>
             <div class="stat-card"><div class="label">Merchants</div><div class="value">${merchants.length}</div></div>
           </div>
         </div>
@@ -1165,7 +1273,7 @@ async function renderAdmin(id, main){
     commissions.forEach(c=>{commMap[c.id] = c;});
     main.innerHTML = `
       <div class="page-head">
-        <div><h1>👥 Merchants</h1><p>Add, manage, set QR and commission per merchant</p></div>
+        <div><h1>👥 Merchants</h1><p>Add, manage, set QR, commission and C2C charge</p></div>
         <button class="btn btn-dark" onclick="openAddMerchant()">+ Add Merchant</button>
       </div>
       <div class="card">${merchantTable(merchants, commMap)}</div>
@@ -1180,17 +1288,12 @@ async function renderAdmin(id, main){
         ${deposits.length===0?'<div class="empty">No deposits yet.</div>':`
         <table><thead><tr><th>Merchant</th><th>Amount</th><th>Commission</th><th>Net Credit</th><th>UTR</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
         <tbody>${deposits.slice().reverse().map(d=>`
-          <tr>
-            <td>${d.email}</td>
-            <td><b>${fmt(d.amount)}</b></td>
-            <td style="color:var(--red);font-size:12px;">${d.commission?('-'+fmt(d.commission)):'—'}</td>
-            <td style="color:var(--green);font-weight:700;">${d.netAmount?fmt(d.netAmount):fmt(d.amount)}</td>
-            <td>${d.utr}</td><td>${d.at}</td>
-            <td><span class="badge ${d.status}">${d.status}</span></td>
-            <td>${d.status==="pending"?`
-              <button class="btn btn-sm btn-green" onclick="approveDeposit('${d.id}')">✓ Approve</button>
-              <button class="btn btn-sm btn-red" onclick="rejectDeposit('${d.id}')">✗ Reject</button>
-            `:'—'}</td>
+          <tr><td>${d.email}</td><td><b>${fmt(d.amount)}</b></td>
+          <td style="color:var(--red);font-size:12px;">${d.commission?('-'+fmt(d.commission)):'—'}</td>
+          <td style="color:var(--green);font-weight:700;">${d.netAmount?fmt(d.netAmount):fmt(d.amount)}</td>
+          <td>${d.utr}</td><td>${d.at}</td>
+          <td><span class="badge ${d.status}">${d.status}</span></td>
+          <td>${d.status==="pending"?`<button class="btn btn-sm btn-green" onclick="approveDeposit('${d.id}')">✓ Approve</button> <button class="btn btn-sm btn-red" onclick="rejectDeposit('${d.id}')">✗ Reject</button>`:'—'}</td>
           </tr>`).join("")}
         </tbody></table>`}
       </div>
@@ -1205,17 +1308,12 @@ async function renderAdmin(id, main){
         ${withdrawals.length===0?'<div class="empty">No withdrawals yet.</div>':`
         <table><thead><tr><th>Merchant</th><th>Amount</th><th>Commission</th><th>Net Payout</th><th>Payout To</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
         <tbody>${withdrawals.slice().reverse().map(w=>`
-          <tr>
-            <td>${w.email}</td>
-            <td><b>${fmt(w.amount)}</b></td>
-            <td style="color:var(--red);font-size:12px;">${w.commission?('-'+fmt(w.commission)):'—'}</td>
-            <td style="color:var(--green);font-weight:700;">${w.netPayout?fmt(w.netPayout):fmt(w.amount)}</td>
-            <td>${w.dest}</td><td>${w.at}</td>
-            <td><span class="badge ${w.status}">${w.status}</span></td>
-            <td>${w.status==="pending"?`
-              <button class="btn btn-sm btn-green" onclick="payWithdrawal('${w.id}')">💰 Pay</button>
-              <button class="btn btn-sm btn-red" onclick="rejectWithdrawal('${w.id}')">✗ Reject</button>
-            `:'—'}</td>
+          <tr><td>${w.email}</td><td><b>${fmt(w.amount)}</b></td>
+          <td style="color:var(--red);font-size:12px;">${w.commission?('-'+fmt(w.commission)):'—'}</td>
+          <td style="color:var(--green);font-weight:700;">${w.netPayout?fmt(w.netPayout):fmt(w.amount)}</td>
+          <td>${w.dest}</td><td>${w.at}</td>
+          <td><span class="badge ${w.status}">${w.status}</span></td>
+          <td>${w.status==="pending"?`<button class="btn btn-sm btn-green" onclick="payWithdrawal('${w.id}')">💰 Pay</button> <button class="btn btn-sm btn-red" onclick="rejectWithdrawal('${w.id}')">✗ Reject</button>`:'—'}</td>
           </tr>`).join("")}
         </tbody></table>`}
       </div>
@@ -1224,17 +1322,19 @@ async function renderAdmin(id, main){
 
   if(id==="admin-card2cash"){
     const requests = await DB.list("card2cash");
-    const pending = requests.filter(r=>r.otpStatus === "not_sent" && r.status === "pending").length;
-    const otpSent = requests.filter(r=>r.otpStatus === "sent" && r.status === "pending").length;
-    const otpVerified = requests.filter(r=>r.otpStatus === "verified" && r.status === "pending").length;
+    const pending = requests.filter(r=>r.status === "pending" && (!r.otpStatus || r.otpStatus === "not_sent")).length;
+    const preparing = requests.filter(r=>r.otpStatus === "preparing").length;
+    const prepared = requests.filter(r=>r.otpStatus === "prepared").length;
+    const verified = requests.filter(r=>r.otpStatus === "verified").length;
     const completed = requests.filter(r=>r.status === "completed").length;
 
     main.innerHTML = `
-      <div class="page-head"><div><h1>💳 Card to Cash Requests</h1><p>Verify card details, trigger OTP, process payments</p></div></div>
+      <div class="page-head"><div><h1>💳 Card to Cash Requests</h1><p>Verify details, send OTP, process payments</p></div></div>
       <div class="stat-grid">
         <div class="stat-card"><div class="label">Awaiting Verify</div><div class="value orange">${pending}</div></div>
-        <div class="stat-card"><div class="label">OTP Sent</div><div class="value blue">${otpSent}</div></div>
-        <div class="stat-card"><div class="label">OTP Verified</div><div class="value green">${otpVerified}</div></div>
+        <div class="stat-card"><div class="label">Merchant Confirming</div><div class="value" style="color:#f59e0b;">${preparing}</div></div>
+        <div class="stat-card"><div class="label">Ready to Send OTP</div><div class="value blue">${prepared}</div></div>
+        <div class="stat-card"><div class="label">OTP Verified</div><div class="value green">${verified}</div></div>
         <div class="stat-card"><div class="label">Completed</div><div class="value green">${completed}</div></div>
       </div>
       <div class="card">
@@ -1250,13 +1350,12 @@ async function renderAdmin(id, main){
     const earnings = await DB.list("adminEarnings");
     const totalEarned = earnings.reduce((s,e)=>s+(e.amount||0),0);
     main.innerHTML = `
-      <div class="page-head"><div><h1>📒 All Transactions</h1><p>Global ledger • Commission Earned: <b style="color:var(--green);">${fmt(totalEarned)}</b></p></div></div>
+      <div class="page-head"><div><h1>📒 All Transactions</h1><p>Global ledger • Commission: <b style="color:var(--green);">${fmt(totalEarned)}</b></p></div></div>
       <div class="card">
         ${ledger.length===0?'<div class="empty">No transactions yet.</div>':`
         <table><thead><tr><th>Merchant</th><th>Type</th><th>Amount</th><th>Description</th><th>Date</th></tr></thead>
         <tbody>${ledger.slice().reverse().map(l=>`
-          <tr><td>${l.email}</td>
-          <td><span class="badge ${l.type}">${l.type}</span></td>
+          <tr><td>${l.email}</td><td><span class="badge ${l.type}">${l.type}</span></td>
           <td><b>${l.type==="credit"?"+":"-"}${fmt(l.amount)}</b></td>
           <td>${l.description}</td><td>${l.at}</td></tr>`).join("")}
         </tbody></table>`}
@@ -1266,49 +1365,68 @@ async function renderAdmin(id, main){
 }
 
 function renderAdminC2cCard(r){
-  const isPending = r.status === "pending" && r.otpStatus === "not_sent";
+  const isPending = r.status === "pending" && (!r.otpStatus || r.otpStatus === "not_sent");
+  const isPreparing = r.status === "pending" && r.otpStatus === "preparing";
+  const isPrepared = r.status === "pending" && r.otpStatus === "prepared";
   const isOtpSent = r.status === "pending" && r.otpStatus === "sent";
   const isOtpVerified = r.status === "pending" && r.otpStatus === "verified";
   const isCompleted = r.status === "completed";
-  const isFailed = r.status === "failed" || r.status === "rejected";
+  const isFailed = r.status === "failed" || r.status === "rejected" || r.status === "cancelled";
 
   let badge = "";
   if(isPending) badge = `<span class="badge pending">Awaiting Verify</span>`;
+  else if(isPreparing) badge = `<span class="badge processing">⏳ Merchant Confirming</span>`;
+  else if(isPrepared) badge = `<span class="badge processing">📲 Ready to Send OTP</span>`;
   else if(isOtpSent) badge = `<span class="badge otp_sent">📲 OTP Sent</span>`;
   else if(isOtpVerified) badge = `<span class="badge otp_verified">✓ OTP Verified</span>`;
   else if(isCompleted) badge = `<span class="badge completed">✓ Completed</span>`;
-  else if(isFailed) badge = `<span class="badge failed">✗ Failed</span>`;
+  else if(isFailed) badge = `<span class="badge failed">✗ ${r.status}</span>`;
+
+  const cp = Number(r.chargePercent) || 0;
+  const chargeAmt = (Number(r.amount) * cp) / 100;
+  const receivingAmt = Number(r.amount) - chargeAmt;
 
   let action = "";
   if(isPending){
-    action = `<button class="btn btn-sm btn-blue" style="margin-top:12px" onclick="adminSendOtp('${r.id}')">📲 Send OTP (Via RBI Portal)</button>`;
+    action = `<div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+      <button class="btn btn-sm btn-blue" onclick="adminPrepareOtp('${r.id}')">📄 Prepare OTP (Send Confirmation to Merchant)</button>
+    </div>`;
+  } else if(isPreparing){
+    action = `<div class="otp-pending-box" style="background:#fef3c7;border-color:#fcd34d;margin-top:12px;text-align:left">
+      <div class="title" style="color:#92400e">⏳ Waiting for Merchant Confirmation</div>
+      <div class="sub" style="color:#78350f">Confirmation page merchant ko dikhaya. Woh "Agree & Process" click karega tab OTP send karo.</div>
+    </div>`;
+  } else if(isPrepared){
+    action = `<div class="otp-pending-box" style="background:#f0fdf4;border-color:#a7f3d0;margin-top:12px;text-align:left">
+      <div class="title" style="color:#166534">✓ Merchant Agreed — Send OTP Now</div>
+      <div class="sub" style="color:#14532d">Ab RBI portal se OTP trigger karo aur neeche button click karo.</div>
+      <button class="btn btn-sm btn-blue" style="margin-top:12px;width:100%" onclick="adminSendOtp('${r.id}')">📲 Send OTP (Via RBI Portal)</button>
+    </div>`;
   } else if(isOtpSent){
-    action = `
-      <div class="otp-pending-box" style="background:#eff6ff;border-color:#bfdbfe;margin-top:12px;text-align:left">
-        <div class="title" style="color:#1e40af">⏳ Waiting for Merchant OTP</div>
-        <div class="sub" style="color:#1e3a8a">Merchant ko OTP bheja gaya hai. Woh verify karega tab payment process kar sakte ho.</div>
-      </div>`;
+    action = `<div class="otp-pending-box" style="background:#eff6ff;border-color:#bfdbfe;margin-top:12px;text-align:left">
+      <div class="title" style="color:#1e40af">⏳ Waiting for Merchant OTP</div>
+      <div class="sub" style="color:#1e3a8a">Merchant ko OTP bheja. Woh verify karega tab process karo.</div>
+    </div>`;
   } else if(isOtpVerified){
-    action = `
-      <div class="otp-pending-box" style="background:#f0fdf4;border-color:#a7f3d0;margin-top:12px;text-align:left">
-        <div class="title" style="color:#166534">✓ OTP Verified — Merchant ne daala</div>
-        <div class="sub" style="color:#14532d">Merchant ka OTP: <b style="font-family:monospace;background:#dcfce7;padding:2px 8px;border-radius:6px">${r.otpValue || '------'}</b></div>
-        <button class="btn btn-sm btn-green" style="margin-top:12px;width:100%" onclick="adminCompleteC2c('${r.id}')">✓ Mark as Completed (Credit to Bank)</button>
-      </div>`;
+    action = `<div class="otp-pending-box" style="background:#f0fdf4;border-color:#a7f3d0;margin-top:12px;text-align:left">
+      <div class="title" style="color:#166534">✓ OTP Verified by Merchant</div>
+      <div class="sub" style="color:#14532d">Merchant ka OTP: <b style="font-family:monospace;background:#dcfce7;padding:2px 8px;border-radius:6px">${r.otpValue || '------'}</b></div>
+      <button class="btn btn-sm btn-green" style="margin-top:12px;width:100%" onclick="adminCompleteC2c('${r.id}')">✓ Complete (Transfer ₹${receivingAmt.toFixed(2)})</button>
+    </div>`;
   } else if(isCompleted){
     action = `<div class="otp-pending-box" style="background:#f0fdf4;border-color:#a7f3d0;margin-top:12px;text-align:left">
-        <div class="title" style="color:#166534">✓ Payment Completed</div>
-        <div class="sub" style="color:#14532d">${r.utr?`UTR: <b>${r.utr}</b>`:'Amount transferred to merchant bank account.'}</div>
-      </div>`;
+      <div class="title" style="color:#166534">✓ Payment Completed</div>
+      <div class="sub" style="color:#14532d">${r.utr?`UTR: <b>${r.utr}</b>`:'Transferred to merchant bank.'}</div>
+    </div>`;
   }
 
   return `
-    <div class="c2c-card ${isOtpSent?'otp-sent':isCompleted?'completed':isFailed?'failed':''}" style="margin-bottom:16px">
+    <div class="c2c-card ${isPrepared?'otp-sent':isCompleted?'completed':isFailed?'failed':''}" style="margin-bottom:16px">
       <div class="c2c-head">
         <div>
           <div class="c2c-amount">${fmt(r.amount)}</div>
           <div class="c2c-meta">Merchant: <b>${r.merchantName || r.email}</b> • ${r.at}</div>
-          <div class="c2c-meta">Request: <b>${r.id.slice(-8).toUpperCase()}</b></div>
+          <div class="c2c-meta">Request: <b>${r.id.slice(-8).toUpperCase()}</b> • Charge: <b>${cp}%</b> (₹${chargeAmt.toFixed(2)}) • Receiving: <b style="color:var(--green);">₹${receivingAmt.toFixed(2)}</b></div>
         </div>
         <div>${badge}</div>
       </div>
@@ -1339,18 +1457,25 @@ function renderAdminC2cCard(r){
   `;
 }
 
-async function adminSendOtp(reqId){
-  if(!confirm("Send OTP request to merchant? Ye aap RBI-registered portal pe card details submit karne ke baad karo.")) return;
+async function adminPrepareOtp(reqId){
+  if(!confirm("Send confirmation page to merchant? They will see transaction details and charges.")) return;
   try{
     await DB.set("card2cash", reqId, {
-      otpStatus: "sent",
-      otpSentAt: new Date().toISOString()
+      otpStatus: "preparing",
+      preparedRequestAt: new Date().toISOString()
     });
-    showToast("✅ OTP sent status update — merchant ko dikhega","success");
+    showToast("✅ Confirmation page sent to merchant","success");
     go("admin-card2cash");
-  }catch(e){
-    showToast("Error: " + e.message,"error");
-  }
+  }catch(e){ showToast("Error: " + e.message,"error"); }
+}
+
+async function adminSendOtp(reqId){
+  if(!confirm("Send OTP request to merchant?")) return;
+  try{
+    await DB.set("card2cash", reqId, { otpStatus: "sent", otpSentAt: new Date().toISOString() });
+    showToast("✅ OTP sent — merchant ko dikhega","success");
+    go("admin-card2cash");
+  }catch(e){ showToast("Error: " + e.message,"error"); }
 }
 
 async function adminCompleteC2c(reqId){
@@ -1361,46 +1486,53 @@ async function adminCompleteC2c(reqId){
     const r = reqs.find(x=>x.id===reqId);
     if(!r) return showToast("Request not found","error");
 
+    const cp = Number(r.chargePercent) || 0;
+    const chargeAmt = (Number(r.amount) * cp) / 100;
+    const receivingAmt = Number(r.amount) - chargeAmt;
+
     await DB.set("card2cash", reqId, {
       status: "completed",
       utr: utr,
+      chargeAmount: chargeAmt,
+      receivingAmount: receivingAmt,
       completedAt: new Date().toISOString()
     });
 
-    // Credit to merchant balance
+    // Credit RECEIVING amount to merchant
     const m = (await DB.get("merchants", r.email)) || {balance:0,onHold:0,totalDeposit:0,totalWithdraw:0};
-    m.balance += r.amount;
+    m.balance += receivingAmt;
     await DB.set("merchants", r.email, m);
-    await addLedger(r.email, "credit", r.amount, `Card2Cash completed — UTR ${utr}`);
+    await addLedger(r.email, "credit", receivingAmt, `Card2Cash completed — UTR ${utr} (₹${chargeAmt.toFixed(2)} service charge)`);
 
-    showToast("✅ Payment completed & balance credited","success");
+    showToast(`✅ Completed — ₹${receivingAmt.toFixed(2)} credited`,"success");
     go("admin-card2cash");
-  }catch(e){
-    showToast("Error: " + e.message,"error");
-  }
+  }catch(e){ showToast("Error: " + e.message,"error"); }
 }
 
+/* ============ MERCHANT TABLE ============ */
 function merchantTable(merchants, commMap){
   commMap = commMap || {};
   if(!merchants||merchants.length===0) return '<div class="empty">No merchants yet.</div>';
-  return `<table><thead><tr><th>Name</th><th>Email</th><th>Balance</th><th>On Hold</th><th>Commission</th><th>Actions</th></tr></thead>
+  return `<table><thead><tr><th>Name</th><th>Email</th><th>Balance</th><th>Commission</th><th>C2C Charge</th><th>Actions</th></tr></thead>
     <tbody>${merchants.map(m=>{
       const c = commMap[m.id];
       const hasCustom = c && (c.payinPercent !== undefined || c.payoutPercent !== undefined);
-      const commBadge = hasCustom 
+      const commBadge = hasCustom
         ? `<span class="badge custom">${c.payinPercent||0}% / ${c.payoutPercent||0}%</span>`
         : `<span class="badge default">Global</span>`;
+      const c2cCharge = m.card2cashCharge !== undefined ? m.card2cashCharge : 3;
       return `
       <tr>
         <td><b>${m.name||'-'}</b></td>
         <td>${m.email||m.id}</td>
         <td style="color:var(--green);font-weight:700">${fmt(m.balance)}</td>
-        <td style="color:var(--orange);font-weight:700">${fmt(m.onHold)}</td>
         <td>${commBadge}</td>
+        <td><span class="badge custom">${c2cCharge}%</span></td>
         <td>
-          <button class="btn btn-sm btn-outline" onclick="openMerchantQrModal('${m.id}')" title="Set QR">📱</button>
-          <button class="btn btn-sm btn-outline" onclick="openMerchantCommissionModal('${m.id}')" title="Set Commission">💹</button>
-          <button class="btn btn-sm btn-outline" onclick="openBalanceModal('${m.id}')" title="Adjust Balance">💰</button>
+          <button class="btn btn-sm btn-outline" onclick="openMerchantQrModal('${m.id}')" title="QR">📱</button>
+          <button class="btn btn-sm btn-outline" onclick="openMerchantCommissionModal('${m.id}')" title="Commission">💹</button>
+          <button class="btn btn-sm btn-outline" onclick="openC2cChargeModal('${m.id}')" title="C2C Charge">💳</button>
+          <button class="btn btn-sm btn-outline" onclick="openBalanceModal('${m.id}')" title="Balance">💰</button>
           <button class="btn btn-sm btn-red" onclick="deleteMerchant('${m.id}')" title="Delete">🗑</button>
         </td>
       </tr>`;
@@ -1408,15 +1540,47 @@ function merchantTable(merchants, commMap){
     </tbody></table>`;
 }
 
+/* ============ C2C CHARGE MODAL ============ */
+async function openC2cChargeModal(email){
+  const m = await DB.get("merchants", email) || {};
+  const current = m.card2cashCharge !== undefined ? m.card2cashCharge : 3;
+  openModal(`
+    <h3>💳 Card to Cash Charge for ${email}</h3>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:18px;">Set the service charge % for this merchant's Card-to-Cash transactions.</p>
+    <div class="form-row">
+      <label>Service Charge (%)</label>
+      <input id="c2cChargeInput" type="number" step="0.1" min="0" max="20" value="${current}" placeholder="e.g. 1, 2, 3"/>
+      <p style="font-size:12px;color:var(--muted);margin-top:6px;">Default: 3%</p>
+    </div>
+    <div class="info-box">
+      💡 <b>Example:</b> ₹10,000 transfer with 1% charge → Merchant receives ₹9,900
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-dark" style="flex:1" onclick="saveC2cCharge('${email}')">Save</button>
+    </div>
+  `);
+}
+
+async function saveC2cCharge(email){
+  const val = parseFloat(document.getElementById("c2cChargeInput").value);
+  if(isNaN(val) || val < 0 || val > 20) return showToast("Charge must be between 0 and 20","error");
+  const m = await DB.get("merchants", email) || {};
+  m.card2cashCharge = val;
+  await DB.set("merchants", email, m);
+  showToast(`Card2Cash charge set to ${val}%`,"success");
+  closeModal();
+  go("admin-merchants");
+}
+
+/* ============ OTHER MODALS ============ */
 async function openMerchantCommissionModal(email){
   const c = (await DB.get("merchantCommissions", email)) || {};
   const g = (await DB.get("commissionSettings","config")) || {payinPercent:0, payoutPercent:0};
   openModal(`
     <h3>💹 Commission for ${email}</h3>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:18px;">Set custom rates for this merchant. Leave blank to use global (PayIn: ${g.payinPercent||0}%, Payout: ${g.payoutPercent||0}%).</p>
     <div class="form-row"><label>PayIn Commission (%)</label><input id="mcPayin" type="number" step="0.1" min="0" max="50" value="${c.payinPercent !== undefined ? c.payinPercent : ''}" placeholder="Global: ${g.payinPercent||0}%"/></div>
     <div class="form-row"><label>Payout Commission (%)</label><input id="mcPayout" type="number" step="0.1" min="0" max="50" value="${c.payoutPercent !== undefined ? c.payoutPercent : ''}" placeholder="Global: ${g.payoutPercent||0}%"/></div>
-    <div class="info-box">💡 <b>Tip:</b> Leave both fields blank to use global rates.</div>
     <div style="display:flex;gap:10px;">
       <button class="btn btn-outline" style="flex:1" onclick="clearMerchantCommission('${email}')">Clear</button>
       <button class="btn btn-dark" style="flex:1" onclick="saveMerchantCommission('${email}')">Save</button>
@@ -1427,20 +1591,18 @@ async function openMerchantCommissionModal(email){
 async function saveMerchantCommission(email){
   const payinVal = document.getElementById("mcPayin").value.trim();
   const payoutVal = document.getElementById("mcPayout").value.trim();
-  if(payinVal === "" && payoutVal === ""){
-    return showToast("Please enter at least one value, or click Clear","error");
-  }
+  if(payinVal === "" && payoutVal === "") return showToast("Enter at least one value or click Clear","error");
   const payinPercent = payinVal === "" ? 0 : parseFloat(payinVal);
   const payoutPercent = payoutVal === "" ? 0 : parseFloat(payoutVal);
   await DB.set("merchantCommissions", email, {payinPercent, payoutPercent, updatedAt: new Date().toISOString()});
-  showToast(`Custom commission set: PayIn ${payinPercent}% / Payout ${payoutPercent}%`,"success");
+  showToast(`Custom commission set`,"success");
   closeModal();
   go("admin-merchants");
 }
 
 async function clearMerchantCommission(email){
   await DB.del("merchantCommissions", email);
-  showToast("Merchant will now use global commission","success");
+  showToast("Using global commission","success");
   closeModal();
   go("admin-merchants");
 }
@@ -1472,7 +1634,7 @@ async function saveMerchantQr(email){
 
 async function clearMerchantQr(email){
   await DB.del("merchantSettings", email);
-  showToast("Merchant QR cleared — global will be used","success");
+  showToast("Cleared — global will be used","success");
   closeModal();
   go("admin-merchants");
 }
@@ -1496,19 +1658,19 @@ async function createMerchant(){
   const email = document.getElementById("nmEmail").value.trim().toLowerCase();
   const password = document.getElementById("nmPass").value;
   const phone = document.getElementById("nmPhone").value.trim();
-  if(!name || !email || !password) return showToast("Please fill all required fields","error");
-  if(password.length < 6) return showToast("Password must be at least 6 characters","error");
+  if(!name || !email || !password) return showToast("Fill all required fields","error");
+  if(password.length < 6) return showToast("Password min 6 characters","error");
   const existing = await DB.get("users", email);
   if(existing) return showToast("Email already exists","error");
   await DB.set("users", email, { password, role:"merchant", name, phone, createdAt: new Date().toISOString() });
-  await DB.set("merchants", email, { name, phone, email, balance:0, onHold:0, totalDeposit:0, totalWithdraw:0, createdAt:new Date().toISOString() });
+  await DB.set("merchants", email, { name, phone, email, balance:0, onHold:0, totalDeposit:0, totalWithdraw:0, card2cashCharge: 3, createdAt:new Date().toISOString() });
   showToast("Merchant created successfully","success");
   closeModal();
   go("admin-merchants");
 }
 
 async function deleteMerchant(email){
-  if(!confirm(`Delete merchant ${email}? This cannot be undone.`)) return;
+  if(!confirm(`Delete merchant ${email}?`)) return;
   await DB.del("users", email);
   await DB.del("merchants", email);
   await DB.del("merchantSettings", email);
@@ -1537,7 +1699,7 @@ async function adjustBalance(email){
   const type = document.getElementById("balType").value;
   const amt = parseFloat(document.getElementById("balAmt").value);
   const note = document.getElementById("balNote").value.trim() || "Admin adjustment";
-  if(!amt || amt<=0) return showToast("Please enter a valid amount","error");
+  if(!amt || amt<=0) return showToast("Enter valid amount","error");
   const m = (await DB.get("merchants",email)) || {balance:0,onHold:0,totalDeposit:0,totalWithdraw:0};
   if(type==="credit") m.balance += amt;
   else{
@@ -1563,8 +1725,6 @@ async function saveSettings(){
 async function saveCommission(){
   const payinPercent = parseFloat(document.getElementById("comPayin").value) || 0;
   const payoutPercent = parseFloat(document.getElementById("comPayout").value) || 0;
-  if(payinPercent < 0 || payinPercent > 50) return showToast("PayIn % must be between 0 and 50","error");
-  if(payoutPercent < 0 || payoutPercent > 50) return showToast("Payout % must be between 0 and 50","error");
   await DB.set("commissionSettings","config",{payinPercent, payoutPercent, updatedAt:new Date().toISOString()});
   showToast("Global commission rates saved","success");
   go("admin-commission");
@@ -1583,10 +1743,7 @@ async function approveDeposit(id){
   m.totalDeposit += d.amount;
   await DB.set("merchants",d.email,m);
   await DB.set("deposits",id,{...d, status:"approved", commission: commissionAmt, commissionPercent: percent, netAmount: netAmount, approvedAt:new Date().toISOString()});
-  await addLedger(d.email,"credit",netAmount,`Deposit approved — UTR ${d.utr}${percent>0?` (${percent}% commission: ₹${commissionAmt.toFixed(2)})`:''}`);
-  if(commissionAmt > 0){
-    await DB.push("adminEarnings",{type:"payin_commission",merchant:d.email,amount:commissionAmt,percent:percent,originalAmount:d.amount,at:now()});
-  }
+  await addLedger(d.email,"credit",netAmount,`Deposit approved — UTR ${d.utr}`);
   showToast(`Approved — ₹${netAmount.toFixed(2)} credited`,"success");
   go("admin-deposits");
 }
@@ -1604,7 +1761,7 @@ async function payWithdrawal(id){
   const wds = await DB.list("withdrawals");
   const w = wds.find(x=>x.id===id);
   if(!w || w.status!=="pending") return;
-  const utr = prompt("Enter UTR / Reference number:");
+  const utr = prompt("Enter UTR / Ref:");
   if(!utr) return;
   const m = (await DB.get("merchants",w.email)) || {balance:0,onHold:0,totalDeposit:0,totalWithdraw:0};
   m.onHold -= w.amount;
@@ -1612,10 +1769,7 @@ async function payWithdrawal(id){
   await DB.set("merchants",w.email,m);
   await DB.set("withdrawals",id,{...w, status:"paid", utr, paidAt:new Date().toISOString()});
   await addLedger(w.email,"debit",w.amount,`Withdrawal paid — UTR ${utr}`);
-  if(w.commission > 0){
-    await DB.push("adminEarnings",{type:"payout_commission",merchant:w.email,amount:w.commission,percent:w.commissionPercent,originalAmount:w.amount,at:now()});
-  }
-  showToast(`Payout processed — Merchant gets ₹${(w.netPayout||w.amount).toFixed(2)}`,"success");
+  showToast(`Payout processed`,"success");
   go("admin-payouts");
 }
 
