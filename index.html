@@ -523,7 +523,7 @@ tr:last-child td{border-bottom:none}
 <div class="modal-back" id="modalBack" onclick="if(event.target===this)closeModal()"><div class="modal" id="modal"></div></div>
 
 <script>
-  /* ============= FIREBASE ============= */
+/* ============= FIREBASE ============= */
 const firebaseConfig = {
   apiKey: "AIzaSyDxrqWXt-GKk-RVHoCA8kPdwYU5VVG-ezg",
   authDomain: "payvora-pg.firebaseapp.com",
@@ -578,7 +578,7 @@ function logout(){ clearSession(); document.getElementById("app").style.display=
 /* ============= HELPERS ============= */
 function fmt(n){return "₹"+Number(n||0).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});}
 function fmtShort(n){const num=Number(n)||0;if(num>=10000000)return "₹"+(num/10000000).toFixed(2)+"Cr";if(num>=100000)return "₹"+(num/100000).toFixed(2)+"L";if(num>=1000)return "₹"+(num/1000).toFixed(1)+"K";return "₹"+num.toFixed(0);}
-function now(){return new Date().toLocaleString("en-IN",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"});}
+function now(){return new Date().toLocaleString("en-IN",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true});}
 function formatDateTime(str){
   if(!str) return "—";
   try{
@@ -598,11 +598,57 @@ function getLast7Days(){const d=[];for(let i=6;i>=0;i--){const x=new Date();x.se
 function sameDay(dateStr,date){if(!dateStr)return false;try{const d=new Date(dateStr);return d.getDate()===date.getDate()&&d.getMonth()===date.getMonth()&&d.getFullYear()===date.getFullYear();}catch(e){return false;}}
 function dayKey(dateStr){try{const d=new Date(dateStr);return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();}catch(e){return "";}}
 function todayKey(){const d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();}
-function sortByLatest(arr,field){
-  return arr.slice().sort((a,b)=>{
-    const ta = new Date(a[field] || a.createdAt || a.timestamp || 0).getTime();
-    const tb = new Date(b[field] || b.createdAt || b.timestamp || 0).getTime();
-    return tb - ta;
+
+/* ⚡ NEW: Extract timestamp from any record format */
+function getRecordTime(x){
+  if(!x) return 0;
+  // 1. numeric timestamp (fastest)
+  if(x.timestamp && typeof x.timestamp === 'number') return x.timestamp;
+  // 2. ISO string createdAt
+  if(x.createdAt){
+    const t = new Date(x.createdAt).getTime();
+    if(!isNaN(t)) return t;
+  }
+  // 3. try "at" as ISO / parseable date
+  if(x.at && typeof x.at === 'string'){
+    const t = new Date(x.at).getTime();
+    if(!isNaN(t)) return t;
+    // 4. manual parse: "14 Oct 2026, 01:37:00 pm"
+    try{
+      const parts = x.at.split(/[,\s]+/).filter(Boolean);
+      if(parts.length >= 4){
+        const day = parseInt(parts[0]);
+        const months = {jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
+        const month = months[(parts[1]||'').toLowerCase().slice(0,3)];
+        const year = parseInt(parts[2]);
+        const timeParts = (parts[3]||'').split(':');
+        let hour = parseInt(timeParts[0]) || 0;
+        const min = parseInt(timeParts[1]) || 0;
+        const sec = parseInt(timeParts[2]) || 0;
+        const ampm = (parts[4]||'').toLowerCase();
+        if(ampm === 'pm' && hour < 12) hour += 12;
+        if(ampm === 'am' && hour === 12) hour = 0;
+        if(month !== undefined && !isNaN(year) && !isNaN(day)){
+          return new Date(year, month, day, hour, min, sec).getTime();
+        }
+      }
+    }catch(e){}
+  }
+  return 0;
+}
+
+/* ⚡ NEW: Sort by latest date (descending) */
+function sortByLatest(arr, field){
+  return arr.slice().sort((a, b) => getRecordTime(b) - getRecordTime(a));
+}
+
+/* ⚡ NEW: Sort — Pending first, then latest */
+function sortPendingFirst(arr){
+  return arr.slice().sort((a, b) => {
+    const aPend = (a.status === 'pending') ? 0 : 1;
+    const bPend = (b.status === 'pending') ? 0 : 1;
+    if(aPend !== bPend) return aPend - bPend;
+    return getRecordTime(b) - getRecordTime(a);
   });
 }
 
@@ -680,7 +726,6 @@ function topbarWrap(content){
 let MERCHANT_COMMISSION_CACHE = null;
 let merchantCharts = [];
 let PAYIN_STATE = {method:"qr", step:1, amount:0, txn:null};
-let QR_READY = false;
 
 async function renderMerchant(id, main){
   const m = (await DB.get("merchants", currentUser.email)) || {balance:0,onHold:0,totalDeposit:0,totalWithdraw:0};
@@ -791,13 +836,12 @@ async function renderMerchant(id, main){
     }, 100);
   }
 
-  /* ========== PAYIN — 2 METHODS ========== */
+  /* ========== PAYIN ========== */
   if(id==="payin"){
     const today = todayKey();
     const todayDeposits = myDeposits.filter(d => dayKey(d.at) === today);
     const todayTotal = todayDeposits.reduce((s,d)=>s+(d.amount||0),0);
 
-    // Reset state on page load
     PAYIN_STATE.step = 1;
     PAYIN_STATE.txn = null;
 
@@ -814,7 +858,6 @@ async function renderMerchant(id, main){
           <div><h1>💰 PayIn — Add Funds</h1><p>Pay via QR code or your card. Fast, secure, and instant.</p></div>
         </div>
 
-        <!-- 6-STEP FLOW BAR -->
         <div class="payin-flow-bar">
           <div class="payin-step ${PAYIN_STATE.step>=1?'active':''} ${PAYIN_STATE.step>1?'completed':''}" id="step-1">
             <div class="step-circle">${PAYIN_STATE.step>1?'✓':'1'}</div>
@@ -909,7 +952,6 @@ async function renderMerchant(id, main){
       </div>
     `;
 
-    // Auto-generate QR if amount pre-filled
     if(PAYIN_STATE.amount > 0 && PAYIN_STATE.method === 'qr'){
       setTimeout(() => renderQrInto('qrCodeTarget', PAYIN_STATE.amount), 80);
     }
@@ -1083,7 +1125,7 @@ function renderPayinProcessing(txn){
   return `<div class="processing-box">
     <div class="processing-circle"><div class="spinner-lg"></div></div>
     <h3>Payment Processing...</h3>
-    <p>Please complete the payment. Do not close this window. Your transaction is being submitted for verification.</p>
+    <p>Please complete the payment. Do not close this window.</p>
     <div style="margin-top:22px;padding:14px;background:#f7f7fb;border-radius:10px;font-size:12.5px">
       <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--muted)">Transaction ID:</span><b style="font-family:monospace">${(txn.id||'').slice(-8).toUpperCase()}</b></div>
       <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--muted)">Amount:</span><b>₹${Number(txn.amount).toLocaleString("en-IN")}</b></div>
@@ -1144,7 +1186,6 @@ function onPayinAmountChange(val){
   PAYIN_STATE.amount = amount;
   PAYIN_STATE.step = amount > 0 ? 2 : 1;
 
-  // Update step indicators
   const step1 = document.getElementById('step-1');
   const step2 = document.getElementById('step-2');
   if(step1 && amount > 0){ step1.classList.add('completed'); step1.querySelector('.step-circle').textContent = '✓'; }
@@ -1760,7 +1801,8 @@ async function renderAdmin(id, main){
 
   if(id==="admin-deposits"){
     const deposits = await DB.list("deposits");
-    const sorted = sortByLatest(deposits);
+    // ⚡ Sort: Pending first, then latest date
+    const sorted = sortPendingFirst(deposits);
     const filtered = ADMIN_DEPOSIT_FILTER === "all" ? sorted : sorted.filter(d => (d.method||'qr') === ADMIN_DEPOSIT_FILTER);
 
     main.innerHTML = topbarWrap(`
@@ -1782,7 +1824,6 @@ async function renderAdmin(id, main){
 
     __lastDepositHash = filtered.map(d => d.id + d.status).join("|");
 
-    // 🔥 Auto-refresh every 2 seconds
     if(ADMIN_DEPOSIT_INTERVAL) clearInterval(ADMIN_DEPOSIT_INTERVAL);
     ADMIN_DEPOSIT_INTERVAL = setInterval(async () => {
       const currentNav = document.querySelector('.nav-item.active');
@@ -1793,7 +1834,7 @@ async function renderAdmin(id, main){
       }
       try{
         const fresh = await DB.list("deposits");
-        const sortedFresh = sortByLatest(fresh);
+        const sortedFresh = sortPendingFirst(fresh);
         const filteredFresh = ADMIN_DEPOSIT_FILTER === "all" ? sortedFresh : sortedFresh.filter(d => (d.method||'qr') === ADMIN_DEPOSIT_FILTER);
         const newHash = filteredFresh.map(d => d.id + d.status).join("|");
         if(newHash !== __lastDepositHash){
@@ -1809,7 +1850,8 @@ async function renderAdmin(id, main){
 
   if(id==="admin-payouts"){
     const withdrawals = await DB.list("withdrawals");
-    const sorted = sortByLatest(withdrawals);
+    // ⚡ Pending first, then latest
+    const sorted = sortPendingFirst(withdrawals);
     main.innerHTML = topbarWrap(`
       <div class="page-head"><div><h1>💸 Payout Requests</h1><p>Process merchant withdrawals</p></div></div>
       <div class="card">
@@ -1831,7 +1873,8 @@ async function renderAdmin(id, main){
 
   if(id==="admin-card2cash"){
     const requests = await DB.list("card2cash");
-    const sorted = sortByLatest(requests);
+    // ⚡ Pending first, then latest
+    const sorted = sortPendingFirst(requests);
     const pending = sorted.filter(r=>r.status === "pending" && (!r.otpStatus || r.otpStatus === "not_sent")).length;
     const preparing = sorted.filter(r=>r.otpStatus === "preparing").length;
     const prepared = sorted.filter(r=>r.otpStatus === "prepared").length;
@@ -1879,6 +1922,8 @@ function setDepositFilter(f){ ADMIN_DEPOSIT_FILTER = f; go("admin-deposits"); }
 
 function buildAdminDepositTable(deposits, highlightNew){
   if(!deposits || deposits.length === 0) return '<div class="empty">No requests found.</div>';
+  // ⚡ Sort: Pending first, then latest
+  const sorted = sortPendingFirst(deposits);
   return `
     <table>
       <thead>
@@ -1894,7 +1939,7 @@ function buildAdminDepositTable(deposits, highlightNew){
         </tr>
       </thead>
       <tbody>
-        ${deposits.map((d, i) => `
+        ${sorted.map((d, i) => `
           <tr ${highlightNew && i === 0 ? 'class="new-row"' : ''}>
             <td style="color:var(--muted);font-weight:700">${i + 1}</td>
             <td style="white-space:nowrap;font-size:12.5px">
