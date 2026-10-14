@@ -784,10 +784,13 @@ async function renderMerchant(id, main){
     myDeposits.forEach(d => { if(d.method === 'card') methods.Card++; else methods.UPI++; });
     myWithdrawals.forEach(w => { if(w.method === "bank") methods.Bank++; else methods.QR++; });
 
-    // Today's payin
+    // ⚡ Today's payin — ONLY APPROVED
     const today = todayKey();
-    const todayDeposits = myDeposits.filter(d => dayKey(d.at || d.createdAt) === today);
-    const todayPayin = todayDeposits.reduce((s,d)=>s+(d.amount||0),0);
+    const todayDeposits = myDeposits.filter(d => 
+      dayKey(d.at || d.createdAt) === today && 
+      d.status === "approved"
+    );
+    const todayPayin = todayDeposits.reduce((s,d)=>s+(d.netAmount || d.amount || 0),0);
     const todayCount = todayDeposits.length;
 
     main.innerHTML = `
@@ -809,13 +812,12 @@ async function renderMerchant(id, main){
               </div>
             </div>
 
-            <!-- TODAY'S PAYIN HIGHLIGHT -->
             <div class="stat-grid">
               <div class="stat-card" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-color:#a7f3d0">
                 <div class="stat-icon green" style="background:#10b981;color:#fff">₹</div>
                 <div class="stat-label" style="color:#065f46">Today's PayIn</div>
                 <div class="stat-value" style="color:#065f46">${fmt(todayPayin)}</div>
-                <div class="stat-trend up" style="color:#065f46">↑ ${todayCount} transactions today</div>
+                <div class="stat-trend up" style="color:#065f46">↑ ${todayCount} approved transactions</div>
               </div>
               <div class="stat-card"><div class="stat-icon purple">💰</div><div class="stat-label">Available Balance</div><div class="stat-value">${fmt(m.balance)}</div><div class="stat-trend up">↑ On Hold: ${fmt(m.onHold)}</div></div>
               <div class="stat-card"><div class="stat-icon orange">⏳</div><div class="stat-label">Pending</div><div class="stat-value">${pend}</div><div class="stat-trend">${pend>0?'Awaiting action':'All clear'}</div></div>
@@ -880,8 +882,10 @@ async function renderMerchant(id, main){
   /* ========== PAYIN ========== */
   if(id==="payin"){
     const today = todayKey();
-    const todayDeposits = myDeposits.filter(d => dayKey(d.at || d.createdAt) === today);
-    const todayTotal = todayDeposits.reduce((s,d)=>s+(d.amount||0),0);
+    const todayApproved = myDeposits.filter(d => 
+      dayKey(d.at || d.createdAt) === today && d.status === "approved"
+    );
+    const todayTotal = todayApproved.reduce((s,d)=>s+(d.netAmount || d.amount || 0),0);
 
     PAYIN_STATE.step = 1;
     PAYIN_STATE.txn = null;
@@ -957,7 +961,7 @@ async function renderMerchant(id, main){
         <div class="table-card" style="margin-top:20px">
           <div class="table-head">
             <h3>📋 Recent PayIn Activity</h3>
-            <div style="font-size:12px;color:var(--muted)">Today: <b style="color:var(--success)">${fmt(todayTotal)}</b></div>
+            <div style="font-size:12px;color:var(--muted)">Today (Approved): <b style="color:var(--success)">${fmt(todayTotal)}</b></div>
           </div>
           ${myDeposits.length===0?'<div class="empty">No deposits yet.</div>':`
             <table><thead><tr><th>#</th><th>Date & Time</th><th>Method</th><th>Amount</th><th>UTR</th><th>Status</th></tr></thead>
@@ -981,9 +985,7 @@ async function renderMerchant(id, main){
 
   /* ========== BANK ACCOUNTS ========== */
   if(id==="bankaccounts"){
-    SAVED_ACCOUNTS = await DB.list("bankAccounts");
-    SAVED_ACCOUNTS = SAVED_ACCOUNTS.filter(a => a.email === currentUser.email);
-
+    SAVED_ACCOUNTS = (await DB.list("bankAccounts")).filter(a => a.email === currentUser.email);
     main.innerHTML = topbarWrap(`
       <div class="page-head">
         <div><h1>🏦 Bank Accounts</h1><p>Save your bank accounts for quick payouts</p></div>
@@ -992,7 +994,7 @@ async function renderMerchant(id, main){
       <div class="info-box">💡 <b>Save once, use forever:</b> Add your bank accounts here. During payout, you can select from saved accounts instead of typing details every time.</div>
       <div class="card">
         <h3>📋 Saved Accounts</h3>
-        ${SAVED_ACCOUNTS.length === 0 ? '<div class="empty">No bank accounts saved yet. Click "Add Bank Account" to add one.</div>' :
+        ${SAVED_ACCOUNTS.length === 0 ? '<div class="empty">No bank accounts saved yet.</div>' :
           `<div class="saved-acc-list">${SAVED_ACCOUNTS.map(a => `
             <div class="saved-acc-item" style="cursor:default">
               <div class="acc-icon">${ICONS.bank}</div>
@@ -1195,7 +1197,6 @@ function renderPayoutMode(){
   if(!wrap) return;
 
   if(!USE_MANUAL_ACC && SAVED_ACCOUNTS.length > 0){
-    // Saved mode
     wrap.innerHTML = `
       <div class="saved-acc-list">
         ${SAVED_ACCOUNTS.map(a => `
@@ -1212,7 +1213,6 @@ function renderPayoutMode(){
       </div>
     `;
   } else {
-    // Manual mode
     wrap.innerHTML = `
       <div class="form-row"><label>Payout Method</label><select id="wdMethod"><option value="upi">UPI ID</option><option value="bank">Bank Account</option></select></div>
       <div class="form-row"><label id="wdLabel">UPI ID</label><input id="wdDest" placeholder="name@bank"/></div>
@@ -1435,7 +1435,6 @@ async function submitCardDeposit(){
   }
 }
 
-function renderPayoutModeContent(){}
 function merchantLedgerTable(rows){
   if(!rows||rows.length===0) return '<div class="empty">No transactions found.</div>';
   const sorted = sortByLatest(rows);
