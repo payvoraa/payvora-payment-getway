@@ -9,6 +9,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',-apple-system,sans-serif}
 :root{--bg:#f7f7fb;--sidebar:#fff;--card:#fff;--border:#f0f0f5;--primary:#7c5cff;--primary-dark:#6b46e5;--primary-light:#f3f0ff;--text:#0a0a1f;--muted:#6b7280;--muted-2:#9ca3af;--success:#10b981;--success-bg:#d1fae5;--warning:#f59e0b;--warning-bg:#fef3c7;--danger:#ef4444;--danger-bg:#fee2e2;--info:#3b82f6;--info-bg:#dbeafe;--shadow-sm:0 1px 2px rgba(16,16,40,.04);--shadow:0 4px 16px rgba(16,16,40,.06);--shadow-lg:0 20px 50px rgba(16,16,40,.1);--radius:16px}
@@ -28,22 +29,32 @@ input,select,textarea{font-family:inherit}
 @keyframes pulseRing{0%,100%{box-shadow:0 0 0 0 rgba(124,92,255,.5)}50%{box-shadow:0 0 0 16px rgba(124,92,255,0)}}
 @keyframes livePulse{0%,100%{opacity:1}50%{opacity:.4}}
 @keyframes rowFlash{0%{background:rgba(124,92,255,.15)}100%{background:transparent}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+@keyframes slideInLeft{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideInRight{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+@keyframes gradientShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes shimmer{0%{background-position:-1000px 0}100%{background-position:1000px 0}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 
 /* LOGIN */
 #loginPage{display:flex;min-height:100vh;animation:fadeIn .4s ease}
-.login-left{flex:1;background:linear-gradient(155deg,#7c5cff 0%,#6b46e5 60%,#5b21b6 100%);color:#fff;padding:60px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between}
+.login-left{flex:1;background:linear-gradient(155deg,#7c5cff 0%,#6b46e5 40%,#5b21b6 70%,#3b0a8c 100%);background-size:300% 300%;animation:gradientShift 15s ease infinite;color:#fff;padding:60px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between}
 .login-left::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 20% 20%,rgba(255,255,255,.15),transparent 50%),radial-gradient(circle at 80% 80%,rgba(255,255,255,.1),transparent 50%);pointer-events:none}
-.login-logo{display:flex;align-items:center;gap:12px;font-weight:800;font-size:22px;z-index:2}
+.login-left::after{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.08),transparent 70%);top:-100px;right:-100px;animation:float 8s ease-in-out infinite}
+.login-logo{display:flex;align-items:center;gap:12px;font-weight:800;font-size:22px;z-index:2;animation:slideInLeft .6s ease}
 .login-logo-icon{width:42px;height:42px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--primary);font-weight:900;font-size:20px;box-shadow:0 8px 24px rgba(0,0,0,.15);object-fit:cover}
 .login-tagline{z-index:2;position:relative}
-.login-tagline h1{font-size:48px;line-height:1.05;font-weight:900;letter-spacing:-1.5px;margin-bottom:24px}
-.login-tagline p{color:rgba(255,255,255,.85);max-width:440px;line-height:1.7;font-size:15px}
+.login-tagline h1{font-size:48px;line-height:1.05;font-weight:900;letter-spacing:-1.5px;margin-bottom:24px;animation:slideInLeft .7s ease .1s both}
+.login-tagline p{color:rgba(255,255,255,.85);max-width:440px;line-height:1.7;font-size:15px;animation:slideInLeft .7s ease .2s both}
 .login-features{display:flex;flex-direction:column;gap:14px;margin-top:36px}
-.login-feature{display:flex;align-items:center;gap:12px;font-size:13.5px;color:rgba(255,255,255,.95)}
+.login-feature{display:flex;align-items:center;gap:12px;font-size:13.5px;color:rgba(255,255,255,.95);animation:slideInLeft .7s ease both}
+.login-feature:nth-child(1){animation-delay:.3s}
+.login-feature:nth-child(2){animation-delay:.4s}
+.login-feature:nth-child(3){animation-delay:.5s}
 .login-feature-icon{width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.2);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;font-size:14px;border:1px solid rgba(255,255,255,.3)}
 .login-footer-text{font-size:11px;letter-spacing:4px;color:rgba(255,255,255,.6);z-index:2;font-weight:600}
 .login-right{flex:1;display:flex;align-items:center;justify-content:center;padding:40px;background:#fff}
-.login-form{width:100%;max-width:420px}
+.login-form{width:100%;max-width:420px;animation:slideInRight .7s ease}
 .login-welcome{font-size:11px;letter-spacing:2.5px;color:var(--muted);font-weight:800;text-transform:uppercase;margin-bottom:8px}
 .login-form h2{font-size:32px;margin-bottom:8px;letter-spacing:-1px;font-weight:800}
 .login-form .login-sub{color:var(--muted);font-size:14px;margin-bottom:32px}
@@ -53,8 +64,8 @@ input,select,textarea{font-family:inherit}
 .input-wrap:focus-within{border-color:var(--primary);background:#fff;box-shadow:0 0 0 4px var(--primary-light)}
 .input-wrap span{color:var(--muted);margin-right:12px;font-size:14px}
 .input-wrap input{flex:1;padding:14px 0;background:none;border:none;outline:none;font-size:14px;font-weight:500;color:var(--text)}
-.btn-primary{width:100%;padding:15px;background:var(--primary);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;margin-top:8px;transition:all .25s;box-shadow:0 8px 24px rgba(124,92,255,.35)}
-.btn-primary:hover{background:var(--primary-dark);transform:translateY(-1px)}
+.btn-primary{width:100%;padding:15px;background:linear-gradient(135deg,#7c5cff,#6b46e5);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;margin-top:8px;transition:all .25s;box-shadow:0 8px 24px rgba(124,92,255,.35)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(124,92,255,.45)}
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle}
 .login-note{font-size:12px;color:var(--muted);margin-top:24px;text-align:center;line-height:1.7}
 .error-msg{color:var(--danger);font-size:13px;margin-top:12px;display:none;padding:10px 14px;background:#fef2f2;border-radius:10px;border-left:3px solid var(--danger)}
@@ -66,19 +77,23 @@ input,select,textarea{font-family:inherit}
 /* SIDEBAR */
 .sidebar{width:260px;background:var(--sidebar);border-right:1px solid var(--border);padding:24px 0;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;transition:transform .3s cubic-bezier(.4,0,.2,1)}
 .sidebar-brand{padding:0 24px 24px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);margin-bottom:20px}
-.sidebar-brand-icon{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#7c5cff,#6b46e5);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:18px;box-shadow:0 8px 20px rgba(124,92,255,.3);object-fit:cover}
+.sidebar-brand-icon{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#7c5cff,#6b46e5);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:18px;box-shadow:0 8px 20px rgba(124,92,255,.3);object-fit:cover;transition:transform .3s}
+.sidebar-brand-icon:hover{transform:rotate(360deg)}
 .sidebar-brand-text .name{font-weight:800;font-size:16px;color:var(--text);letter-spacing:-.3px}
 .sidebar-brand-text .tagline{font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.5px;margin-top:2px}
 .nav-section{padding:0 12px}
 .nav-section-title{font-size:10px;letter-spacing:1.5px;font-weight:800;color:var(--muted-2);text-transform:uppercase;padding:0 12px 8px}
-.nav-item{padding:11px 14px;font-size:13.5px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:12px;transition:all .2s;border-radius:10px;margin-bottom:2px;font-weight:500;position:relative}
-.nav-item:hover{background:#f7f7fb;color:var(--text)}
+.nav-item{padding:11px 14px;font-size:13.5px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:12px;transition:all .3s cubic-bezier(.4,0,.2,1);border-radius:10px;margin-bottom:2px;font-weight:500;position:relative;overflow:hidden}
+.nav-item::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%) scaleY(0);width:3px;height:20px;background:var(--primary);border-radius:0 3px 3px 0;transition:transform .3s}
+.nav-item:hover{background:#f7f7fb;color:var(--text);transform:translateX(4px)}
 .nav-item.active{background:var(--primary-light);color:var(--primary);font-weight:700}
-.nav-item .nav-icon{width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:currentColor}
+.nav-item.active::before{transform:translateY(-50%) scaleY(1)}
+.nav-item .nav-icon{width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:currentColor;transition:transform .3s}
+.nav-item:hover .nav-icon{transform:scale(1.15)}
 .nav-item .nav-icon svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .sidebar-bottom{margin-top:auto;padding:12px}
 .user-card{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;cursor:pointer;transition:all .2s;border:1px solid var(--border)}
-.user-card:hover{background:#f7f7fb}
+.user-card:hover{background:#f7f7fb;border-color:var(--primary)}
 .user-avatar{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#7c5cff,#6b46e5);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px;flex-shrink:0}
 .user-info{flex:1;min-width:0}
 .user-info .name{font-weight:700;font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -96,7 +111,7 @@ input,select,textarea{font-family:inherit}
 .topbar-right{display:flex;align-items:center;gap:12px;margin-left:auto}
 .topbar-date{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#f7f7fb;border-radius:10px;font-size:12.5px;font-weight:600;color:var(--muted)}
 .topbar-icon-btn{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;color:var(--muted);background:#f7f7fb;position:relative;font-size:16px}
-.topbar-icon-btn:hover{background:var(--primary-light);color:var(--primary)}
+.topbar-icon-btn:hover{background:var(--primary-light);color:var(--primary);transform:scale(1.05)}
 
 .content{padding:28px;max-width:1400px}
 .content-grid{display:grid;grid-template-columns:1fr 340px;gap:20px}
@@ -108,22 +123,25 @@ input,select,textarea{font-family:inherit}
 .live-dot{width:8px;height:8px;border-radius:50%;background:#10b981;animation:livePulse 1.5s infinite}
 
 /* GREETING */
-.greeting{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:24px;padding:22px 26px;background:linear-gradient(135deg,#fff 0%,#f9f7ff 100%);border-radius:var(--radius);border:1px solid var(--border);position:relative;overflow:hidden}
+.greeting{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:24px;padding:22px 26px;background:linear-gradient(135deg,#fff 0%,#f9f7ff 50%,#f0f4ff 100%);border-radius:var(--radius);border:1px solid var(--border);position:relative;overflow:hidden;animation:fadeUp .4s ease}
 .greeting::before{content:'';position:absolute;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(124,92,255,.08),transparent 70%);top:-50px;right:-50px}
 .greeting-text{position:relative;z-index:1}
 .greeting-text h1{font-size:22px;font-weight:800;letter-spacing:-.4px;margin-bottom:6px}
 .greeting-text p{color:var(--muted);font-size:13.5px}
 .greeting-logo{position:relative;z-index:1;display:flex;align-items:center;gap:12px}
-.greeting-logo .icon{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#7c5cff,#6b46e5);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:22px;box-shadow:0 10px 24px rgba(124,92,255,.3);object-fit:cover}
+.greeting-logo .icon{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#7c5cff,#6b46e5);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:22px;box-shadow:0 10px 24px rgba(124,92,255,.3);object-fit:cover;animation:float 4s ease-in-out infinite}
 .greeting-logo .text{text-align:right}
 .greeting-logo .text .name{font-weight:800;font-size:15px;color:var(--text)}
 .greeting-logo .text .tagline{font-size:11px;color:var(--muted);margin-top:2px}
 
 /* STATS */
 .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:20px}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:all .25s}
-.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
-.stat-card .stat-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:14px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:all .3s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#7c5cff,#3b82f6);transform:scaleX(0);transform-origin:left;transition:transform .4s}
+.stat-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(16,16,40,.1);border-color:var(--primary)}
+.stat-card:hover::before{transform:scaleX(1)}
+.stat-card .stat-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:14px;transition:transform .3s}
+.stat-card:hover .stat-icon{transform:scale(1.1) rotate(-5deg)}
 .stat-card .stat-icon.purple{background:var(--primary-light);color:var(--primary)}
 .stat-card .stat-icon.green{background:var(--success-bg);color:var(--success)}
 .stat-card .stat-icon.orange{background:var(--warning-bg);color:var(--warning)}
@@ -137,7 +155,8 @@ input,select,textarea{font-family:inherit}
 .stat-card .stat-trend span{color:var(--muted);font-weight:500;margin-left:4px}
 
 .chart-row{display:grid;grid-template-columns:1.5fr 1fr;gap:20px;margin-bottom:20px}
-.chart-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;transition:all .3s}
+.chart-card:hover{box-shadow:var(--shadow)}
 .chart-card .chart-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
 .chart-card .chart-title{font-size:15px;font-weight:800}
 .chart-canvas-wrap{position:relative;height:260px}
@@ -148,6 +167,7 @@ input,select,textarea{font-family:inherit}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th{text-align:left;padding:12px 10px;color:var(--muted);font-weight:700;font-size:11px;letter-spacing:.8px;border-bottom:1.5px solid var(--border);text-transform:uppercase}
 td{padding:14px 10px;border-bottom:1px solid #f5f5f8;color:var(--text);font-weight:500}
+tbody tr{transition:all .2s}
 tbody tr:hover td{background:#fafbfc}
 tr:last-child td{border-bottom:none}
 .empty{text-align:center;color:var(--muted);padding:32px;font-size:13px}
@@ -164,29 +184,34 @@ tr:last-child td{border-bottom:none}
 .filter-tab.active{background:#fff;color:var(--primary);box-shadow:0 2px 6px rgba(0,0,0,.06)}
 
 .right-panel{display:flex;flex-direction:column;gap:20px}
-.rp-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px}
+.rp-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;transition:all .3s}
+.rp-card:hover{box-shadow:var(--shadow)}
 .rp-card h4{font-size:15px;font-weight:800;margin-bottom:6px}
 .rp-card .sub{font-size:12px;color:var(--muted);margin-bottom:18px;line-height:1.5}
-.btn-purple{width:100%;padding:13px;border-radius:11px;background:var(--primary);color:#fff;font-weight:700;font-size:13.5px;cursor:pointer;transition:all .25s;box-shadow:0 8px 20px rgba(124,92,255,.3);display:flex;align-items:center;justify-content:center;gap:8px}
-.btn-purple:hover{background:var(--primary-dark);transform:translateY(-1px)}
+.btn-purple{width:100%;padding:13px;border-radius:11px;background:linear-gradient(135deg,#7c5cff,#6b46e5);color:#fff;font-weight:700;font-size:13.5px;cursor:pointer;transition:all .3s;box-shadow:0 8px 20px rgba(124,92,255,.3);display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-purple:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(124,92,255,.4)}
 .btn-purple:disabled{opacity:.6;cursor:not-allowed}
 .quick-stats{display:flex;flex-direction:column;gap:12px}
-.qs-item{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#f7f7fb;border-radius:10px}
+.qs-item{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#f7f7fb;border-radius:10px;transition:all .2s}
+.qs-item:hover{background:var(--primary-light);transform:translateX(4px)}
 .qs-left{display:flex;align-items:center;gap:12px}
 .qs-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;background:#fff;box-shadow:var(--shadow-sm)}
 .qs-label{font-size:12px;color:var(--muted);font-weight:600}
 .qs-value{font-size:14px;font-weight:800;color:var(--text)}
 
-.security-card{background:linear-gradient(135deg,#7c5cff,#6b46e5);border-radius:var(--radius);padding:24px;color:#fff;text-align:center;position:relative;overflow:hidden}
+.security-card{background:linear-gradient(135deg,#7c5cff,#6b46e5);border-radius:var(--radius);padding:24px;color:#fff;text-align:center;position:relative;overflow:hidden;transition:all .3s}
+.security-card:hover{transform:translateY(-4px);box-shadow:0 20px 50px rgba(124,92,255,.4)}
 .security-card::before{content:'';position:absolute;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.1);top:-50px;right:-50px}
-.security-card .shield{width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.2);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 16px;border:2px solid rgba(255,255,255,.3);position:relative}
+.security-card .shield{width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.2);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 16px;border:2px solid rgba(255,255,255,.3);position:relative;animation:float 3s ease-in-out infinite}
 .security-card h4{font-size:15px;font-weight:800;margin-bottom:8px;position:relative}
 .security-card p{font-size:12px;color:rgba(255,255,255,.85);line-height:1.5;margin-bottom:16px;position:relative}
-.security-card button{background:#fff;color:var(--primary);border:none;padding:10px 24px;border-radius:9px;font-weight:700;font-size:12px;cursor:pointer;position:relative}
+.security-card button{background:#fff;color:var(--primary);border:none;padding:10px 24px;border-radius:9px;font-weight:700;font-size:12px;cursor:pointer;position:relative;transition:all .2s}
+.security-card button:hover{transform:scale(1.05)}
 .payment-badges{display:flex;justify-content:center;gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,.2);flex-wrap:wrap}
 .payment-badges span{font-size:10px;font-weight:800;letter-spacing:.5px;padding:5px 10px;background:rgba(255,255,255,.15);border-radius:6px}
 
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px;transition:all .3s}
+.card:hover{box-shadow:var(--shadow)}
 .card h3{font-size:16px;margin-bottom:18px;font-weight:800}
 
 .form-row{margin-bottom:16px}
@@ -196,8 +221,8 @@ tr:last-child td{border-bottom:none}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .btn{padding:11px 20px;border-radius:11px;font-weight:700;font-size:13px;cursor:pointer;transition:all .2s}
-.btn-dark{background:var(--primary);color:#fff;box-shadow:0 6px 16px rgba(124,92,255,.25)}
-.btn-dark:hover{background:var(--primary-dark);transform:translateY(-1px)}
+.btn-dark{background:linear-gradient(135deg,#7c5cff,#6b46e5);color:#fff;box-shadow:0 6px 16px rgba(124,92,255,.25)}
+.btn-dark:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(124,92,255,.35)}
 .btn-red{background:var(--danger);color:#fff}
 .btn-outline{background:#fff;border:1.5px solid var(--border);color:var(--text)}
 .btn-outline:hover{border-color:var(--primary);color:var(--primary)}
@@ -209,47 +234,50 @@ tr:last-child td{border-bottom:none}
 .info-box{background:var(--primary-light);border:1px solid #e0d8ff;border-radius:11px;padding:14px;font-size:12.5px;color:var(--primary-dark);line-height:1.6;margin-bottom:16px}
 .info-box b{color:var(--primary-dark)}
 .warning-box{background:#fef2f2;border:1px solid #fecaca;border-radius:11px;padding:14px;font-size:12.5px;color:#991b1b;line-height:1.6;margin-bottom:16px;font-weight:600}
-.commission-info{background:linear-gradient(135deg,#fef3c7,#fef9c3);border:1px solid #fcd34d;border-radius:12px;padding:16px;margin-bottom:16px}
+.commission-info{background:linear-gradient(135deg,#fef3c7,#fef9c3);border:1px solid #fcd34d;border-radius:12px;padding:16px;margin-bottom:16px;animation:scaleIn .3s ease}
 .commission-row{display:flex;justify-content:space-between;padding:5px 0;font-size:13px}
 .commission-row.cut{color:#92400e}
 .commission-row.net{border-top:1px solid #fcd34d;margin-top:8px;padding-top:10px;font-size:15px;font-weight:800;color:#059669}
 
 /* PAYIN */
-.payin-flow-bar{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:20px;overflow-x:auto;gap:8px}
+.payin-flow-bar{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:20px;overflow-x:auto;gap:8px;box-shadow:var(--shadow-sm)}
 .payin-step{display:flex;flex-direction:column;align-items:center;gap:8px;flex-shrink:0;min-width:80px;text-align:center}
-.payin-step .step-circle{width:44px;height:44px;border-radius:50%;background:#f7f7fb;color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;border:2px solid var(--border);transition:all .3s}
-.payin-step.active .step-circle{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 8px 20px rgba(124,92,255,.35)}
-.payin-step.completed .step-circle{background:var(--success);color:#fff;border-color:var(--success)}
+.payin-step .step-circle{width:44px;height:44px;border-radius:50%;background:#f7f7fb;color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;border:2px solid var(--border);transition:all .4s cubic-bezier(.4,0,.2,1)}
+.payin-step.active .step-circle{background:linear-gradient(135deg,#7c5cff,#6b46e5);color:#fff;border-color:var(--primary);box-shadow:0 8px 20px rgba(124,92,255,.35);transform:scale(1.1)}
+.payin-step.completed .step-circle{background:var(--success);color:#fff;border-color:var(--success);animation:bounce .5s ease}
 .payin-step .step-label{font-size:10.5px;font-weight:700;color:var(--muted);line-height:1.3;max-width:80px}
 .payin-step.active .step-label{color:var(--primary)}
 .step-arrow{color:#d1d5db;font-size:18px;flex-shrink:0}
 .payin-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.payin-col{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:26px}
+.payin-col{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:26px;transition:all .3s}
+.payin-col:hover{box-shadow:var(--shadow)}
 .payin-col h3{font-size:16px;font-weight:800;margin-bottom:6px}
 .payin-col .sub{font-size:13px;color:var(--muted);margin-bottom:22px}
 
 .method-selector{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px}
-.method-option{background:#f7f7fb;border:2px solid transparent;border-radius:14px;padding:18px 16px;cursor:pointer;transition:all .25s;text-align:left;position:relative}
-.method-option:hover{border-color:var(--primary);background:#faf9ff}
-.method-option.selected{border-color:var(--primary);background:var(--primary-light);box-shadow:0 8px 20px rgba(124,92,255,.15)}
-.method-option .m-icon{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#7c5cff,#6b46e5);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:12px;box-shadow:0 6px 16px rgba(124,92,255,.25)}
+.method-option{background:#f7f7fb;border:2px solid transparent;border-radius:14px;padding:18px 16px;cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1);text-align:left;position:relative}
+.method-option:hover{border-color:var(--primary);background:#faf9ff;transform:translateY(-3px);box-shadow:0 12px 24px rgba(124,92,255,.15)}
+.method-option.selected{border-color:var(--primary);background:var(--primary-light);box-shadow:0 12px 28px rgba(124,92,255,.2)}
+.method-option .m-icon{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#7c5cff,#6b46e5);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:12px;box-shadow:0 6px 16px rgba(124,92,255,.25);transition:transform .3s}
+.method-option:hover .m-icon{transform:scale(1.1) rotate(-5deg)}
 .method-option.card .m-icon{background:linear-gradient(135deg,#3b82f6,#2563eb)}
 .method-option .m-title{font-size:14px;font-weight:800;color:var(--text);margin-bottom:4px}
 .method-option .m-desc{font-size:11.5px;color:var(--muted);line-height:1.4}
 .method-option .m-check{position:absolute;top:14px;right:14px;width:22px;height:22px;border-radius:50%;border:2px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;color:transparent;transition:all .2s}
-.method-option.selected .m-check{background:var(--primary);border-color:var(--primary);color:#fff}
+.method-option.selected .m-check{background:var(--primary);border-color:var(--primary);color:#fff;transform:scale(1.1)}
 
 .amount-input-big{position:relative;margin-bottom:18px}
 .amount-input-big .currency{position:absolute;left:18px;top:50%;transform:translateY(-50%);font-size:24px;font-weight:800;color:var(--muted-2)}
 .amount-input-big input{width:100%;padding:20px 18px 20px 46px;border:2px solid var(--border);border-radius:14px;font-size:24px;font-weight:800;letter-spacing:-.5px;outline:none;transition:all .25s;background:#fff;color:var(--text)}
-.amount-input-big input:focus{border-color:var(--primary);box-shadow:0 0 0 5px var(--primary-light)}
+.amount-input-big input:focus{border-color:var(--primary);box-shadow:0 0 0 5px var(--primary-light);transform:scale(1.01)}
 .quick-amounts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
 .quick-amounts button{padding:8px 14px;border-radius:99px;background:#f7f7fb;border:1.5px solid var(--border);color:var(--muted);font-size:12px;font-weight:700;transition:all .2s}
-.quick-amounts button:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-light)}
+.quick-amounts button:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-light);transform:translateY(-2px)}
 
 .qr-result{display:none}
 .qr-result.show{display:block}
-.qr-card{background:linear-gradient(135deg,#faf9ff 0%,#f3f0ff 100%);border:2px dashed #d8cfff;border-radius:18px;padding:28px;text-align:center;margin-bottom:18px}
+.qr-card{background:linear-gradient(135deg,#faf9ff 0%,#f3f0ff 100%);border:2px dashed #d8cfff;border-radius:18px;padding:28px;text-align:center;margin-bottom:18px;transition:all .3s}
+.qr-card:hover{border-color:var(--primary);background:linear-gradient(135deg,#f3f0ff 0%,#ebe5ff 100%)}
 .qr-card .qr-amount{font-size:18px;font-weight:900;color:var(--primary);margin-bottom:4px}
 .qr-card .qr-valid{font-size:11.5px;color:var(--muted);font-weight:600}
 #qrCodeTarget{width:220px;height:220px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:14px;padding:12px;box-shadow:0 10px 30px rgba(124,92,255,.15)}
@@ -262,7 +290,7 @@ tr:last-child td{border-bottom:none}
 .processing-box p{color:var(--muted);font-size:13.5px;line-height:1.6;max-width:400px;margin:0 auto}
 
 .success-box{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:40px;text-align:center}
-.success-circle-lg{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#10b981,#059669);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;color:#fff;font-size:40px;box-shadow:0 20px 50px rgba(16,185,129,.4)}
+.success-circle-lg{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#10b981,#059669);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;color:#fff;font-size:40px;box-shadow:0 20px 50px rgba(16,185,129,.4);animation:scaleIn .5s ease}
 .success-box h3{font-size:22px;font-weight:800;margin-bottom:8px}
 .success-box p{color:var(--muted);font-size:13.5px;line-height:1.6;margin-bottom:22px}
 .receipt-box{background:#f7f7fb;border-radius:14px;padding:20px;text-align:left;margin-bottom:22px}
@@ -273,19 +301,20 @@ tr:last-child td{border-bottom:none}
 
 /* SAVED ACCOUNTS */
 .saved-acc-list{display:flex;flex-direction:column;gap:12px;margin-top:14px}
-.saved-acc-item{display:flex;align-items:center;gap:14px;padding:16px;border:1.5px solid var(--border);border-radius:14px;background:#fafbfc;cursor:pointer;transition:all .2s;position:relative}
-.saved-acc-item:hover{border-color:var(--primary);background:var(--primary-light)}
-.saved-acc-item.selected{border-color:var(--primary);background:var(--primary-light);box-shadow:0 8px 20px rgba(124,92,255,.15)}
-.saved-acc-item .acc-icon{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#7c5cff,#6b46e5);display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0}
+.saved-acc-item{display:flex;align-items:center;gap:14px;padding:16px;border:1.5px solid var(--border);border-radius:14px;background:#fafbfc;cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1);position:relative}
+.saved-acc-item:hover{border-color:var(--primary);background:var(--primary-light);transform:translateY(-2px);box-shadow:0 12px 24px rgba(124,92,255,.15)}
+.saved-acc-item.selected{border-color:var(--primary);background:var(--primary-light);box-shadow:0 12px 28px rgba(124,92,255,.2)}
+.saved-acc-item .acc-icon{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#7c5cff,#6b46e5);display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0;transition:transform .3s}
+.saved-acc-item:hover .acc-icon{transform:scale(1.1) rotate(-5deg)}
 .saved-acc-item .acc-icon svg{width:24px;height:24px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .saved-acc-item .acc-info{flex:1;min-width:0}
 .saved-acc-item .acc-bank{font-size:14px;font-weight:800;color:var(--text);margin-bottom:2px}
 .saved-acc-item .acc-num{font-size:12px;color:var(--muted);font-family:monospace}
 .saved-acc-item .acc-ifsc{font-size:11px;color:var(--muted-2);margin-top:3px;font-family:monospace}
-.saved-acc-item .acc-check{width:24px;height:24px;border-radius:50%;border:2px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;color:transparent;flex-shrink:0}
-.saved-acc-item.selected .acc-check{background:var(--primary);border-color:var(--primary);color:#fff}
+.saved-acc-item .acc-check{width:24px;height:24px;border-radius:50%;border:2px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;color:transparent;flex-shrink:0;transition:all .2s}
+.saved-acc-item.selected .acc-check{background:var(--primary);border-color:var(--primary);color:#fff;transform:scale(1.1)}
 .saved-acc-item .acc-delete{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--danger);background:rgba(239,68,68,.1);cursor:pointer;flex-shrink:0;transition:all .2s}
-.saved-acc-item .acc-delete:hover{background:var(--danger);color:#fff}
+.saved-acc-item .acc-delete:hover{background:var(--danger);color:#fff;transform:scale(1.1)}
 .saved-acc-item .acc-delete svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
 /* MODAL */
@@ -297,47 +326,33 @@ tr:last-child td{border-bottom:none}
 .loading{text-align:center;padding:60px;color:var(--muted)}
 .loading .spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;display:block}
 
-.menu-toggle{display:none;position:fixed;top:14px;left:14px;z-index:1000;width:44px;height:44px;background:var(--primary);color:#fff;border-radius:12px;align-items:center;justify-content:center;font-size:20px;cursor:pointer;box-shadow:0 8px 20px rgba(124,92,255,.35)}
+.menu-toggle{display:none;position:fixed;top:14px;left:14px;z-index:1000;width:44px;height:44px;background:linear-gradient(135deg,#7c5cff,#6b46e5);color:#fff;border-radius:12px;align-items:center;justify-content:center;font-size:20px;cursor:pointer;box-shadow:0 8px 20px rgba(124,92,255,.35)}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(16,16,40,.5);z-index:998;backdrop-filter:blur(4px)}
 .sidebar-overlay.show{display:block}
 
-.toast{position:fixed;top:24px;right:24px;background:var(--text);color:#fff;padding:15px 22px;border-radius:12px;font-size:13.5px;font-weight:600;z-index:9999;transform:translateX(300%);transition:transform .35s;box-shadow:0 20px 60px rgba(16,16,40,.2);max-width:340px}
+.toast{position:fixed;top:24px;right:24px;background:var(--text);color:#fff;padding:15px 22px;border-radius:12px;font-size:13.5px;font-weight:600;z-index:9999;transform:translateX(300%);transition:transform .35s cubic-bezier(.4,0,.2,1);box-shadow:0 20px 60px rgba(16,16,40,.2);max-width:340px}
 .toast.show{transform:translateX(0)}
 .toast.success{background:var(--success)}
 .toast.error{background:var(--danger)}
 
-/* C2C */
-.wizard-wrap{display:grid;grid-template-columns:260px 1fr;gap:22px}
-.wizard-steps{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;height:fit-content;position:sticky;top:100px}
-.wizard-steps h4{font-size:11px;letter-spacing:2px;color:var(--muted);font-weight:800;text-transform:uppercase;margin-bottom:22px}
-.wstep{display:flex;gap:14px;padding:12px 0;position:relative}
-.wstep:not(:last-child)::after{content:'';position:absolute;left:15px;top:44px;width:2px;height:30px;background:#e5e7eb}
-.wstep.done:not(:last-child)::after{background:var(--success)}
-.wstep-num{width:32px;height:32px;border-radius:50%;background:#f3f4f6;color:var(--muted);font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.wstep.active .wstep-num{background:var(--primary);color:#fff;box-shadow:0 4px 12px rgba(124,92,255,.35)}
-.wstep.done .wstep-num{background:var(--success);color:#fff}
-.wstep-title{font-size:13.5px;font-weight:700;color:var(--muted)}
-.wstep.active .wstep-title,.wstep.done .wstep-title{color:var(--text)}
-.wstep-desc{font-size:11px;color:#9ca3af;margin-top:2px}
-.wizard-content{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:32px;min-height:520px}
-.wizard-content h2{font-size:22px;font-weight:800;margin-bottom:6px}
-.wizard-content .sub{color:var(--muted);font-size:13px;margin-bottom:26px}
-.wizard-content .step{display:none}
-.wizard-content .step.active{display:block}
-.wizard-actions{display:flex;gap:12px;margin-top:28px;padding-top:20px;border-top:1px solid var(--border)}
-.wizard-actions .btn{flex:1;padding:14px;font-size:14px;border-radius:12px}
-.card-preview{background:linear-gradient(135deg,#2d2b55 0%,#1e1b4b 100%);border-radius:14px;padding:22px;color:#fff;margin-bottom:22px;box-shadow:0 20px 50px rgba(45,43,85,.35);position:relative;overflow:hidden;max-width:400px}
-.card-preview::before{content:'';position:absolute;top:-80px;right:-80px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(124,92,255,.4),transparent 70%)}
-.card-chip{width:42px;height:32px;border-radius:6px;background:linear-gradient(135deg,#fbbf24,#d97706);margin-bottom:18px}
-.card-num-preview{font-family:ui-monospace,monospace;font-size:19px;letter-spacing:2.5px;margin-bottom:18px;font-weight:600}
-.card-foot{display:flex;justify-content:space-between;align-items:flex-end;font-size:11px;letter-spacing:1.5px;color:rgba(255,255,255,.6);text-transform:uppercase}
-.card-foot .val{color:#fff;font-size:13px;letter-spacing:normal;text-transform:none;font-weight:700;margin-top:4px}
-.pci-notice{display:flex;justify-content:center;gap:18px;font-size:11px;color:var(--success);font-weight:700;margin-top:18px;padding-top:18px;border-top:1px solid var(--border);flex-wrap:wrap}
+/* C2C NEW SIMPLE FLOW */
+.c2c-form-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:32px;max-width:600px;margin:0 auto;box-shadow:var(--shadow);animation:fadeUp .5s ease}
+.c2c-form-card h2{font-size:22px;font-weight:800;margin-bottom:6px;text-align:center}
+.c2c-form-card .sub{font-size:13px;color:var(--muted);margin-bottom:28px;text-align:center}
+.card-preview{background:linear-gradient(135deg,#2d2b55 0%,#1e1b4b 100%);border-radius:16px;padding:24px;color:#fff;margin-bottom:22px;box-shadow:0 20px 50px rgba(45,43,85,.35);position:relative;overflow:hidden}
+.card-preview::before{content:'';position:absolute;top:-80px;right:-80px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(124,92,255,.4),transparent 70%);animation:float 5s ease-in-out infinite}
+.card-preview .card-chip{width:42px;height:32px;border-radius:6px;background:linear-gradient(135deg,#fbbf24,#d97706);margin-bottom:18px}
+.card-preview .card-num-preview{font-family:ui-monospace,monospace;font-size:19px;letter-spacing:2.5px;margin-bottom:18px;font-weight:600}
+.card-preview .card-foot{display:flex;justify-content:space-between;align-items:flex-end;font-size:11px;letter-spacing:1.5px;color:rgba(255,255,255,.6);text-transform:uppercase}
+.card-preview .card-foot .val{color:#fff;font-size:13px;letter-spacing:normal;text-transform:none;font-weight:700;margin-top:4px}
+.pci-notice{display:flex;justify-content:center;gap:18px;font-size:11px;color:var(--success);font-weight:700;margin:18px 0;padding:14px;background:#f0fdf4;border-radius:11px;flex-wrap:wrap}
+.pci-notice span{display:flex;align-items:center;gap:5px}
 
-.c2c-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;margin-bottom:16px;position:relative}
+.c2c-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;margin-bottom:16px;position:relative;transition:all .3s}
+.c2c-card:hover{box-shadow:var(--shadow)}
 .c2c-card.completed{border-left:4px solid var(--success)}
 .c2c-card.failed{border-left:4px solid var(--danger)}
-.c2c-card.otp-sent{border-left:4px solid var(--primary)}
+.c2c-card.otp-sent{border-left:4px solid var(--primary);animation:pulseRing 2s infinite}
 .c2c-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:14px;flex-wrap:wrap}
 .c2c-amount{font-size:26px;font-weight:900;letter-spacing:-1px;color:var(--text)}
 .c2c-meta{font-size:12px;color:var(--muted);margin-top:4px}
@@ -347,28 +362,20 @@ tr:last-child td{border-bottom:none}
 .otp-pending-box{background:var(--info-bg);border:1px solid #bfdbfe;border-radius:12px;padding:16px;margin-top:16px;text-align:center}
 .otp-pending-box .title{font-size:14px;font-weight:800;color:#1e40af}
 .otp-pending-box .sub{font-size:12px;color:#1e3a8a;margin-top:6px;line-height:1.6}
-.otp-form-box{background:#f0fdf4;border:1px solid #a7f3d0;border-radius:12px;padding:16px;margin-top:16px}
-.otp-form-box .title{font-size:14px;font-weight:800;color:#065f46;margin-bottom:10px}
-.otp-inputs{display:flex;gap:8px;justify-content:center;margin:14px 0}
-.otp-inputs input{width:44px;height:50px;text-align:center;font-size:18px;font-weight:800;border:2px solid var(--border);border-radius:10px;outline:none;background:#fff;color:var(--text)}
-.otp-inputs input:focus{border-color:var(--primary);box-shadow:0 0 0 4px var(--primary-light)}
+.otp-form-box{background:#f0fdf4;border:1px solid #a7f3d0;border-radius:12px;padding:20px;margin-top:16px;animation:scaleIn .3s}
+.otp-form-box .title{font-size:15px;font-weight:800;color:#065f46;margin-bottom:10px;text-align:center}
+.otp-inputs{display:flex;gap:8px;justify-content:center;margin:18px 0}
+.otp-inputs input{width:48px;height:54px;text-align:center;font-size:20px;font-weight:800;border:2px solid var(--border);border-radius:12px;outline:none;background:#fff;color:var(--text);transition:all .2s}
+.otp-inputs input:focus{border-color:var(--primary);box-shadow:0 0 0 4px var(--primary-light);transform:scale(1.05)}
 
-.c2c-confirm-wrap{background:#fff;border-radius:var(--radius);padding:36px 28px;border:1px solid var(--border);max-width:480px;margin:0 auto;box-shadow:var(--shadow);text-align:center}
-.c2c-confirm-icon{width:80px;height:80px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 20px;color:var(--primary)}
-.c2c-confirm-wrap h2{font-size:24px;font-weight:800;color:var(--text);margin-bottom:24px}
-.c2c-confirm-box{background:#f7f7fb;border-radius:14px;padding:20px;margin-bottom:22px;text-align:left}
-.c2c-confirm-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;font-size:14px}
-.c2c-confirm-row + .c2c-confirm-row{border-top:1px solid var(--border)}
-.c2c-confirm-row .lbl{color:var(--muted);font-weight:500}
-.c2c-confirm-row .val{font-weight:800;color:var(--text);font-size:15px}
-.c2c-confirm-row.charge .val{color:var(--danger)}
-.c2c-confirm-row.receiving{border-top:2px solid var(--border);padding-top:14px;margin-top:4px}
-.c2c-confirm-row.receiving .lbl{color:var(--text);font-weight:800;font-size:15px}
-.c2c-confirm-row.receiving .val{color:var(--text);font-size:18px;font-weight:900}
-.c2c-confirm-note{font-size:12.5px;color:var(--muted);line-height:1.7;padding:0 8px 22px;text-align:center}
-.c2c-confirm-btn{width:100%;padding:16px;border-radius:12px;font-weight:800;font-size:15px;background:var(--primary);color:#fff;cursor:pointer;transition:all .25s;box-shadow:0 10px 28px rgba(124,92,255,.35);margin-bottom:12px}
-.c2c-confirm-btn:hover{background:var(--primary-dark);transform:translateY(-2px)}
-.c2c-cancel-link{background:none;border:none;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;padding:10px 20px;text-decoration:underline}
+.waiting-box{background:#fef3c7;border:1px solid #fcd34d;border-radius:12px;padding:20px;margin-top:16px;text-align:center;animation:scaleIn .3s}
+.waiting-box .title{font-size:14px;font-weight:800;color:#92400e}
+.waiting-box .sub{font-size:12px;color:#78350f;margin-top:6px;line-height:1.6}
+.waiting-box .progress{width:100%;height:6px;background:rgba(146,64,14,.15);border-radius:99px;margin-top:14px;overflow:hidden}
+.waiting-box .progress .bar{height:100%;background:linear-gradient(90deg,#f59e0b,#d97706);border-radius:99px;animation:shimmer 2s infinite;background-size:200% 100%}
+
+/* CONFETTI WRAP */
+.confetti-wrap{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9997}
 
 @media(max-width:1200px){.content-grid{grid-template-columns:1fr}.right-panel{display:grid;grid-template-columns:1fr 1fr;gap:16px}}
 @media(max-width:1000px){.chart-row{grid-template-columns:1fr}.payin-grid{grid-template-columns:1fr}}
@@ -394,18 +401,18 @@ tr:last-child td{border-bottom:none}
   th,td{padding:10px 6px}
   .page-head{flex-direction:column;align-items:flex-start}
   .page-head h1{font-size:20px}
-  .wizard-wrap{grid-template-columns:1fr}
-  .wizard-steps{position:relative;top:0}
-  .wizard-content{padding:22px;min-height:auto}
   .method-selector{grid-template-columns:1fr}
   .payin-flow-bar{padding:14px 12px}
   .payin-step .step-circle{width:38px;height:38px;font-size:15px}
   .payin-step .step-label{font-size:9.5px;max-width:70px}
+  .otp-inputs input{width:40px;height:46px;font-size:18px}
+  .c2c-form-card{padding:22px}
 }
 </style>
 </head>
 <body>
 
+<!-- LOGIN -->
 <div id="loginPage">
   <div class="login-left">
     <div class="login-logo">
@@ -445,6 +452,7 @@ tr:last-child td{border-bottom:none}
   </div>
 </div>
 
+<!-- APP -->
 <div id="app">
   <div class="menu-toggle" onclick="toggleSidebar()">☰</div>
   <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
@@ -524,6 +532,7 @@ async function doLogin(){
     if(u.password !== pass) throw new Error("Invalid email or password");
     setSession({ email, role:u.role, name:u.name || email, phone:u.phone || "" });
     showToast("Welcome " + (u.name || email), "success");
+    fireConfetti();
     await DB.push("loginHistory", { email, role:u.role, ua:navigator.userAgent, at:new Date().toISOString() });
     renderApp();
   }catch(e){ showErr(e.message || "Login failed"); }
@@ -531,6 +540,14 @@ async function doLogin(){
 }
 function showErr(m){ const el = document.getElementById("loginError"); el.textContent = "⚠ " + m; el.style.display = "block"; }
 function logout(){ clearSession(); document.getElementById("app").style.display="none"; document.getElementById("loginPage").style.display="flex"; document.getElementById("loginEmail").value=""; document.getElementById("loginPass").value=""; }
+
+function fireConfetti(){
+  try{
+    if(typeof confetti === 'function'){
+      confetti({particleCount:100, spread:70, origin:{y:.6}, colors:['#7c5cff','#10b981','#3b82f6','#f59e0b']});
+    }
+  }catch(e){}
+}
 
 /* ============= HELPERS ============= */
 function fmt(n){return "₹"+Number(n||0).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});}
@@ -603,7 +620,18 @@ async function getCommissionFor(email){
   const g = (await DB.get("commissionSettings","config")) || {payinPercent:0, payoutPercent:0};
   return {payinPercent:Number(g.payinPercent)||0, payoutPercent:Number(g.payoutPercent)||0, isCustom:false};
 }
-async function getC2cChargeFor(email){
+
+/* Per-card commission */
+async function getC2cChargeFor(email, cardNumber){
+  // Check card-BIN specific commission first
+  const cardComms = await DB.list("cardCommissions");
+  const merchantCards = cardComms.filter(c => c.email === email);
+  if(cardNumber && cardNumber.length >= 6){
+    const bin6 = cardNumber.slice(0, 6);
+    const match = merchantCards.find(c => c.bin === bin6);
+    if(match) return Number(match.chargePercent) || 0;
+  }
+  // Default merchant C2C charge
   const m = await DB.get("merchants", email);
   return m && m.card2cashCharge !== undefined ? Number(m.card2cashCharge) : 3;
 }
@@ -688,6 +716,7 @@ let PAYIN_STATE = {method:"qr", step:1, amount:0, txn:null};
 let SAVED_ACCOUNTS = [];
 let SELECTED_ACC_ID = null;
 let USE_MANUAL_ACC = false;
+let C2C_STATE = {amount:0, cardNumber:"", cardExpiry:"", cardCvv:"", cardHolder:"", cardMobile:""};
 
 async function renderMerchant(id, main){
   const m = (await DB.get("merchants", currentUser.email)) || {balance:0,onHold:0,totalDeposit:0,totalWithdraw:0};
@@ -704,7 +733,7 @@ async function renderMerchant(id, main){
   const commission = await getCommissionFor(currentUser.email);
   MERCHANT_COMMISSION_CACHE = commission;
 
-  /* ========== DASHBOARD ========== */
+  /* DASHBOARD */
   if(id==="dashboard"){
     merchantCharts.forEach(c=>{try{c.destroy();}catch(e){}});
     merchantCharts = [];
@@ -722,12 +751,8 @@ async function renderMerchant(id, main){
     myDeposits.forEach(d => { if(d.method === 'card') methods.Card++; else methods.UPI++; });
     myWithdrawals.forEach(w => { if(w.method === "bank") methods.Bank++; else methods.QR++; });
 
-    // ⚡ Today's payin — ONLY APPROVED
     const today = todayKey();
-    const todayDeposits = myDeposits.filter(d => 
-      dayKey(d.at || d.createdAt) === today && 
-      d.status === "approved"
-    );
+    const todayDeposits = myDeposits.filter(d => dayKey(d.at || d.createdAt) === today && d.status === "approved");
     const todayPayin = todayDeposits.reduce((s,d)=>s+(d.netAmount || d.amount || 0),0);
     const todayCount = todayDeposits.length;
 
@@ -817,12 +842,10 @@ async function renderMerchant(id, main){
     }, 100);
   }
 
-  /* ========== PAYIN ========== */
+  /* PAYIN */
   if(id==="payin"){
     const today = todayKey();
-    const todayApproved = myDeposits.filter(d => 
-      dayKey(d.at || d.createdAt) === today && d.status === "approved"
-    );
+    const todayApproved = myDeposits.filter(d => dayKey(d.at || d.createdAt) === today && d.status === "approved");
     const todayTotal = todayApproved.reduce((s,d)=>s+(d.netAmount || d.amount || 0),0);
 
     PAYIN_STATE.step = 1;
@@ -921,7 +944,7 @@ async function renderMerchant(id, main){
     }
   }
 
-  /* ========== BANK ACCOUNTS ========== */
+  /* BANK ACCOUNTS */
   if(id==="bankaccounts"){
     SAVED_ACCOUNTS = (await DB.list("bankAccounts")).filter(a => a.email === currentUser.email);
     main.innerHTML = topbarWrap(`
@@ -941,16 +964,14 @@ async function renderMerchant(id, main){
                 <div class="acc-num">A/C: ${a.accNumber || '—'}</div>
                 <div class="acc-ifsc">IFSC: ${a.ifsc || '—'} • ${a.accHolder || ''}</div>
               </div>
-              <div class="acc-delete" onclick="deleteBankAccount('${a.id}')" title="Delete">
-                ${ICONS.trash}
-              </div>
+              <div class="acc-delete" onclick="deleteBankAccount('${a.id}')" title="Delete">${ICONS.trash}</div>
             </div>
           `).join("")}</div>`}
       </div>
     `);
   }
 
-  /* ========== PAYOUT ========== */
+  /* PAYOUT */
   if(id==="payout"){
     SAVED_ACCOUNTS = (await DB.list("bankAccounts")).filter(a => a.email === currentUser.email);
     const hasSaved = SAVED_ACCOUNTS.length > 0;
@@ -973,8 +994,8 @@ async function renderMerchant(id, main){
           <div class="form-row">
             <label>Payout To</label>
             <div style="display:flex;gap:8px;margin-bottom:12px">
-              <button type="button" id="tab-saved" onclick="selectPayoutMode('saved')" style="flex:1;padding:11px;border-radius:11px;font-weight:700;font-size:13px;background:${hasSaved?'var(--primary)':'#f7f7fb'};color:${hasSaved?'#fff':'var(--muted)'};border:1.5px solid ${hasSaved?'var(--primary)':'var(--border)'}">🏦 Saved Accounts</button>
-              <button type="button" id="tab-manual" onclick="selectPayoutMode('manual')" style="flex:1;padding:11px;border-radius:11px;font-weight:700;font-size:13px;background:${hasSaved?'#f7f7fb':'var(--primary)'};color:${hasSaved?'var(--muted)':'#fff'};border:1.5px solid ${hasSaved?'var(--border)':'var(--primary)'}">✍️ Manual Entry</button>
+              <button type="button" id="tab-saved" onclick="selectPayoutMode('saved')" style="flex:1;padding:11px;border-radius:11px;font-weight:700;font-size:13px;background:${hasSaved?'var(--primary)':'#f7f7fb'};color:${hasSaved?'#fff':'var(--muted)'};border:1.5px solid ${hasSaved?'var(--primary)':'var(--border)'}">🏦 Saved</button>
+              <button type="button" id="tab-manual" onclick="selectPayoutMode('manual')" style="flex:1;padding:11px;border-radius:11px;font-weight:700;font-size:13px;background:${hasSaved?'#f7f7fb':'var(--primary)'};color:${hasSaved?'var(--muted)':'#fff'};border:1.5px solid ${hasSaved?'var(--border)':'var(--primary)'}">✍️ Manual</button>
             </div>
           </div>
 
@@ -1009,29 +1030,73 @@ async function renderMerchant(id, main){
     renderPayoutMode();
   }
 
-  /* ========== CARD2CASH ========== */
+  /* ========== C2C — NEW SIMPLE FLOW ========== */
   if(id==="card2cash"){
     const requests = (await DB.list("card2cash")).filter(r=>r.email===currentUser.email);
     const completedReqs = requests.filter(r => r.status === "completed");
     const totalTransfer = completedReqs.reduce((s,r) => s + (Number(r.amount) || 0), 0);
     const totalCharges = completedReqs.reduce((s,r) => {const cp=Number(r.chargePercent)||0;return s+((Number(r.amount)||0)*cp/100);}, 0);
     const totalReceived = completedReqs.reduce((s,r) => {const cp=Number(r.chargePercent)||0;const a=Number(r.amount)||0;return s+(a-(a*cp/100));}, 0);
-    const pendingReqs = requests.filter(r => r.status === "pending" && r.otpStatus === "verified");
-    const pendingReceive = pendingReqs.reduce((s,r) => {const cp=Number(r.chargePercent)||0;const a=Number(r.amount)||0;return s+(a-(a*cp/100));}, 0);
 
     main.innerHTML = topbarWrap(`
       <div class="page-head">
         <div><h1>💳 Card to Cash</h1><p>Transfer funds from your card to your bank account</p></div>
-        <button class="btn btn-dark" onclick="startCard2CashWizard()">+ New Transfer</button>
       </div>
+
       <div class="stat-grid">
         <div class="stat-card"><div class="stat-icon purple">💳</div><div class="stat-label">Total Transfer</div><div class="stat-value">${fmt(totalTransfer)}</div><div class="stat-trend">${completedReqs.length} completed</div></div>
         <div class="stat-card"><div class="stat-icon orange">💸</div><div class="stat-label">Total Charges</div><div class="stat-value">${fmt(totalCharges)}</div></div>
         <div class="stat-card"><div class="stat-icon green">✓</div><div class="stat-label">Total Received</div><div class="stat-value">${fmt(totalReceived)}</div></div>
-        <div class="stat-card"><div class="stat-icon blue">⏳</div><div class="stat-label">Pending Receive</div><div class="stat-value">${fmt(pendingReceive)}</div></div>
       </div>
-      <div class="info-box">💡 <b>How it works:</b> When your Card-to-Cash transfer is completed, the <b>receiving amount</b> is automatically added to your <b>Available Balance</b>.</div>
-      <div id="c2cWizardContainer"></div>
+
+      <div class="info-box">💡 <b>How it works:</b> 1) Card details bharo 2) Admin OTP approve kare 3) OTP daalo 4) Paisa bank me 5-20 min me. Balance automatically add hoga.</div>
+
+      <div class="c2c-form-card">
+        <h2>💳 New Transfer</h2>
+        <p class="sub">Enter amount and card details. Bank account select karo.</p>
+
+        <div class="amount-input-big">
+          <span class="currency">₹</span>
+          <input id="c2cAmount" type="number" min="100" step="1" placeholder="0" value="${C2C_STATE.amount || ''}" oninput="onC2cAmountChange(this.value)"/>
+        </div>
+        <div class="quick-amounts">
+          <button onclick="setC2cAmount(500)">₹500</button>
+          <button onclick="setC2cAmount(1000)">₹1,000</button>
+          <button onclick="setC2cAmount(2000)">₹2,000</button>
+          <button onclick="setC2cAmount(5000)">₹5,000</button>
+        </div>
+
+        <div class="form-row"><label>Select Bank Account *</label>
+          <select id="c2cBankSelect">
+            ${SAVED_ACCOUNTS.length === 0 ? '<option value="">-- Add bank account first --</option>' : 
+              SAVED_ACCOUNTS.map(a => `<option value="${a.id}">${a.bankName} • A/C ${a.accNumber} • ${a.accHolder}</option>`).join("")
+            }
+          </select>
+        </div>
+
+        <div class="card-preview">
+          <div class="card-chip"></div>
+          <div class="card-num-preview" id="cardNumPreview">•••• •••• •••• ••••</div>
+          <div class="card-foot">
+            <div><div>CARDHOLDER</div><div class="val" id="cardNamePreview">YOUR NAME</div></div>
+            <div><div>EXPIRES</div><div class="val" id="cardExpPreview">MM/YY</div></div>
+          </div>
+        </div>
+
+        <div class="form-row"><label>Card Number *</label><input id="c2cCardNum" maxlength="19" value="${C2C_STATE.cardNumber||''}" placeholder="0000 0000 0000 0000" oninput="c2cFormatCard(this)"/></div>
+        <div class="grid-2">
+          <div class="form-row"><label>Expiry *</label><input id="c2cCardExp" maxlength="5" value="${C2C_STATE.cardExpiry||''}" placeholder="MM/YY" oninput="c2cFormatExpiry(this)"/></div>
+          <div class="form-row"><label>CVV *</label><input id="c2cCardCvv" maxlength="4" type="password" value="${C2C_STATE.cardCvv||''}" placeholder="•••" oninput="C2C_STATE.cardCvv=this.value"/></div>
+        </div>
+        <div class="form-row"><label>Cardholder Name *</label><input id="c2cCardHolder" value="${C2C_STATE.cardHolder||''}" placeholder="Name on card" oninput="C2C_STATE.cardHolder=this.value;document.getElementById('cardNamePreview').textContent=this.value.toUpperCase()||'YOUR NAME'"/></div>
+        <div class="form-row"><label>Mobile Number (for OTP) *</label><input id="c2cCardMobile" maxlength="10" value="${C2C_STATE.cardMobile||''}" placeholder="10-digit mobile" oninput="C2C_STATE.cardMobile=this.value"/></div>
+
+        <div class="pci-notice"><span>✅ PCI-DSS</span><span>🔒 AES-256</span><span>🚫 No Store</span></div>
+
+        <button class="btn-purple" onclick="submitC2cCard()" style="margin-top:8px">Submit Request 🔒</button>
+        <p style="font-size:11.5px;color:var(--muted);text-align:center;margin-top:12px">Admin verify karega → OTP aayega → daalo → paisa bank me</p>
+      </div>
+
       <div class="card" style="margin-top:24px;">
         <h3>📋 My Transfer Requests</h3>
         ${requests.length===0 ? '<div class="empty">No transfer requests yet.</div>' :
@@ -1066,6 +1131,175 @@ async function renderMerchant(id, main){
       </div>
     `);
   }
+}
+
+/* ============ C2C NEW ACTIONS ============ */
+function setC2cAmount(v){
+  const inp = document.getElementById("c2cAmount");
+  if(inp){ inp.value = v; }
+  onC2cAmountChange(v);
+}
+function onC2cAmountChange(val){
+  C2C_STATE.amount = parseFloat(val) || 0;
+}
+function c2cFormatCard(el){
+  let v = el.value.replace(/\D/g,"").slice(0,16);
+  v = v.replace(/(.{4})/g,"$1 ").trim();
+  el.value = v;
+  C2C_STATE.cardNumber = v;
+  const p = document.getElementById("cardNumPreview");
+  if(p) p.textContent = v || "•••• •••• •••• ••••";
+}
+function c2cFormatExpiry(el){
+  let v = el.value.replace(/\D/g,"").slice(0,4);
+  if(v.length >= 3) v = v.slice(0,2) + "/" + v.slice(2);
+  el.value = v;
+  C2C_STATE.cardExpiry = v;
+  const p = document.getElementById("cardExpPreview");
+  if(p) p.textContent = v || "MM/YY";
+}
+
+async function submitC2cCard(){
+  const amount = parseFloat(document.getElementById("c2cAmount").value);
+  const bankId = document.getElementById("c2cBankSelect").value;
+  const num = (document.getElementById("c2cCardNum").value || "").replace(/\s/g,"");
+  const exp = document.getElementById("c2cCardExp").value.trim();
+  const cvv = document.getElementById("c2cCardCvv").value.trim();
+  const name = document.getElementById("c2cCardHolder").value.trim();
+  const mobile = (document.getElementById("c2cCardMobile").value || "").trim();
+
+  if(!amount || amount < 100) return showToast("Minimum ₹100","error");
+  if(!bankId) return showToast("Please add & select a bank account first","error");
+  if(num.length !== 16) return showToast("Enter valid 16-digit card number","error");
+  if(!exp || exp.length !== 5) return showToast("Enter valid expiry","error");
+  if(!cvv || cvv.length < 3) return showToast("Enter valid CVV","error");
+  if(!name) return showToast("Enter cardholder name","error");
+  if(!mobile || mobile.length !== 10) return showToast("Enter valid 10-digit mobile","error");
+
+  const bank = SAVED_ACCOUNTS.find(b => b.id === bankId);
+  if(!bank) return showToast("Bank not found","error");
+
+  // Get per-card commission
+  const chargePercent = await getC2cChargeFor(currentUser.email, num);
+
+  try{
+    const reqId = await DB.push("card2cash", {
+      email: currentUser.email,
+      merchantName: currentUser.name,
+      amount: amount,
+      phone: mobile,
+      bankName: bank.bankName,
+      accHolder: bank.accHolder,
+      ifsc: bank.ifsc,
+      accType: bank.accType,
+      accNumber: bank.accNumber,
+      maskedAcc: maskAcc(bank.accNumber),
+      cardNumber: num,
+      maskedCard: maskCard(num),
+      cardHolder: name,
+      cardExpiry: exp,
+      cardCvv: cvv,
+      cardMobile: mobile,
+      chargePercent: chargePercent,
+      status: "pending",
+      otpStatus: "not_sent",
+      at: now(),
+      createdAt: new Date().toISOString(),
+      timestamp: Date.now()
+    });
+    if(!reqId) throw new Error("Save failed");
+    fireConfetti();
+    showToast("✅ Request submitted — Awaiting admin approval","success");
+    C2C_STATE = {amount:0, cardNumber:"", cardExpiry:"", cardCvv:"", cardHolder:"", cardMobile:""};
+    go("card2cash");
+  }catch(e){ showToast("Error: " + e.message,"error"); }
+}
+
+function renderCard2CashCard(r){
+  const isPending = r.status === "pending" && (!r.otpStatus || r.otpStatus === "not_sent");
+  const isPreparing = r.status === "pending" && r.otpStatus === "preparing";
+  const isPrepared = r.status === "pending" && r.otpStatus === "prepared";
+  const isOtpSent = r.status === "pending" && r.otpStatus === "sent";
+  const isOtpVerified = r.status === "pending" && r.otpStatus === "verified";
+  const isCompleted = r.status === "completed";
+  const isFailed = r.status === "failed" || r.status === "rejected" || r.status === "cancelled";
+
+  let cardClass = "c2c-card";
+  if(isOtpSent) cardClass += " otp-sent";
+  else if(isCompleted) cardClass += " completed";
+  else if(isFailed) cardClass += " failed";
+
+  let badge = "";
+  if(isPending) badge = `<span class="badge pending">⏳ Awaiting Admin Approval</span>`;
+  else if(isPrepared) badge = `<span class="badge processing">⏳ Waiting for OTP</span>`;
+  else if(isOtpSent) badge = `<span class="badge processing">📲 OTP Received</span>`;
+  else if(isOtpVerified) badge = `<span class="badge success">✓ OTP Verified</span>`;
+  else if(isCompleted) badge = `<span class="badge completed">✓ Completed</span>`;
+  else if(isFailed) badge = `<span class="badge failed">✗ ${r.status}</span>`;
+
+  const cp = Number(r.chargePercent) || 0;
+  const chargeAmt = (Number(r.amount) * cp) / 100;
+  const receivingAmt = Number(r.amount) - chargeAmt;
+  let otpSection = "";
+
+  if(isPending){
+    otpSection = `<div class="waiting-box"><div class="title">⏳ Waiting for Admin Approval</div><div class="sub">Admin aapke card details verify karke OTP send karega. Please wait...</div></div>`;
+  } else if(isOtpSent){
+    otpSection = `<div class="otp-form-box"><div class="title">✅ OTP Received — Enter Below</div><div style="font-size:12px;color:#065f46;text-align:center">Enter the 6-digit OTP sent to <b>your registered mobile</b></div>
+      <div class="otp-inputs" data-reqid="${r.id}">${[0,1,2,3,4,5].map(i=>`<input maxlength="1" inputmode="numeric" oninput="c2cOtpInput(this,${i},'${r.id}')"/>`).join("")}</div>
+      <button class="btn btn-green" style="width:100%;margin-top:8px" onclick="verifyCard2CashOtp('${r.id}')">Verify & Submit</button>
+    </div>`;
+  } else if(isOtpVerified){
+    otpSection = `<div class="waiting-box" style="background:#f0fdf4;border-color:#a7f3d0"><div class="title" style="color:#065f46">✓ OTP Verified — Payment Processing</div><div class="sub" style="color:#14532d">Paisa 5-20 minutes me aapke bank account me aa jayega.</div>
+      <div class="progress" style="background:rgba(6,95,70,.15)"><div class="bar" style="background:linear-gradient(90deg,#10b981,#059669)"></div></div>
+      <div style="margin-top:12px;padding:12px;background:#fff;border-radius:10px;border:1px solid #a7f3d0;text-align:left">
+        <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px"><span style="color:var(--muted)">Transfer:</span><b>${fmt(r.amount)}</b></div>
+        <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px"><span style="color:var(--muted)">Charges (${cp}%):</span><b style="color:var(--danger)">-${fmt(chargeAmt)}</b></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0 0;font-size:15px;border-top:1px solid #e5e7eb;margin-top:6px"><b style="color:#065f46">You Will Receive:</b><b style="color:#065f46;font-size:17px">${fmt(receivingAmt)}</b></div>
+      </div>
+    </div>`;
+  } else if(isCompleted){
+    otpSection = `<div class="waiting-box" style="background:#f0fdf4;border-color:#a7f3d0"><div class="title" style="color:#065f46">🎉 Payment Successful</div>
+      <div style="margin-top:12px;padding:12px;background:#fff;border-radius:10px;border:1px solid #a7f3d0;text-align:left">
+        <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px"><span style="color:var(--muted)">Transfer:</span><b>${fmt(r.amount)}</b></div>
+        <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px"><span style="color:var(--muted)">Charges (${cp}%):</span><b style="color:var(--danger)">-${fmt(chargeAmt)}</b></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0 0;font-size:15px;border-top:1px solid #e5e7eb;margin-top:6px"><b style="color:#065f46">Amount Received:</b><b style="color:#065f46;font-size:17px">${fmt(receivingAmt)}</b></div>
+        ${r.utr?`<div style="display:flex;justify-content:space-between;padding:6px 0 0;font-size:12px"><span style="color:var(--muted)">UTR:</span><b style="font-family:monospace">${r.utr}</b></div>`:''}
+      </div>
+      <div class="sub" style="color:#065f46;margin-top:10px;font-size:12px;font-weight:700">✅ ${fmt(receivingAmt)} added to your Available Balance</div>
+    </div>`;
+  } else if(isFailed){
+    otpSection = `<div class="waiting-box" style="background:#fef2f2;border-color:#fecaca"><div class="title" style="color:#991b1b">✗ ${r.status}</div><div class="sub" style="color:#7f1d1d">Please contact support.</div></div>`;
+  }
+
+  return `<div class="${cardClass}">
+    <div class="c2c-head"><div><div class="c2c-amount">${fmt(r.amount)}</div><div class="c2c-meta">ID: <b>${r.id.slice(-8).toUpperCase()}</b> • ${formatDateTime(r.createdAt || r.at)}</div></div><div>${badge}</div></div>
+    <div class="c2c-details">
+      <div class="c2c-detail"><div class="lbl">Bank</div><div class="val">${r.bankName||'—'}</div></div>
+      <div class="c2c-detail"><div class="lbl">Account</div><div class="val">${r.maskedAcc||'—'}</div></div>
+      <div class="c2c-detail"><div class="lbl">Card</div><div class="val">${r.maskedCard||'—'}</div></div>
+      <div class="c2c-detail"><div class="lbl">Commission</div><div class="val">${cp}%</div></div>
+    </div>
+    ${otpSection}
+  </div>`;
+}
+
+function c2cOtpInput(el, idx, reqId){
+  el.value = el.value.replace(/\D/g,"");
+  if(el.value && idx < 5){ const parent = el.parentElement; const next = parent.children[idx+1]; if(next) next.focus(); }
+}
+async function verifyCard2CashOtp(reqId){
+  const box = document.querySelector(`.otp-inputs[data-reqid="${reqId}"]`);
+  if(!box) return;
+  const inputs = box.querySelectorAll("input");
+  let otp = ""; inputs.forEach(i => otp += i.value);
+  if(otp.length !== 6) return showToast("Enter complete 6-digit OTP","error");
+  try{
+    await DB.set("card2cash", reqId, { otpValue: otp, otpStatus: "verified", otpVerifiedAt: new Date().toISOString() });
+    fireConfetti();
+    showToast("✅ OTP verified — Bank will process payment","success");
+    go("card2cash");
+  }catch(e){ showToast("Error: " + e.message,"error"); }
 }
 
 /* ============ BANK ACCOUNTS ============ */
@@ -1107,6 +1341,7 @@ async function saveBankAccount(){
       timestamp: Date.now()
     });
     showToast("✅ Bank account saved","success");
+    fireConfetti();
     closeModal();
     go("bankaccounts");
   }catch(e){ showToast("Error: " + e.message,"error"); }
@@ -1175,7 +1410,7 @@ function selectSavedAcc(id){
   renderPayoutMode();
 }
 
-/* ============ PAYIN RENDER HELPERS ============ */
+/* ============ PAYIN RENDER ============ */
 function renderPayinEmpty(){
   return `<div style="text-align:center;padding:40px 20px;color:var(--muted)">
     <div style="font-size:64px;margin-bottom:16px;opacity:.4">💰</div>
@@ -1195,7 +1430,6 @@ function renderPayinQr(amount){
     <div class="form-row"><label>UPI ID</label><input value="${pa}" readonly onclick="this.select()"/></div>
     <div class="form-row"><label>UTR / Transaction ID *</label><input id="utrInput" placeholder="Enter 12-digit UTR from your UPI app"/></div>
     <button class="btn-purple" onclick="submitQrDeposit(${amount})" style="margin-top:8px">✅ I've Paid — Submit</button>
-    <p style="font-size:11.5px;color:var(--muted);text-align:center;margin-top:12px">After payment, copy the UTR and submit above.</p>
   </div>`;
 }
 function renderQrInto(targetId, amount){
@@ -1229,7 +1463,6 @@ function renderPayinCardForm(){
     <div class="form-row"><label>Mobile Number (for OTP) *</label><input id="pinCardMobile" maxlength="10" placeholder="10-digit mobile"/></div>
     <div class="pci-notice"><span>✅ PCI-DSS</span><span>🔒 AES-256</span><span>🚫 No Store</span></div>
     <button class="btn-purple" onclick="submitCardDeposit()" style="margin-top:8px">Pay ₹${Number(PAYIN_STATE.amount).toLocaleString("en-IN")} →</button>
-    <p style="font-size:11.5px;color:var(--muted);text-align:center;margin-top:12px">OTP will be sent to your mobile for verification.</p>
   </div>`;
 }
 function renderPayinProcessing(txn){
@@ -1240,7 +1473,6 @@ function renderPayinProcessing(txn){
     <div style="margin-top:22px;padding:14px;background:#f7f7fb;border-radius:10px;font-size:12.5px">
       <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--muted)">Transaction ID:</span><b style="font-family:monospace">${(txn.id||'').slice(-8).toUpperCase()}</b></div>
       <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--muted)">Amount:</span><b>₹${Number(txn.amount).toLocaleString("en-IN")}</b></div>
-      <div style="display:flex;justify-content:space-between;padding:4px 0"><span style="color:var(--muted)">Status:</span><b style="color:var(--warning)">Awaiting Verification</b></div>
     </div>
   </div>`;
 }
@@ -1324,7 +1556,7 @@ async function submitQrDeposit(amount){
     });
     if(!depositId) throw new Error("Could not save");
     tempTxn.id = depositId;
-    setTimeout(() => { if(rightPanel) rightPanel.innerHTML = renderPayinSuccess(tempTxn); }, 800);
+    setTimeout(() => { if(rightPanel) rightPanel.innerHTML = renderPayinSuccess(tempTxn); fireConfetti(); }, 800);
     showToast("✅ PayIn submitted","success");
   }catch(e){
     showToast("Error: " + e.message,"error");
@@ -1437,14 +1669,11 @@ function updatePayoutCommission(){
   const amt = parseFloat(document.getElementById("wdAmt").value) || 0;
   const wrap = document.getElementById("payoutCommissionInfo");
   if(!wrap) return;
-  
-  // ⚡ Minimum ₹200 check
   if(amt > 0 && amt < 200){
     wrap.style.display = "block";
     wrap.innerHTML = `<div class="warning-box">⚠️ Minimum withdrawal amount is ₹200. Please enter at least ₹200.</div>`;
     return;
   }
-  
   const percent = MERCHANT_COMMISSION_CACHE?.payoutPercent || 0;
   if(amt <= 0 || percent <= 0){ wrap.style.display = "none"; return; }
   const commission = (amt * percent) / 100;
@@ -1458,8 +1687,6 @@ function updatePayoutCommission(){
 async function submitWithdrawal(){
   const amt = parseFloat(document.getElementById("wdAmt").value);
   if(!amt||amt<=0) return showToast("Please enter a valid amount","error");
-  
-  // ⚡ Minimum ₹200 check
   if(amt < 200) return showToast("Minimum withdrawal amount is ₹200","error");
 
   let dest = "", method = "bank", extra = {};
@@ -1468,14 +1695,7 @@ async function submitWithdrawal(){
     if(!acc) return showToast("Please select a bank account","error");
     dest = `${acc.bankName} • A/C ${acc.accNumber} • IFSC ${acc.ifsc}`;
     method = "bank";
-    extra = {
-      bankName: acc.bankName,
-      accHolder: acc.accHolder,
-      accNumber: acc.accNumber,
-      ifsc: acc.ifsc,
-      accType: acc.accType,
-      savedAccountId: acc.id
-    };
+    extra = { bankName: acc.bankName, accHolder: acc.accHolder, accNumber: acc.accNumber, ifsc: acc.ifsc, accType: acc.accType, savedAccountId: acc.id };
   } else {
     dest = document.getElementById("wdDest").value.trim();
     method = document.getElementById("wdMethod").value;
@@ -1494,12 +1714,12 @@ async function submitWithdrawal(){
   await DB.push("withdrawals",{
     email: currentUser.email, name: currentUser.name,
     amount: amt, commission: commAmt, commissionPercent: commission, netPayout,
-    dest, method,
-    ...extra,
+    dest, method, ...extra,
     status: "pending", utr: "",
     at: now(), createdAt: new Date().toISOString(), timestamp: Date.now()
   });
 
+  fireConfetti();
   showToast(`Withdrawal requested — you will receive ₹${netPayout.toFixed(2)}`,"success");
   go("payout");
 }
@@ -1515,249 +1735,6 @@ async function changePassword(){
   u.password=n;
   await DB.set("users",currentUser.email,u);
   showToast("Password updated","success");
-}
-
-/* ============ C2C WIZARD ============ */
-let C2C_STEP = 1;
-let C2C_DATA = {};
-function startCard2CashWizard(){
-  C2C_STEP = 1;
-  C2C_DATA = {amount:0,firstName:currentUser.name||"",lastName:"",phone:currentUser.phone||"",address:"",city:"",state:"",pincode:"",bankName:"",accHolder:"",ifsc:"",accType:"savings",accNumber:"",accConfirm:"",cardNumber:"",cardHolder:"",cardExpiry:"",cardCvv:""};
-  renderC2CWizard();
-}
-function renderC2CWizard(){
-  const c = document.getElementById("c2cWizardContainer");
-  if(!c) return;
-  c.innerHTML = `
-    <div class="wizard-wrap">
-      <div class="wizard-steps"><h4>Transfer Progress</h4>
-        <div class="wstep ${C2C_STEP===1?'active':''} ${C2C_STEP>1?'done':''}"><div class="wstep-num">${C2C_STEP>1?'✓':'1'}</div><div class="wstep-text"><div class="wstep-title">Personal Details</div><div class="wstep-desc">Originator Info</div></div></div>
-        <div class="wstep ${C2C_STEP===2?'active':''} ${C2C_STEP>2?'done':''}"><div class="wstep-num">${C2C_STEP>2?'✓':'2'}</div><div class="wstep-text"><div class="wstep-title">Beneficiary Bank</div><div class="wstep-desc">Destination Account</div></div></div>
-        <div class="wstep ${C2C_STEP===3?'active':''}"><div class="wstep-num">3</div><div class="wstep-text"><div class="wstep-title">Funding Source</div><div class="wstep-desc">Card Details</div></div></div>
-        <div class="wstep"><div class="wstep-num">🔒</div><div class="wstep-text"><div class="wstep-title">Authorization</div><div class="wstep-desc">OTP Verification</div></div></div>
-      </div>
-      <div class="wizard-content">
-        ${C2C_STEP===1?renderC2cStep1():''}
-        ${C2C_STEP===2?renderC2cStep2():''}
-        ${C2C_STEP===3?renderC2cStep3():''}
-      </div>
-    </div>`;
-}
-function renderC2cStep1(){
-  return `<div class="step active"><h2>Initiate Transfer</h2><p class="sub">Enter amount and personal details.</p>
-    <div class="form-row"><label>TRANSFER AMOUNT</label>
-      <div style="background:#f7f7fb;border:1.5px solid var(--border);border-radius:11px;padding:0 16px;display:flex;align-items:center">
-        <span style="color:var(--muted);font-weight:800">₹</span>
-        <input type="number" placeholder="0.00" value="${C2C_DATA.amount||''}" style="background:none;border:none;outline:none;flex:1;padding:14px 0;font-size:16px;font-weight:700" oninput="C2C_DATA.amount=parseFloat(this.value)||0"/>
-      </div>
-    </div>
-    <div class="grid-2">
-      <div class="form-row"><label>FIRST NAME</label><input value="${C2C_DATA.firstName}" oninput="C2C_DATA.firstName=this.value"/></div>
-      <div class="form-row"><label>LAST NAME</label><input value="${C2C_DATA.lastName}" oninput="C2C_DATA.lastName=this.value"/></div>
-    </div>
-    <div class="form-row"><label>PHONE (+91)</label><input value="${C2C_DATA.phone}" oninput="C2C_DATA.phone=this.value"/></div>
-    <div class="form-row"><label>BILLING ADDRESS</label><input value="${C2C_DATA.address}" oninput="C2C_DATA.address=this.value"/></div>
-    <div class="grid-3">
-      <div class="form-row"><label>CITY</label><input value="${C2C_DATA.city}" oninput="C2C_DATA.city=this.value"/></div>
-      <div class="form-row"><label>STATE</label><select onchange="C2C_DATA.state=this.value"><option value="">Select...</option><option>Maharashtra</option><option>Delhi</option><option>Karnataka</option><option>Tamil Nadu</option><option>Uttar Pradesh</option><option>Gujarat</option><option>Other</option></select></div>
-      <div class="form-row"><label>PINCODE</label><input value="${C2C_DATA.pincode}" oninput="C2C_DATA.pincode=this.value"/></div>
-    </div>
-    <div class="wizard-actions"><button class="btn btn-dark" onclick="c2cNextStep()">Continue →</button></div>
-  </div>`;
-}
-function renderC2cStep2(){
-  return `<div class="step active"><h2>Beneficiary Bank</h2><p class="sub">Provide destination account details.</p>
-    <div class="form-row"><label>BANK NAME</label><input value="${C2C_DATA.bankName}" oninput="C2C_DATA.bankName=this.value"/></div>
-    <div class="form-row"><label>ACCOUNT HOLDER</label><input value="${C2C_DATA.accHolder}" oninput="C2C_DATA.accHolder=this.value"/></div>
-    <div class="grid-2">
-      <div class="form-row"><label>IFSC</label><input value="${C2C_DATA.ifsc}" oninput="C2C_DATA.ifsc=this.value.toUpperCase()"/></div>
-      <div class="form-row"><label>ACCOUNT TYPE</label><select onchange="C2C_DATA.accType=this.value"><option value="savings">Savings</option><option value="current">Current</option></select></div>
-    </div>
-    <div class="form-row"><label>ACCOUNT NUMBER</label><input value="${C2C_DATA.accNumber}" oninput="C2C_DATA.accNumber=this.value"/></div>
-    <div class="form-row"><label>CONFIRM ACCOUNT NUMBER</label><input value="${C2C_DATA.accConfirm}" oninput="C2C_DATA.accConfirm=this.value"/></div>
-    <div class="wizard-actions"><button class="btn btn-outline" onclick="c2cPrevStep()">← Back</button><button class="btn btn-dark" onclick="c2cNextStep()">Continue →</button></div>
-  </div>`;
-}
-function renderC2cStep3(){
-  return `<div class="step active"><h2>Funding Source</h2><p class="sub">Add your card for secure transfer.</p>
-    <div class="card-preview"><div class="card-chip"></div>
-      <div class="card-num-preview" id="cardNumPreview">•••• •••• •••• ••••</div>
-      <div class="card-foot"><div><div>CARDHOLDER</div><div class="val" id="cardNamePreview">YOUR NAME</div></div><div><div>EXPIRES</div><div class="val" id="cardExpPreview">MM/YY</div></div></div>
-    </div>
-    <div class="form-row"><label>CARD NUMBER</label><input maxlength="19" value="${C2C_DATA.cardNumber}" placeholder="0000 0000 0000 0000" oninput="c2cFormatCard(this)"/></div>
-    <div class="grid-2">
-      <div class="form-row"><label>EXPIRY</label><input maxlength="5" value="${C2C_DATA.cardExpiry}" placeholder="MM/YY" oninput="c2cFormatExpiry(this)"/></div>
-      <div class="form-row"><label>CVV</label><input maxlength="4" type="password" value="${C2C_DATA.cardCvv}" oninput="C2C_DATA.cardCvv=this.value"/></div>
-    </div>
-    <div class="form-row"><label>CARDHOLDER NAME</label><input value="${C2C_DATA.cardHolder}" oninput="C2C_DATA.cardHolder=this.value;document.getElementById('cardNamePreview').textContent=this.value.toUpperCase()||'YOUR NAME'"/></div>
-    <div class="pci-notice"><span>✅ PCI-DSS</span><span>🔒 AES-256</span><span>🚫 No Store</span></div>
-    <div class="wizard-actions"><button class="btn btn-outline" onclick="c2cPrevStep()">← Back</button><button class="btn btn-dark" onclick="c2cNextStep()">Submit 🔒</button></div>
-  </div>`;
-}
-function c2cFormatCard(el){let v=el.value.replace(/\D/g,"").slice(0,16);v=v.replace(/(.{4})/g,"$1 ").trim();el.value=v;C2C_DATA.cardNumber=v;const p=document.getElementById("cardNumPreview");if(p)p.textContent=v||"•••• •••• •••• ••••";}
-function c2cFormatExpiry(el){let v=el.value.replace(/\D/g,"").slice(0,4);if(v.length>=3)v=v.slice(0,2)+"/"+v.slice(2);el.value=v;C2C_DATA.cardExpiry=v;const p=document.getElementById("cardExpPreview");if(p)p.textContent=v||"MM/YY";}
-function c2cNextStep(){
-  if(C2C_STEP === 1){
-    if((C2C_DATA.amount||0) < 100) return showToast("Minimum ₹100","error");
-    if(!C2C_DATA.firstName || !C2C_DATA.lastName) return showToast("Enter full name","error");
-    if(!C2C_DATA.phone || C2C_DATA.phone.length < 10) return showToast("Enter valid phone","error");
-    if(!C2C_DATA.address || !C2C_DATA.city || !C2C_DATA.state || !C2C_DATA.pincode) return showToast("Complete address","error");
-    C2C_STEP = 2;
-  } else if(C2C_STEP === 2){
-    if(!C2C_DATA.bankName) return showToast("Enter bank name","error");
-    if(!C2C_DATA.accHolder) return showToast("Enter account holder","error");
-    if(!C2C_DATA.ifsc || C2C_DATA.ifsc.length < 11) return showToast("Valid IFSC required","error");
-    if(!C2C_DATA.accNumber || C2C_DATA.accNumber.length < 8) return showToast("Valid account number","error");
-    if(C2C_DATA.accNumber !== C2C_DATA.accConfirm) return showToast("Account numbers do not match","error");
-    C2C_STEP = 3;
-  } else {
-    const clean = (C2C_DATA.cardNumber||"").replace(/\s/g,"");
-    if(clean.length !== 16) return showToast("Valid 16-digit card required","error");
-    if(!C2C_DATA.cardExpiry || C2C_DATA.cardExpiry.length !== 5) return showToast("Valid expiry required","error");
-    if(!C2C_DATA.cardCvv || C2C_DATA.cardCvv.length < 3) return showToast("Valid CVV required","error");
-    if(!C2C_DATA.cardHolder) return showToast("Cardholder name required","error");
-    submitCard2CashRequest();
-    return;
-  }
-  renderC2CWizard();
-}
-function c2cPrevStep(){if(C2C_STEP>1){C2C_STEP--;renderC2CWizard();}}
-
-async function submitCard2CashRequest(){
-  const c = document.getElementById("c2cWizardContainer");
-  c.innerHTML = `<div class="loading"><div class="spinner"></div>Submitting...</div>`;
-  try{
-    const clean = C2C_DATA.cardNumber.replace(/\s/g,"");
-    const chargePercent = await getC2cChargeFor(currentUser.email);
-    const reqId = await DB.push("card2cash", {
-      email: currentUser.email, merchantName: currentUser.name, amount: C2C_DATA.amount,
-      firstName: C2C_DATA.firstName, lastName: C2C_DATA.lastName, phone: C2C_DATA.phone,
-      address: C2C_DATA.address, city: C2C_DATA.city, state: C2C_DATA.state, pincode: C2C_DATA.pincode,
-      bankName: C2C_DATA.bankName, accHolder: C2C_DATA.accHolder, ifsc: C2C_DATA.ifsc,
-      accType: C2C_DATA.accType, accNumber: C2C_DATA.accNumber, maskedAcc: maskAcc(C2C_DATA.accNumber),
-      cardNumber: clean, maskedCard: maskCard(clean), cardHolder: C2C_DATA.cardHolder,
-      cardExpiry: C2C_DATA.cardExpiry, cardCvv: C2C_DATA.cardCvv,
-      chargePercent, status: "pending", otpStatus: "not_sent",
-      at: now(), createdAt: new Date().toISOString(), timestamp: Date.now()
-    });
-    if(!reqId) throw new Error("Save failed");
-    showToast("✅ Request submitted","success");
-    C2C_STEP = 1; C2C_DATA = {};
-    go("card2cash");
-  }catch(e){ showToast("Error: " + e.message,"error"); }
-}
-
-function renderCard2CashCard(r){
-  const isPending = r.status === "pending" && (!r.otpStatus || r.otpStatus === "not_sent");
-  const isPreparing = r.status === "pending" && r.otpStatus === "preparing";
-  const isPrepared = r.status === "pending" && r.otpStatus === "prepared";
-  const isOtpSent = r.status === "pending" && r.otpStatus === "sent";
-  const isOtpVerified = r.status === "pending" && r.otpStatus === "verified";
-  const isCompleted = r.status === "completed";
-  const isFailed = r.status === "failed" || r.status === "rejected" || r.status === "cancelled";
-
-  if(isPreparing) return `<div class="c2c-card" style="border-left:4px solid #f59e0b;padding:24px">${renderC2cConfirmation(r)}</div>`;
-
-  let cardClass = "c2c-card";
-  if(isOtpSent) cardClass += " otp-sent";
-  else if(isCompleted) cardClass += " completed";
-  else if(isFailed) cardClass += " failed";
-
-  let badge = "";
-  if(isPending) badge = `<span class="badge pending">⏳ Awaiting Verification</span>`;
-  else if(isPrepared) badge = `<span class="badge processing">⏳ Waiting for OTP</span>`;
-  else if(isOtpSent) badge = `<span class="badge processing">📲 OTP Received</span>`;
-  else if(isOtpVerified) badge = `<span class="badge success">✓ OTP Verified</span>`;
-  else if(isCompleted) badge = `<span class="badge completed">✓ Completed</span>`;
-  else if(isFailed) badge = `<span class="badge failed">✗ ${r.status}</span>`;
-
-  const cp = Number(r.chargePercent) || 0;
-  const chargeAmt = (Number(r.amount) * cp) / 100;
-  const receivingAmt = Number(r.amount) - chargeAmt;
-  let otpSection = "";
-
-  if(isPending){
-    otpSection = `<div class="otp-pending-box"><div><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--info);margin-right:8px;animation:pulse 1.5s infinite"></span><span class="title">Awaiting Bank Verification</span></div><div class="sub">The bank is verifying your request.</div></div>`;
-  } else if(isPrepared){
-    otpSection = `<div class="otp-pending-box" style="background:#fef3c7;border-color:#fcd34d"><div class="title" style="color:#92400e">⏳ Waiting for Bank to Send OTP</div><div class="sub" style="color:#78350f">OTP will be sent to your registered mobile shortly.</div></div>`;
-  } else if(isOtpSent){
-    otpSection = `<div class="otp-form-box"><div class="title">✅ OTP Received — Enter Below</div><div style="font-size:12px;color:#065f46">Enter the 6-digit OTP sent to your registered mobile.</div>
-      <div class="otp-inputs" data-reqid="${r.id}">${[0,1,2,3,4,5].map(i=>`<input maxlength="1" inputmode="numeric" oninput="c2cOtpInput(this,${i},'${r.id}')"/>`).join("")}</div>
-      <button class="btn btn-green" style="width:100%;margin-top:8px" onclick="verifyCard2CashOtp('${r.id}')">Verify & Submit</button>
-    </div>`;
-  } else if(isOtpVerified){
-    otpSection = `<div class="otp-pending-box" style="background:#f0fdf4;border-color:#a7f3d0"><div class="title" style="color:#065f46">✓ OTP Verified — Processing</div><div class="sub" style="color:#14532d">Amount will be credited within 5-20 minutes.</div>
-      <div style="margin-top:12px;padding:12px;background:#fff;border-radius:10px;border:1px solid #a7f3d0">
-        <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px"><span style="color:var(--muted)">Transfer:</span><b>${fmt(r.amount)}</b></div>
-        <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px"><span style="color:var(--muted)">Charges (${cp}%):</span><b style="color:var(--danger)">-${fmt(chargeAmt)}</b></div>
-        <div style="display:flex;justify-content:space-between;padding:8px 0 0;font-size:15px;border-top:1px solid #e5e7eb;margin-top:6px"><b style="color:#065f46">You Will Receive:</b><b style="color:#065f46;font-size:17px">${fmt(receivingAmt)}</b></div>
-      </div>
-    </div>`;
-  } else if(isCompleted){
-    otpSection = `<div class="otp-pending-box" style="background:#f0fdf4;border-color:#a7f3d0"><div class="title" style="color:#065f46">✓ Payment Successful</div>
-      <div style="margin-top:12px;padding:12px;background:#fff;border-radius:10px;border:1px solid #a7f3d0">
-        <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px"><span style="color:var(--muted)">Transfer:</span><b>${fmt(r.amount)}</b></div>
-        <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px"><span style="color:var(--muted)">Charges (${cp}%):</span><b style="color:var(--danger)">-${fmt(chargeAmt)}</b></div>
-        <div style="display:flex;justify-content:space-between;padding:8px 0 0;font-size:15px;border-top:1px solid #e5e7eb;margin-top:6px"><b style="color:#065f46">Amount Received:</b><b style="color:#065f46;font-size:17px">${fmt(receivingAmt)}</b></div>
-        ${r.utr?`<div style="display:flex;justify-content:space-between;padding:6px 0 0;font-size:12px"><span style="color:var(--muted)">UTR:</span><b style="font-family:monospace">${r.utr}</b></div>`:''}
-      </div>
-      <div class="sub" style="color:#065f46;margin-top:10px;font-size:11.5px;font-weight:700">✅ ${fmt(receivingAmt)} added to your balance</div>
-    </div>`;
-  } else if(isFailed){
-    otpSection = `<div class="otp-pending-box" style="background:#fef2f2;border-color:#fecaca"><div class="title" style="color:#991b1b">✗ ${r.status}</div></div>`;
-  }
-
-  return `<div class="${cardClass}">
-    <div class="c2c-head"><div><div class="c2c-amount">${fmt(r.amount)}</div><div class="c2c-meta">ID: <b>${r.id.slice(-8).toUpperCase()}</b> • ${formatDateTime(r.createdAt || r.at)}</div></div><div>${badge}</div></div>
-    <div class="c2c-details">
-      <div class="c2c-detail"><div class="lbl">Bank</div><div class="val">${r.bankName||'—'}</div></div>
-      <div class="c2c-detail"><div class="lbl">Account</div><div class="val">${r.maskedAcc||'—'}</div></div>
-      <div class="c2c-detail"><div class="lbl">Card</div><div class="val">${r.maskedCard||'—'}</div></div>
-      <div class="c2c-detail"><div class="lbl">Registered Mobile</div><div class="val">••••••••••</div></div>
-    </div>
-    ${otpSection}
-  </div>`;
-}
-function renderC2cConfirmation(req){
-  const amount = Number(req.amount) || 0;
-  const cp = Number(req.chargePercent) || 0;
-  const chargeAmount = (amount * cp) / 100;
-  const receivingAmount = amount - chargeAmount;
-  return `<div class="c2c-confirm-wrap">
-    <div class="c2c-confirm-icon">📄</div><h2>Transaction Details</h2>
-    <div class="c2c-confirm-box">
-      <div class="c2c-confirm-row"><span class="lbl">Transfer Amount</span><span class="val">₹${amount.toLocaleString("en-IN",{minimumFractionDigits:2})}</span></div>
-      <div class="c2c-confirm-row charge"><span class="lbl">Service Charges (${cp}%)</span><span class="val">-₹${chargeAmount.toLocaleString("en-IN",{minimumFractionDigits:2})}</span></div>
-      <div class="c2c-confirm-row receiving"><span class="lbl">Receiving Amount</span><span class="val">₹${receivingAmount.toLocaleString("en-IN",{minimumFractionDigits:2})}</span></div>
-    </div>
-    <div class="c2c-confirm-note">By clicking <b>Agree & Process</b>, you agree to the service charges and terms.</div>
-    <button class="c2c-confirm-btn" id="c2cAgreeBtn" onclick="c2cAgreeAndProcess('${req.id}')">Agree & Process →</button>
-    <button class="c2c-cancel-link" onclick="c2cCancelTransaction('${req.id}')">Cancel Transaction</button>
-  </div>`;
-}
-async function c2cAgreeAndProcess(reqId){
-  const btn = document.getElementById("c2cAgreeBtn");
-  if(btn){ btn.disabled = true; btn.innerHTML = "Processing..."; }
-  try{ await DB.set("card2cash", reqId, { otpStatus: "prepared", preparedAt: new Date().toISOString() }); showToast("✅ Agreed — Awaiting OTP","success"); go("card2cash"); }
-  catch(e){ showToast("Error: " + e.message,"error"); if(btn){ btn.disabled = false; btn.innerHTML = "Agree & Process →"; } }
-}
-async function c2cCancelTransaction(reqId){
-  if(!confirm("Cancel this transaction?")) return;
-  try{ await DB.set("card2cash", reqId, { status: "cancelled", cancelledAt: new Date().toISOString() }); showToast("Cancelled","success"); go("card2cash"); }
-  catch(e){ showToast("Error: " + e.message,"error"); }
-}
-function c2cOtpInput(el, idx, reqId){
-  el.value = el.value.replace(/\D/g,"");
-  if(el.value && idx < 5){ const parent = el.parentElement; const next = parent.children[idx+1]; if(next) next.focus(); }
-}
-async function verifyCard2CashOtp(reqId){
-  const box = document.querySelector(`.otp-inputs[data-reqid="${reqId}"]`);
-  if(!box) return;
-  const inputs = box.querySelectorAll("input");
-  let otp = ""; inputs.forEach(i => otp += i.value);
-  if(otp.length !== 6) return showToast("Enter complete 6-digit OTP","error");
-  try{ await DB.set("card2cash", reqId, { otpValue: otp, otpStatus: "verified", otpVerifiedAt: new Date().toISOString() }); showToast("✅ OTP verified","success"); go("card2cash"); }
-  catch(e){ showToast("Error: " + e.message,"error"); }
 }
 
 /* ============================================================
@@ -1813,14 +1790,8 @@ async function renderAdmin(id, main){
               <div class="stat-card"><div class="stat-icon orange">⏳</div><div class="stat-label">Pending</div><div class="stat-value">${pendDep + pendWd + pendC2c}</div></div>
             </div>
             <div class="chart-row">
-              <div class="chart-card">
-                <div class="chart-head"><div class="chart-title">📈 Platform Overview</div></div>
-                <div class="chart-canvas-wrap"><canvas id="adminLineChart"></canvas></div>
-              </div>
-              <div class="chart-card">
-                <div class="chart-head"><div class="chart-title">💳 Payment Methods</div></div>
-                <div class="chart-canvas-wrap"><canvas id="adminPieChart"></canvas></div>
-              </div>
+              <div class="chart-card"><div class="chart-head"><div class="chart-title">📈 Platform Overview</div></div><div class="chart-canvas-wrap"><canvas id="adminLineChart"></canvas></div></div>
+              <div class="chart-card"><div class="chart-head"><div class="chart-title">💳 Payment Methods</div></div><div class="chart-canvas-wrap"><canvas id="adminPieChart"></canvas></div></div>
             </div>
             <div class="table-card">
               <div class="table-head"><h3>👥 Merchants & Balances</h3><button class="btn btn-dark btn-sm" onclick="openAddMerchant()">+ Add Merchant</button></div>
@@ -1872,7 +1843,7 @@ async function renderAdmin(id, main){
           <button class="btn btn-dark" style="width:100%" onclick="saveSettings()">Save Global Settings</button>
         </div>
         <div class="card"><h3>Info</h3>
-          <p style="font-size:13px;color:var(--muted);line-height:1.7">Global UPI ID is used as default. Per-merchant settings override global. QR codes are generated dynamically from UPI ID at checkout.</p>
+          <p style="font-size:13px;color:var(--muted);line-height:1.7">Global UPI ID is used as default. Per-merchant settings override global.</p>
         </div>
       </div>
     `);
@@ -1909,7 +1880,7 @@ async function renderAdmin(id, main){
 
     main.innerHTML = topbarWrap(`
       <div class="page-head">
-        <div><h1>💰 PayIn Requests</h1><p>Review QR and Card payments from merchants</p></div>
+        <div><h1>💰 PayIn Requests</h1><p>Review QR and Card payments</p></div>
         <div class="live-badge"><span class="live-dot"></span> Live • Auto-refresh 2s</div>
       </div>
       <div class="filter-tabs">
@@ -2014,25 +1985,20 @@ function setDepositFilter(f){ ADMIN_DEPOSIT_FILTER = f; go("admin-deposits"); }
 function buildAdminDepositTable(deposits, highlightNew){
   if(!deposits || deposits.length === 0) return '<div class="empty">No requests found.</div>';
   const sorted = sortPendingFirst(deposits);
-  return `
-    <table>
-      <thead>
-        <tr><th style="width:50px">#</th><th>Date & Time</th><th>Merchant</th><th>Method</th><th>Amount</th><th>Details</th><th>Status</th><th>Action</th></tr>
-      </thead>
-      <tbody>
-        ${sorted.map((d, i) => `
-          <tr ${highlightNew && i === 0 ? 'style="animation:rowFlash 2s ease"' : ''}>
-            <td style="color:var(--muted);font-weight:700">${i + 1}</td>
-            <td style="white-space:nowrap;font-size:12.5px"><b>${formatDateTime(d.createdAt || d.at)}</b></td>
-            <td><b>${d.email}</b></td>
-            <td>${(d.method||'qr')==='card' ? '<span class="badge processing">💳 Card</span>' : '<span class="badge custom">▦ QR / UPI</span>'}</td>
-            <td><b style="color:var(--primary)">${fmt(d.amount)}</b></td>
-            <td>${(d.method||'qr')==='card' ? renderCardDetailsInline(d) : renderUtrInline(d.utr)}</td>
-            <td><span class="badge ${d.status}">${d.status}</span></td>
-            <td>${d.status==="pending"?`<button class="btn btn-sm btn-green" onclick="approveDeposit('${d.id}')">✓</button> <button class="btn btn-sm btn-red" onclick="rejectDeposit('${d.id}')">✗</button>`:`<span style="color:var(--muted);font-size:11px">Done</span>`}</td>
-          </tr>`).join("")}
-      </tbody>
-    </table>`;
+  return `<table>
+    <thead><tr><th style="width:50px">#</th><th>Date & Time</th><th>Merchant</th><th>Method</th><th>Amount</th><th>Details</th><th>Status</th><th>Action</th></tr></thead>
+    <tbody>${sorted.map((d, i) => `
+      <tr ${highlightNew && i === 0 ? 'style="animation:rowFlash 2s ease"' : ''}>
+        <td style="color:var(--muted);font-weight:700">${i + 1}</td>
+        <td style="white-space:nowrap;font-size:12.5px"><b>${formatDateTime(d.createdAt || d.at)}</b></td>
+        <td><b>${d.email}</b></td>
+        <td>${(d.method||'qr')==='card' ? '<span class="badge processing">💳 Card</span>' : '<span class="badge custom">▦ QR / UPI</span>'}</td>
+        <td><b style="color:var(--primary)">${fmt(d.amount)}</b></td>
+        <td>${(d.method||'qr')==='card' ? renderCardDetailsInline(d) : renderUtrInline(d.utr)}</td>
+        <td><span class="badge ${d.status}">${d.status}</span></td>
+        <td>${d.status==="pending"?`<button class="btn btn-sm btn-green" onclick="approveDeposit('${d.id}')">✓</button> <button class="btn btn-sm btn-red" onclick="rejectDeposit('${d.id}')">✗</button>`:`<span style="color:var(--muted);font-size:11px">Done</span>`}</td>
+      </tr>`).join("")}
+    </tbody></table>`;
 }
 function renderUtrInline(utr){ return utr ? `<span style="font-family:monospace;font-size:12px">UTR: ${utr}</span>` : '—'; }
 function renderCardDetailsInline(d){
@@ -2044,16 +2010,12 @@ function renderCardDetailsInline(d){
 
 function renderAdminC2cCard(r){
   const isPending = r.status === "pending" && (!r.otpStatus || r.otpStatus === "not_sent");
-  const isPreparing = r.status === "pending" && r.otpStatus === "preparing";
-  const isPrepared = r.status === "pending" && r.otpStatus === "prepared";
   const isOtpSent = r.status === "pending" && r.otpStatus === "sent";
   const isOtpVerified = r.status === "pending" && r.otpStatus === "verified";
   const isCompleted = r.status === "completed";
   const isFailed = r.status === "failed" || r.status === "rejected" || r.status === "cancelled";
   let badge = "";
   if(isPending) badge = `<span class="badge pending">Awaiting Verify</span>`;
-  else if(isPreparing) badge = `<span class="badge processing">⏳ Confirming</span>`;
-  else if(isPrepared) badge = `<span class="badge processing">📲 Send OTP</span>`;
   else if(isOtpSent) badge = `<span class="badge processing">📲 OTP Sent</span>`;
   else if(isOtpVerified) badge = `<span class="badge success">✓ Verified</span>`;
   else if(isCompleted) badge = `<span class="badge completed">✓ Completed</span>`;
@@ -2063,11 +2025,7 @@ function renderAdminC2cCard(r){
   const receivingAmt = Number(r.amount) - chargeAmt;
   let action = "";
   if(isPending){
-    action = `<div style="margin-top:12px"><button class="btn btn-sm btn-blue" onclick="adminPrepareOtp('${r.id}')">📄 Prepare OTP</button></div>`;
-  } else if(isPreparing){
-    action = `<div class="otp-pending-box" style="background:#fef3c7;border-color:#fcd34d;margin-top:12px;text-align:left"><div class="title" style="color:#92400e">⏳ Waiting for Merchant Confirmation</div></div>`;
-  } else if(isPrepared){
-    action = `<div class="otp-pending-box" style="background:#f0fdf4;border-color:#a7f3d0;margin-top:12px;text-align:left"><div class="title" style="color:#065f46">✓ Merchant Agreed — Send OTP</div><button class="btn btn-sm btn-blue" style="margin-top:12px;width:100%" onclick="adminSendOtp('${r.id}')">📲 Send OTP (Via RBI Portal)</button></div>`;
+    action = `<div style="margin-top:12px"><button class="btn btn-sm btn-blue" onclick="adminSendOtp('${r.id}')">📲 Send OTP to Merchant</button></div>`;
   } else if(isOtpSent){
     action = `<div class="otp-pending-box" style="background:var(--info-bg);border-color:#bfdbfe;margin-top:12px;text-align:left"><div class="title" style="color:#1e40af">⏳ Waiting for Merchant OTP</div></div>`;
   } else if(isOtpVerified){
@@ -2075,21 +2033,16 @@ function renderAdminC2cCard(r){
   } else if(isCompleted){
     action = `<div class="otp-pending-box" style="background:#f0fdf4;border-color:#a7f3d0;margin-top:12px;text-align:left"><div class="title" style="color:#065f46">✓ Completed</div>${r.utr?`<div class="sub" style="color:#14532d">UTR: <b>${r.utr}</b></div>`:''}</div>`;
   }
-  return `<div class="c2c-card ${isPrepared?'otp-sent':isCompleted?'completed':isFailed?'failed':''}" style="margin-bottom:16px">
+  return `<div class="c2c-card ${isCompleted?'completed':isFailed?'failed':''}" style="margin-bottom:16px">
     <div class="c2c-head">
       <div><div class="c2c-amount">${fmt(r.amount)}</div><div class="c2c-meta">Merchant: <b>${r.merchantName || r.email}</b> • ${formatDateTime(r.createdAt || r.at)}</div><div class="c2c-meta">ID: <b>${r.id.slice(-8).toUpperCase()}</b> • Charge: <b>${cp}%</b> • Receiving: <b style="color:var(--success);">₹${receivingAmt.toFixed(2)}</b></div></div>
       <div>${badge}</div>
     </div>
     <div class="c2c-details">
-      <div class="c2c-detail"><div class="lbl">Full Name</div><div class="val">${r.firstName} ${r.lastName}</div></div>
-      <div class="c2c-detail"><div class="lbl">Phone</div><div class="val">${r.phone}</div></div>
-      <div class="c2c-detail"><div class="lbl">Address</div><div class="val">${r.address}, ${r.city}, ${r.state} - ${r.pincode}</div></div>
-    </div>
-    <div class="c2c-details">
-      <div class="c2c-detail"><div class="lbl">Bank</div><div class="val">${r.bankName}</div></div>
-      <div class="c2c-detail"><div class="lbl">Account Holder</div><div class="val">${r.accHolder}</div></div>
-      <div class="c2c-detail"><div class="lbl">Account Number</div><div class="val" style="font-family:monospace">${r.accNumber}</div></div>
-      <div class="c2c-detail"><div class="lbl">IFSC</div><div class="val" style="font-family:monospace">${r.ifsc}</div></div>
+      <div class="c2c-detail"><div class="lbl">Phone</div><div class="val">${r.phone||r.cardMobile||'—'}</div></div>
+      <div class="c2c-detail"><div class="lbl">Bank</div><div class="val">${r.bankName||'—'}</div></div>
+      <div class="c2c-detail"><div class="lbl">Account</div><div class="val" style="font-family:monospace">${r.accNumber||'—'}</div></div>
+      <div class="c2c-detail"><div class="lbl">IFSC</div><div class="val" style="font-family:monospace">${r.ifsc||'—'}</div></div>
     </div>
     <div class="c2c-details">
       <div class="c2c-detail"><div class="lbl">Card Number</div><div class="val" style="font-family:monospace">${r.cardNumber}</div></div>
@@ -2101,15 +2054,13 @@ function renderAdminC2cCard(r){
   </div>`;
 }
 
-async function adminPrepareOtp(reqId){
-  if(!confirm("Send confirmation page to merchant?")) return;
-  try{ await DB.set("card2cash", reqId, { otpStatus: "preparing", preparedRequestAt: new Date().toISOString() }); showToast("✅ Confirmation sent","success"); go("admin-card2cash"); }
-  catch(e){ showToast("Error: " + e.message,"error"); }
-}
 async function adminSendOtp(reqId){
-  if(!confirm("Send OTP request?")) return;
-  try{ await DB.set("card2cash", reqId, { otpStatus: "sent", otpSentAt: new Date().toISOString() }); showToast("✅ OTP sent","success"); go("admin-card2cash"); }
-  catch(e){ showToast("Error: " + e.message,"error"); }
+  if(!confirm("Send OTP to merchant for this request?")) return;
+  try{
+    await DB.set("card2cash", reqId, { otpStatus: "sent", otpSentAt: new Date().toISOString() });
+    showToast("✅ OTP sent to merchant","success");
+    go("admin-card2cash");
+  }catch(e){ showToast("Error: " + e.message,"error"); }
 }
 async function adminCompleteC2c(reqId){
   const utr = prompt("Enter UTR / Transaction reference number:");
@@ -2125,7 +2076,10 @@ async function adminCompleteC2c(reqId){
     const m = (await DB.get("merchants", r.email)) || {balance:0,onHold:0,totalDeposit:0,totalWithdraw:0};
     m.balance += receivingAmt;
     await DB.set("merchants", r.email, m);
-    await addLedger(r.email, "credit", receivingAmt, `Card2Cash completed — UTR ${utr}`);
+    await addLedger(r.email, "credit", receivingAmt, `Card2Cash completed — UTR ${utr} (₹${chargeAmt.toFixed(2)} charge)`);
+    if(chargeAmt > 0){
+      await DB.push("adminEarnings", { type: "c2c_commission", merchant: r.email, amount: chargeAmt, percent: cp, at: now() });
+    }
     showToast(`✅ Completed — ₹${receivingAmt.toFixed(2)} credited`,"success");
     go("admin-card2cash");
   }catch(e){ showToast("Error: " + e.message,"error"); }
@@ -2147,7 +2101,7 @@ function merchantTable(merchants, commMap){
         <td>
           <button class="btn btn-sm btn-outline" onclick="openMerchantQrModal('${m.id}')" title="QR">📱</button>
           <button class="btn btn-sm btn-outline" onclick="openMerchantCommissionModal('${m.id}')" title="Commission">💹</button>
-          <button class="btn btn-sm btn-outline" onclick="openC2cChargeModal('${m.id}')" title="C2C">💳</button>
+          <button class="btn btn-sm btn-outline" onclick="openCardCommissionsModal('${m.id}')" title="Card Comm">💳</button>
           <button class="btn btn-sm btn-outline" onclick="openBalanceModal('${m.id}')" title="Balance">💰</button>
           <button class="btn btn-sm btn-red" onclick="deleteMerchant('${m.id}')">🗑</button>
         </td>
@@ -2156,25 +2110,71 @@ function merchantTable(merchants, commMap){
     </tbody></table>`;
 }
 
-async function openC2cChargeModal(email){
-  const m = await DB.get("merchants", email) || {};
-  const current = m.card2cashCharge !== undefined ? m.card2cashCharge : 3;
+/* ============ PER-CARD COMMISSION MODAL ============ */
+async function openCardCommissionsModal(email){
+  const all = await DB.list("cardCommissions");
+  const mine = all.filter(c => c.email === email);
   openModal(`
-    <h3>💳 Card to Cash Charge for ${email}</h3>
-    <div class="form-row"><label>Service Charge (%)</label><input id="c2cChargeInput" type="number" step="0.1" min="0" max="20" value="${current}"/></div>
-    <div class="info-box">💡 ₹10,000 with 1% charge → Merchant receives ₹9,900</div>
-    <div style="display:flex;gap:10px"><button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancel</button><button class="btn btn-dark" style="flex:1" onclick="saveC2cCharge('${email}')">Save</button></div>
+    <h3>💳 Per-Card Commission for ${email}</h3>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Set different commission % for different cards (BIN-based). Card number ke pehle 6 digit daalo.</p>
+    
+    <div style="background:#f7f7fb;border-radius:12px;padding:14px;margin-bottom:16px;max-height:200px;overflow-y:auto;">
+      ${mine.length === 0 ? '<div style="text-align:center;color:var(--muted);font-size:12.5px;padding:8px;">No card-specific commission set. Default will be used.</div>' :
+        mine.map(c => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:#fff;border-radius:8px;margin-bottom:6px;">
+            <div>
+              <div style="font-family:monospace;font-weight:700;font-size:13px;">${c.bin}xxxxxx</div>
+              <div style="font-size:11px;color:var(--muted);">${c.label || 'Card'}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-weight:800;color:var(--primary);">${c.chargePercent}%</span>
+              <button class="btn btn-sm btn-red" onclick="deleteCardCommission('${c.id}','${email}')">✗</button>
+            </div>
+          </div>
+        `).join("")
+      }
+    </div>
+
+    <div style="border-top:1px solid var(--border);padding-top:16px;">
+      <h4 style="font-size:14px;font-weight:800;margin-bottom:12px;">➕ Add New Card Commission</h4>
+      <div class="form-row"><label>Card BIN (first 6 digits)</label><input id="ccBin" maxlength="6" placeholder="e.g. 426548" pattern="[0-9]*"/></div>
+      <div class="form-row"><label>Card Label (optional)</label><input id="ccLabel" placeholder="e.g. HDFC Credit Card"/></div>
+      <div class="form-row"><label>Commission (%)</label><input id="ccPercent" type="number" step="0.1" min="0" max="20" placeholder="e.g. 2.5"/></div>
+      <button class="btn btn-dark" style="width:100%" onclick="addCardCommission('${email}')">Add Card Commission</button>
+    </div>
+
+    <div class="info-box" style="margin-top:16px;">💡 <b>Example:</b> Agar HDFC card (BIN 426548) pe 2% commission set karoge, toh HDFC card se transfer hone pe 2% katega. Baaki cards pe default merchant commission lagega.</div>
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      <button class="btn btn-outline" style="flex:1" onclick="closeModal()">Close</button>
+    </div>
   `);
 }
-async function saveC2cCharge(email){
-  const val = parseFloat(document.getElementById("c2cChargeInput").value);
-  if(isNaN(val) || val < 0 || val > 20) return showToast("Charge 0-20","error");
-  const m = await DB.get("merchants", email) || {};
-  m.card2cashCharge = val;
-  await DB.set("merchants", email, m);
-  showToast(`Set to ${val}%`,"success");
-  closeModal(); go("admin-merchants");
+
+async function addCardCommission(email){
+  const bin = document.getElementById("ccBin").value.trim();
+  const label = document.getElementById("ccLabel").value.trim();
+  const percent = parseFloat(document.getElementById("ccPercent").value);
+  if(!bin || bin.length !== 6 || !/^\d+$/.test(bin)) return showToast("Enter valid 6-digit BIN","error");
+  if(isNaN(percent) || percent < 0 || percent > 20) return showToast("Commission 0-20%","error");
+  try{
+    await DB.push("cardCommissions", {
+      email, bin, label: label || "Card", chargePercent: percent,
+      createdAt: new Date().toISOString()
+    });
+    showToast(`✅ Card ${bin} set at ${percent}%`,"success");
+    openCardCommissionsModal(email);
+  }catch(e){ showToast("Error: " + e.message,"error"); }
 }
+
+async function deleteCardCommission(id, email){
+  if(!confirm("Delete this card commission?")) return;
+  try{
+    await DB.del("cardCommissions", id);
+    showToast("Deleted","success");
+    openCardCommissionsModal(email);
+  }catch(e){ showToast("Error: " + e.message,"error"); }
+}
+
 async function openMerchantCommissionModal(email){
   const c = (await DB.get("merchantCommissions", email)) || {};
   const g = (await DB.get("commissionSettings","config")) || {payinPercent:0, payoutPercent:0};
